@@ -20,7 +20,7 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 | BFF-01 protected ticket store | Merged | [PR #6](https://github.com/sholehamed/foundation-backend/pull/6) |
 | BFF-02 interactive Identity cookie | Merged | [PR #8](https://github.com/sholehamed/foundation-backend/pull/8) |
 | BFF-03 code + PKCE and scoped Identity principal | **Merged / 47 tests passed** | [PR #11](https://github.com/sholehamed/foundation-backend/pull/11), merge `c201e4c67d18c9d7896887a688eb31d3340d7930`, [CI run 42130167589](https://github.com/sholehamed/foundation-backend/actions/runs/42130167589) |
-| BFF-04/05 callback, BFF session and revocation | **BFF-04 started, no browser session yet** | [Issue #12](https://github.com/sholehamed/foundation-backend/issues/12), [return URL security Draft PR #14](https://github.com/sholehamed/foundation-backend/pull/14), [Backend roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md) |
+| BFF-04/05 callback, BFF session and revocation | **BFF-04 return-URL validator merged; no browser session yet** | [Issue #12](https://github.com/sholehamed/foundation-backend/issues/12), [merged return URL security PR #14](https://github.com/sholehamed/foundation-backend/pull/14), [Backend roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md) |
 | BFF-06 Angular migration | Blocked on backend and full-stack E2E | [Browser client contract](architecture/browser-bff-client.md) |
 
 ## Current Angular runtime (not yet migrated)
@@ -53,5 +53,5 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 
 - [BFF-03 merged PR #11](https://github.com/sholehamed/foundation-backend/pull/11) with OpenIddict authorization code / PKCE, scoped Identity cookie revalidation and TestServer protocol tests (41 Identity and 6 BFF tests passed). This proves **the Authorization Server side only**.
 - [Backend docs checkpoint PR #13](https://github.com/sholehamed/foundation-backend/pull/13) merged; see backend [PROJECT-STATE](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-STATE.md) for the canonical status.
-- [BFF-04 Issue #12](https://github.com/sholehamed/foundation-backend/issues/12) is next: BFF confidential OIDC challenge/callback, server-side BFF session cookie, safe Identity login continuation; [Draft PR #14](https://github.com/sholehamed/foundation-backend/pull/14) contains only a conservative local returnUrl validator and tests.
+- [BFF-04 Issue #12](https://github.com/sholehamed/foundation-backend/issues/12) is next: BFF confidential OIDC challenge/callback, server-side BFF session cookie, safe Identity login continuation; [Merged PR #14](https://github.com/sholehamed/foundation-backend/pull/14), commit `53732242450bd90c206e29738007372bbe2dde1b`, contains only a conservative local returnUrl validator and tests ([CI 42131501508](https://github.com/sholehamed/foundation-backend/actions/runs/42131501508): 35 BFF + 41 Identity green).
 - No Angular login or package extraction change is authorized/needed yet. Preserve current Password Grant until backend session endpoints and E2E acceptance.
