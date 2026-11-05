@@ -58,3 +58,10 @@ interface BrowserSession {
 - CSRF missing/invalid request rejected on every cookie-authenticated write.
 - Switching tenant host never reuses BFF cookie of another host.
 - Login, logout, expiration and tenant/session revocation tested against real .NET backend.
+
+
+## Cross-repository checkpoint (2026-11-06)
+
+- Backend BFF-01 and BFF-02 have been merged. [BFF-03 Draft PR #11](https://github.com/sholehamed/foundation-backend/pull/11) contains Authorization Code/PKCE work but is still under protocol testing.
+- The current Angular login form does **not** provide a safe return to `/api/connect/authorize`. This is a known integration blocker; a dedicated authenticated OIDC continuation must be designed, tested and reviewed.
+- Do not change Angular runtime yet. When backend BFF session endpoints and test deployment are ready, begin a separate frontend branch, add E2E tests and update [PROJECT-STATE](../PROJECT-STATE.md).
