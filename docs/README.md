@@ -1,5 +1,7 @@
 # Foundation Frontend Documentation
 
+- [Frontend project continuity and current BFF status](PROJECT-STATE.md)
+
 - [Browser authentication contract](architecture/browser-bff-client.md)
 - [System Admin page audit](SYSTEM-ADMIN-PAGE-AUDIT-2026-10-24.md) (legacy historical evidence, not current Foundation readiness)
 
