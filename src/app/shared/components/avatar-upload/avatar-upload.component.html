@@ -1,0 +1,51 @@
+<div class="avatar-field-wrapper">
+  <!-- هدر یا برچسب فیلد -->
+   @if (label) {
+     <label class="avatar-field-label">{{label}}</label>
+   }
+
+  <div
+    class="avatar-container"
+    [style.width.px]="size"
+    [style.height.px]="size"
+    [class.readonly]="!editable"
+    (click)="openFilePicker()"
+  >
+    <img
+      *ngIf="imageSrc; else defaultAvatar"
+      [src]="imageSrc"
+      class="avatar-image"
+    />
+
+    <ng-template #defaultAvatar>
+      <img src="images/users/user65.jpg" class="avatar-image" />
+    </ng-template>
+
+    <!-- دکمه ریلود پیش‌نمایش -->
+    <button
+      *ngIf="imageId && refresh"
+      type="button"
+      class="reload-button"
+      title="Reload preview"
+      (click)="reloadPreview($event)"
+    >
+      ↻
+    </button>
+
+    <!-- اورلی برای حالت ویرایش -->
+    <div class="overlay" *ngIf="editable">
+      <span>Upload</span>
+    </div>
+
+    <!-- اینپوت فایل پنهان -->
+    <input
+      *ngIf="editable"
+      class="hidden-file-input"
+      #fileInput
+      type="file"
+      accept="image/*"
+      (change)="onFileChange($event)"
+      hidden
+    />
+  </div>
+</div>

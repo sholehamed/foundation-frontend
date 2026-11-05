@@ -1,0 +1,51 @@
+<app-page-header />
+
+<app-grid #grid
+  [columns]="columns"
+  [data]="list()"
+  [enableActions]="true"
+  [enableSelection]="true"
+  (queryChange)="loadList($event)"
+>
+<ng-template gridHeaderFilterTemplate="title">
+    <app-text-filter [grid]="grid" field="title" label="جستجوی عنوان "></app-text-filter>
+  </ng-template>
+  <ng-template gridHeaderFilterTemplate="module">
+                               <app-select-filter [searchable]="true"  [grid]="grid" field="moduleId" (searchChanged)="searchModule($event)" placeholder="ماژول"  [options]="modules()" fi label="ماژول"></app-select-filter>
+
+  </ng-template>
+<ng-template [gridHeaderFilterTemplate]="'code'">
+    <app-text-filter [grid]="grid" field="code" label="جستجوی کد"></app-text-filter>
+</ng-template>
+<ng-template [gridCellTemplate]="'isActive'" let-value="value" let-row="row">
+    <app-cell-toggle (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
+</ng-template>
+ <ng-template #HeaderActions>
+            <button
+                    class="add-btn refined-add-btn"
+                    type="button"
+                    routerLink="create"
+                    mat-button>
+                    <i class="material-symbols-outlined">add</i>
+                    جدید
+                </button>
+        </ng-template>
+        
+<ng-template #actionTemplate let-row>
+        <button
+            mat-button
+            [matMenuTriggerFor]="actionMenu"
+            class="dot-menu p-0 d-inline-block border-radius-0"
+        >
+            <i class="ri-more-fill"></i>
+        </button>
+
+        <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
+            <button mat-menu-item [routerLink]="row.id+'/permissions'" type="button">مدیریت مجوزها </button>
+            <button mat-menu-item [routerLink]="row.id+'/uiResources'" type="button">مدیریت ui</button>
+            <button mat-menu-item [routerLink]="row.id+'/apiResources'" type="button">مدیریت api</button>
+            <button mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
+            <button mat-menu-item type="button">حذف</button>
+        </mat-menu>
+    </ng-template>
+</app-grid>

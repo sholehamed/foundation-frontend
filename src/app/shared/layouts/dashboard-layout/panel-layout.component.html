@@ -1,0 +1,34 @@
+<div
+    [class.card-borderd]="themeService.isCardBorderedTheme()"
+    [class.card-with-box-shadow]="themeService.isCardWithBoxShadowTheme()"
+    [class.card-without-border-radius]="themeService.isCardWithoutBorderRadiusTheme()"
+    [class.with-navbar]="themeService.isNavbarTheme()"
+>
+
+    <!-- Sidebar -->
+    <app-sidebar />
+    
+    <!-- Main Content -->
+    <div
+        [class.right-sidebar]="themeService.isRightSidebarTheme()"
+        [class.hide-sidebar]="themeService.isHideSidebarTheme()"
+        class="main-content transition d-flex flex-column"
+        [ngClass]="{'active': isSidebarToggled()}"
+    >
+    
+        <!-- Header -->
+        <app-header />
+
+        <!-- Router Outlet -->
+        <router-outlet />
+    
+        <div class="flex-grow-1"></div>
+    
+        <!-- Footer -->
+        <app-footer />
+    
+    </div>
+    
+    <app-customizer-settings />
+
+</div>

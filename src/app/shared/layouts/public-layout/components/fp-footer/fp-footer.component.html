@@ -1,0 +1,252 @@
+<footer
+    class="pt-150"
+    [class.component-dark-theme]="themeService.isDarkTheme()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+>
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Brand -->
+            <div class="col-lg-4 col-sm-6">
+                <div class="single-footer-widget brand-widget">
+
+                    <a
+    routerLink="/"
+    class="logo d-inline-block"
+>
+    <img
+        class="logo-light"
+        src="shinera-light-logo.png"
+        alt="Shinera"
+    >
+
+    <img
+        class="logo-dark"
+        src="shinera-dark-logo.png"
+        alt="Shinera"
+    >
+</a>
+
+                    <p>
+                        Shinera برای مدیریت ساده‌تر و منظم‌تر
+                        کسب‌وکارهای حوزه زیبایی طراحی شده است؛
+                        همه‌چیز را یکجا مدیریت کن و روی رشد کسب‌وکارت تمرکز داشته باش.
+                    </p>
+
+                    <div class="socials" >
+
+                        <a style="display: flex!important;"
+                            href="#"
+                            class="d-inline-block lh-1"
+                            target="_blank"
+                            aria-label="Instagram"
+                        >
+                            <i class="ri-instagram-fill"></i>
+                        </a>
+
+                        <a style="display: flex!important;"
+                            href="#"
+                            class="d-inline-block lh-1"
+                            target="_blank"
+                            aria-label="Telegram"
+                        >
+                            <i class="ri-telegram-fill"></i>
+                        </a>
+
+                        <a style="display: flex!important;"
+                            href="#"
+                            class="d-inline-block lh-1"
+                            target="_blank"
+                            aria-label="LinkedIn"
+                        >
+                            <i class="ri-linkedin-fill"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Product -->
+            <div class="col-lg-2 col-sm-6">
+                <div class="single-footer-widget">
+
+                    <h3 class="fw-semibold">
+                        محصول
+                    </h3>
+
+                    <ul class="p-0 custom-links m-0 list-unstyled">
+
+                        <li>
+                            <a
+                                href="#features"
+                                class="d-inline-block"
+                            >
+                                امکانات
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                href="#pricing"
+                                class="d-inline-block"
+                            >
+                                پلن‌ها
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                href="#faq"
+                                class="d-inline-block"
+                            >
+                                سوالات متداول
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                routerLink="/auth/register"
+                                class="d-inline-block"
+                            >
+                                شروع کار
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-3 col-sm-6">
+                <div class="single-footer-widget">
+
+                    <h3 class="fw-semibold">
+                        دسترسی سریع
+                    </h3>
+
+                    <ul class="p-0 custom-links m-0 list-unstyled">
+
+                        <li>
+                            <a
+                                href="#"
+                                class="d-inline-block"
+                            >
+                                خانه
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                href="#contact"
+                                class="d-inline-block"
+                            >
+                                ارتباط با ما
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                routerLink="/auth/login"
+                                class="d-inline-block"
+                            >
+                                ورود به Shinera
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                routerLink="/auth/register"
+                                class="d-inline-block"
+                            >
+                                ثبت‌نام
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+
+            <!-- Legal -->
+            <div class="col-lg-3 col-sm-6">
+                <div class="single-footer-widget">
+
+                    <h3 class="fw-semibold">
+                        قوانین و پشتیبانی
+                    </h3>
+
+                    <ul class="p-0 custom-links m-0 list-unstyled">
+
+                        <li>
+                            <a
+                                routerLink="/terms"
+                                class="d-inline-block"
+                            >
+                                شرایط استفاده
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                routerLink="/privacy"
+                                class="d-inline-block"
+                            >
+                                حریم خصوصی
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                routerLink="/support"
+                                class="d-inline-block"
+                            >
+                                پشتیبانی
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                href="#contact"
+                                class="d-inline-block"
+                            >
+                                تماس با ما
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="copyright-area text-center">
+
+        <div class="container">
+
+            <div class="copyright-content">
+
+                <p>
+                    © {{ currentYear }}
+                    <span>Shinera</span>.
+                    تمامی حقوق محفوظ است.
+                </p>
+
+                <p class="made-with">
+                    طراحی و توسعه با
+                    <i class="material-symbols-outlined">
+                        favorite
+                    </i>
+                    برای کسب‌وکارهای زیبایی
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+</footer>

@@ -1,0 +1,476 @@
+.banner-area {
+    padding-top: 165px;
+    overflow: hidden;
+
+    --banner-heading-color: var(--headingColor);
+    --banner-text-color: var(--bodyColor);
+    --banner-muted-color: var(--mutedColor);
+    --banner-accent-color: var(--primaryColor);
+
+    --banner-surface-color: var(--cardBgColor);
+    --banner-subtle-surface-color: var(--surfaceColor);
+    --banner-border-color: var(--borderColor);
+
+    --banner-shadow-color: rgba(0, 0, 0, .08);
+    --banner-glow-color: var(--primaryColor);
+
+    .shape1 {
+        z-index: -1;
+        right: -30px;
+        bottom: 50px;
+        position: absolute;
+        filter: blur(150px);
+    }
+
+    .shape2 {
+        left: 25px;
+        top: -210px;
+        z-index: -1;
+        position: absolute;
+        filter: blur(125px);
+    }
+
+    .shape3 {
+        top: -125px;
+        z-index: -1;
+        right: 260px;
+        position: absolute;
+        filter: blur(75px);
+    }
+
+    .shape4 {
+        bottom: 0;
+        left: -50px;
+        z-index: -1;
+        filter: blur(75px);
+        position: absolute;
+    }
+
+    &.component-rtl-enabled {
+        .shape1 {
+            left: -30px;
+            right: auto;
+        }
+
+        .shape2 {
+            right: 25px;
+            left: auto;
+        }
+
+        .shape3 {
+            left: 260px;
+            right: auto;
+        }
+
+        .shape4 {
+            right: -50px;
+            left: auto;
+        }
+    }
+
+    &.component-dark-theme {
+        --banner-heading-color: var(--headingColor);
+        --banner-text-color: var(--bodyColor);
+        --banner-muted-color: var(--mutedColor);
+        --banner-accent-color: var(--primaryColor);
+
+        --banner-surface-color: var(--cardBgColor);
+        --banner-subtle-surface-color: var(--surfaceColor);
+        --banner-border-color: var(--borderColor);
+
+        --banner-shadow-color: rgba(0, 0, 0, .25);
+
+        .banner-image {
+            img {
+                filter: drop-shadow(
+                    0 30px 55px var(--banner-shadow-color)
+                );
+            }
+        }
+
+        .eyebrow {
+            background: var(--banner-subtle-surface-color);
+            box-shadow:
+                0 6px 25px var(--banner-shadow-color);
+        }
+
+        .secondary-button {
+            background: var(--banner-subtle-surface-color);
+
+            &:hover {
+                background: var(--banner-surface-color);
+            }
+        }
+
+        .dashboard-glow {
+            opacity: .7;
+        }
+    }
+}
+
+
+/* --------------------------------
+   Hero Content
+-------------------------------- */
+
+.banner-content {
+    max-width: 900px;
+    margin: 0 auto 55px;
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 8px 14px;
+        margin-bottom: 22px;
+
+        border: 1px solid var(--banner-border-color);
+        border-radius: 100px;
+
+        background: var(--banner-subtle-surface-color);
+
+        color: var(--banner-accent-color);
+
+        font-size: 13px;
+        font-weight: 600;
+
+        box-shadow:
+            0 6px 25px var(--banner-shadow-color);
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+
+            flex: 0 0 7px;
+
+            border-radius: 50%;
+
+            background: var(--banner-accent-color);
+
+            box-shadow:
+                0 0 0 4px color-mix(
+                    in srgb,
+                    var(--banner-accent-color) 12%,
+                    transparent
+                );
+        }
+    }
+
+    h1 {
+        max-width: 850px;
+
+        margin: 0 auto 25px;
+
+        color: var(--banner-heading-color);
+
+        font-size: 58px;
+        font-weight: 700;
+        line-height: 1.15;
+
+        letter-spacing: -1.8px;
+
+        span {
+            color: var(--banner-accent-color);
+        }
+    }
+
+    p {
+        max-width: 700px;
+
+        margin: 0 auto;
+
+        color: var(--banner-text-color);
+
+        font-size: 17px;
+        line-height: 1.9;
+    }
+}
+
+
+/* --------------------------------
+   Actions
+-------------------------------- */
+
+.banner-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 12px;
+    margin-top: 28px;
+
+    .mat-mdc-button {
+        height: 48px;
+        min-width: 135px;
+
+        border-radius: 9px;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: var(--transition);
+    }
+
+    .primary-button {
+        position: relative;
+
+        padding: 0 20px;
+
+        color: var(--whiteColor);
+        background: var(--banner-accent-color);
+
+        box-shadow:
+            0 10px 25px var(--banner-shadow-color);
+
+        .mdc-button__label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        i {
+            font-size: 19px;
+        }
+
+        &:hover {
+            background: var(--primaryHoverColor);
+        }
+    }
+
+    .secondary-button {
+        padding: 0 20px;
+
+        color: var(--banner-heading-color);
+        background: var(--banner-subtle-surface-color);
+
+        border: 1px solid var(--banner-border-color);
+
+        &:hover {
+            background: var(--banner-surface-color);
+        }
+    }
+}
+
+
+/* --------------------------------
+   Small Note
+-------------------------------- */
+
+.hero-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+    margin-top: 16px;
+
+    color: var(--banner-muted-color);
+
+    font-size: 12px;
+
+    i {
+        font-size: 16px;
+        color: var(--banner-accent-color);
+    }
+}
+
+
+/* --------------------------------
+   Dashboard
+-------------------------------- */
+
+.banner-image {
+    position: relative;
+
+    max-width: 1050px;
+    margin: 0 auto;
+
+    img {
+        position: relative;
+        z-index: 2;
+
+        display: block;
+
+        width: 100%;
+        max-width: 980px;
+
+        margin: 0 auto;
+
+        border-radius: 14px;
+
+        filter:
+            drop-shadow(
+                0 30px 55px var(--banner-shadow-color)
+            );
+
+        transform: translateY(0);
+
+        transition: transform .5s ease;
+    }
+
+    &:hover img {
+        transform: translateY(-6px);
+    }
+
+    .dashboard-glow {
+        position: absolute;
+        z-index: 1;
+
+        left: 50%;
+        bottom: 5%;
+
+        width: 65%;
+        height: 45%;
+
+        transform: translateX(-50%);
+
+        background: var(--banner-glow-color);
+
+        opacity: .16;
+
+        filter: blur(70px);
+
+        border-radius: 50%;
+    }
+}
+
+
+/* --------------------------------
+   RTL
+-------------------------------- */
+
+::ng-deep {
+    .banner-content {
+        .primary-button {
+            .mdc-button__label {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+        }
+    }
+
+    .component-rtl-enabled {
+        .banner-content {
+            .primary-button {
+                .mdc-button__label {
+                    flex-direction: row;
+                }
+            }
+        }
+    }
+}
+
+
+/* --------------------------------
+   Mobile
+-------------------------------- */
+
+@media only screen and (max-width: 767px) {
+
+    .banner-area {
+        padding-top: 120px;
+    }
+
+    .banner-content {
+        max-width: 100%;
+        margin-bottom: 35px;
+
+        .eyebrow {
+            font-size: 11px;
+            padding: 7px 11px;
+        }
+
+        h1 {
+            font-size: 34px;
+            line-height: 1.25;
+            letter-spacing: -.7px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 13px;
+            line-height: 1.8;
+        }
+    }
+
+    .banner-actions {
+        flex-direction: column;
+
+        width: 100%;
+        margin-top: 22px;
+
+        .mat-mdc-button {
+            width: 100%;
+            max-width: 230px;
+        }
+    }
+
+    .hero-note {
+        font-size: 10px;
+    }
+
+    .banner-image {
+        img {
+            width: 110%;
+            max-width: none;
+            margin-left: -5%;
+        }
+
+        .dashboard-glow {
+            width: 90%;
+            filter: blur(50px);
+        }
+    }
+}
+
+
+/* --------------------------------
+   Tablet
+-------------------------------- */
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+
+    .banner-area {
+        padding-top: 135px;
+    }
+
+    .banner-content {
+        h1 {
+            font-size: 42px;
+            letter-spacing: -1px;
+        }
+
+        p {
+            max-width: 600px;
+            font-size: 15px;
+        }
+    }
+
+    .banner-image {
+        margin-top: 15px;
+    }
+}
+
+
+/* --------------------------------
+   Small Desktop
+-------------------------------- */
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+
+    .banner-area {
+        padding-top: 155px;
+    }
+
+    .banner-content {
+        h1 {
+            font-size: 50px;
+        }
+
+        p {
+            font-size: 16px;
+        }
+    }
+}

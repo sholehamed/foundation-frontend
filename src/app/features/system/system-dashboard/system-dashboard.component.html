@@ -1,0 +1,19 @@
+<div class="row">
+
+    <div class="col-xxl-2 col-sm-4">
+        <app-count-widget class="col-xxl-2 col-sm-4" Icon="business" Title="کل مستاجرها" [Value]="_dashboardCards()!.totalTenants"></app-count-widget>
+    </div>
+<div class="col-xxl-2 col-sm-4">
+    <app-count-widget class="col-xxl-2 col-sm-4" Icon="check_circle" Title="مستاجرهای فعال" [Value]="_dashboardCards()!.activeTenants"></app-count-widget>
+</div>
+<div class="col-xxl-2 col-sm-4">
+    <app-count-widget class="col-xxl-2 col-sm-4" Icon="group" Title="کل کاربران" [Value]="_dashboardCards()!.totalUsers"></app-count-widget>
+</div>
+<div class="col-xxl-2 col-sm-4">
+    <app-count-widget class="col-xxl-2 col-sm-4" Icon="admin_panel_settings" Title="کل نقش ها" [Value]="_dashboardCards()!.totalUsers"></app-count-widget>
+</div>
+<div class="col-xxl-2 col-sm-4">
+    <app-count-widget class="col-xxl-2 col-sm-4" Icon="key" Title="کل  دسترسی ها" [Value]="_dashboardCards()!.totalPermissions"></app-count-widget>
+</div>
+</div>
+

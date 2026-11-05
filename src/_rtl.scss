@@ -1,0 +1,1829 @@
+.rtl-enabled {
+    direction: rtl;
+
+    // Card
+    .mat-mdc-card {
+        .mat-mdc-card-header {
+            .mat-mdc-card-header-text {
+                .mat-mdc-button {
+                    &.add-btn {
+                        .mdc-button__label {
+                            padding: {
+                                left: 0;
+                                right: 22px;
+                            };
+                            i {
+                                right: -4px;
+                                left: auto;
+                            }
+                        }
+                    }
+                    &.date-btn {
+                        .mdc-button__label {
+                            padding: {
+                                left: 0;
+                                right: 24px;
+                            };
+                            i {
+                                left: auto;
+                                right: 0;
+                            }
+                        }
+                    }
+                    &.view-all-btn {
+                        .mdc-button__label {
+                            padding: {
+                                right: 0;
+                                left: 15px;
+                            };
+                            i {
+                                right: auto;
+                                left: -7px;
+                            }
+                        }
+                    }
+                }
+                .mat-mdc-card-subtitle {
+                    .mat-mdc-button {
+                        &.dot-menu {
+                            margin: {
+                                left: -7px;
+                                right: 0;
+                            };
+                        }
+                        &.card-header-menu {
+                            .mdc-button__label {
+                                padding: {
+                                    left: 20px;
+                                    right: 0;
+                                };
+                                &::before {
+                                    right: auto;
+                                    left: -3px;
+                                }
+                            }
+                            &.without-border {
+                                .mdc-button__label {
+                                    padding-right: 18px;
+                                    padding: {
+                                        right: 0;
+                                        left: 18px;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                    .buttons-list {
+                        .mat-mdc-button {
+                            margin: {
+                                left: 0;
+                                right: 15px;
+                            };
+                            &:first-child {
+                                margin-right: 0;
+                            }
+                        }
+                    }
+                }
+                .search-box {
+                    i {
+                        left: auto;
+                    }
+                    .input-search {
+                        padding: {
+                            right: 38px;
+                            left: 15px;
+                        };
+                    }
+                }
+            }
+        }
+        .mat-mdc-card-content {
+            .form-btn-box {
+                .mat-mdc-button {
+                    margin: {
+                        right: 0;
+                        left: 20px;
+                    };
+                    &.mat-primary {
+                        .mdc-button__label {
+                            padding: {
+                                left: 0;
+                                right: 29px;
+                            };
+                            i {
+                                left: auto;
+                                right: 0;
+                            }
+                        }                    
+                    }
+                    &:last-child {
+                        margin-left: 0;
+                    }
+                }
+            }
+        }
+    }
+
+    // ApexCharts
+    .apexcharts-canvas {
+        direction: ltr;
+
+        .apexcharts-tooltip {
+            direction: rtl;
+
+            .apexcharts-tooltip-marker {
+                margin: {
+                    right: 0;
+                    left: 6px;
+                };
+            }
+            .apexcharts-tooltip-series-group {
+                justify-content: start;
+            }
+        }
+        .apexcharts-legend-series {
+            direction: rtl;
+
+            .apexcharts-legend-marker {
+                left: auto !important;
+                right: -2px;
+                margin: {
+                    right: 0;
+                    left: 3px;
+                };
+            }
+            .apexcharts-legend-text {
+                padding: {
+                    left: 0;
+                    right: 15px;
+                };
+                margin: {
+                    left: 0;
+                    right: -15px;
+                };
+            }
+        }
+    }
+
+    // Table
+    .mat-mdc-table {
+        &.mdc-data-table__table {
+            .mat-mdc-header-row {
+                .mat-mdc-header-cell {
+                    &:first-child {
+                        border: {
+                            top: {
+                                left-radius: 0;
+                                right-radius: 7px;
+                            };
+                        };
+                    }
+                    &:last-child {
+                        border: {
+                            top: {
+                                right-radius: 0;
+                                left-radius: 7px;
+                            };
+                        };
+                    }
+                }
+            }
+            .mdc-data-table__content {
+                .mat-mdc-row {
+                    .mat-mdc-cell {
+                        .product-info {
+                            .info {
+                                margin: {
+                                    left: 0;
+                                    right: 12px;
+                                };
+                            }
+                        }
+                        .customer-info {
+                            span {
+                                margin: {
+                                    left: 0;
+                                    right: 12px;
+                                };
+                            }
+                        }
+                        .user-info {
+                            .image {
+                                margin: {
+                                    right: 0;
+                                    left: 12px;
+                                };
+                            }
+                        }
+                        .action-buttons {
+                            .mat-mdc-button {
+                                margin: {
+                                    right: 0;
+                                    left: 9px;
+                                };
+                                &:last-child {
+                                    margin-left: 0;
+                                }
+                            }
+                        }
+                        .assignees {
+                            div {
+                                margin: {
+                                    right: 0;
+                                    left: -13px;
+                                };
+                                &:last-child {
+                                    margin-left: 0;
+                                }
+                            }
+                        }
+                        .ratings {
+                            i {
+                                margin: {
+                                    right: 0;
+                                    left: 2px;
+                                };
+                                &:last-child {
+                                    margin-left: 0;
+                                }
+                            }
+                        }
+                        .group-lesson {
+                            .users {
+                                div {
+                                    margin: {
+                                        right: 0;
+                                        left: -21px;
+                                    };
+                                    &:last-child {
+                                        margin-left: 0;
+                                    }
+                                }
+                            }
+                            .info {
+                                margin: {
+                                    left: 0;
+                                    right: 10px;
+                                };
+                            }
+                        }
+                        .file-name {
+                            i {
+                                margin: {
+                                    right: 0;
+                                    left: 8px;
+                                };
+                            }
+                        }
+                        .review {
+                            .ratings {
+                                i {
+                                    margin: {
+                                        right: 0;
+                                        left: 2px;
+                                    };
+                                    &:last-child {
+                                        margin-left: 0;
+                                    }
+                                }
+                            }
+                        }
+                        .speaker-info {
+                            span {
+                                margin: {
+                                    left: 0;
+                                    right: 12px;
+                                };
+                            }
+                        }
+                        .impressions {
+                            padding: {
+                                left: 0;
+                                right: 28px;
+                            };
+                            i {
+                                left: auto;
+                                right: 0;
+                            }
+                        }
+                        .clicks {
+                            padding: {
+                                left: 0;
+                                right: 28px;
+                            };
+                            i {
+                                left: auto;
+                                right: 0;
+                            }
+                        }
+                        .notice-info {
+                            div {
+                                .date {
+                                    padding: {
+                                        left: 0;
+                                        right: 16px;
+                                    };
+                                    i {
+                                        left: auto;
+                                        right: 0;
+                                    }
+                                }
+                            }
+                        }
+                        .caller-info {
+                            div {
+                                .dot {
+                                    left: auto;
+                                    right: -15px;
+                                }
+                            }
+                        }
+                        .campaign-info {
+                            padding: {
+                                left: 0;
+                                right: 13px;
+                            };
+                            &::before {
+                                left: auto;
+                                right: 0;
+                            }
+                        }
+                        &:first-child {
+                            border: {
+                                left-width: 0;
+                                right: 1px solid var(--borderColor);
+                            };
+                        }
+                        &:last-child {
+                            border: {
+                                right-width: 0;
+                                left: 1px solid var(--borderColor);
+                            };
+                        }
+                    }
+                }
+            }
+            .mat-mdc-footer-row {
+                .mat-mdc-footer-cell {
+                    &:first-child {
+                        border: {
+                            left-width: 0;
+                            right: 1px solid var(--borderColor);
+                        };
+                    }
+                    &:last-child {
+                        border: {
+                            right-width: 0;
+                            left: 1px solid var(--borderColor);
+                        };
+                    }
+                }
+            }
+        }
+    }
+    .table-style-two {
+        .mat-mdc-table {
+            &.mdc-data-table__table {
+                .mat-mdc-header-row {
+                    .mat-mdc-header-cell {
+                        &:first-child {
+                            border-top-right-radius: 0;
+                            padding: {
+                                left: 20px;
+                                right: 25px;
+                            };
+                        }
+                        &:last-child {
+                            border-top-left-radius: 0;
+                            padding: {
+                                right: 20px;
+                                left: 25px;
+                            };
+                        }
+                    }
+                }
+                .mdc-data-table__content {
+                    .mat-mdc-row {
+                        .mat-mdc-cell {
+                            &:first-child {
+                                border-right-width: 0;
+                                padding: {
+                                    left: 20px;
+                                    right: 25px;
+                                };
+                            }
+                            &:last-child {
+                                border-left-width: 0;
+                                padding: {
+                                    right: 20px;
+                                    left: 25px;
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .table-style-three {
+        .mat-mdc-table {
+            &.mdc-data-table__table {
+                .mat-mdc-header-row {
+                    .mat-mdc-header-cell {
+                        &:first-child {
+                            border-top-right-radius: 0;
+                            padding: {
+                                left: 20px;
+                                right: 25px;
+                            };
+                        }
+                        &:last-child {
+                            border-top-left-radius: 0;
+                            padding: {
+                                right: 20px;
+                                left: 25px;
+                            };
+                        }
+                    }
+                }
+                .mdc-data-table__content {
+                    .mat-mdc-row {
+                        .mat-mdc-cell {
+                            &:first-child {
+                                border-right-width: 0;
+                                padding: {
+                                    left: 20px;
+                                    right: 25px;
+                                };
+                            }
+                            &:last-child {
+                                border-left-width: 0;
+                                padding: {
+                                    right: 20px;
+                                    left: 25px;
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .table-style-five {
+        .mat-mdc-table {
+            &.mdc-data-table__table {
+                .mat-mdc-header-row {
+                    .mat-mdc-header-cell {
+                        &:first-child {
+                            border-right-width: 0;
+                            padding: {
+                                left: 20px;
+                                right: 0;
+                            };
+                        }
+                        &:last-child {
+                            border-left-width: 0;
+                            padding: {
+                                right: 20px;
+                                left: 0;
+                            };
+                        }
+                    }
+                }
+                .mdc-data-table__content {
+                    .mat-mdc-row {
+                        .mat-mdc-cell {
+                            &:first-child {
+                                border-right-width: 0;
+                                padding: {
+                                    left: 20px;
+                                    right: 0;
+                                };
+                            }
+                            &:last-child {
+                                border-left-width: 0;
+                                padding: {
+                                    right: 20px;
+                                    left: 0;
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .basic-table {
+        table, .table {
+            thead {
+                tr {
+                    th {
+                        &:first-child {
+                            border: {
+                                top: {
+                                    left-radius: 0;
+                                    right-radius: 7px;
+                                };
+                            };
+                        }
+                        &:last-child {
+                            border: {
+                                top: {
+                                    right-radius: 0;
+                                    left-radius: 7px;
+                                };
+                            };
+                        }
+                    }
+                }
+            }
+            tbody {
+                tr {
+                    td {
+                        .product-info {
+                            .info {
+                                margin: {
+                                    left: 0;
+                                    right: 12px;
+                                };
+                            }
+                        }
+                        .customer-info {
+                            span {
+                                margin: {
+                                    left: 0;
+                                    right: 12px;
+                                };
+                            }
+                        }
+                        .user-info {
+                            .image {
+                                margin: {
+                                    right: 0;
+                                    left: 12px;
+                                };
+                            }
+                        }
+                        .action-buttons {
+                            .mat-mdc-button {
+                                margin: {
+                                    right: 0;
+                                    left: 9px;
+                                };
+                                &:last-child {
+                                    margin-left: 0;
+                                }
+                            }
+                        }
+                        .assignees {
+                            div {
+                                margin: {
+                                    right: 0;
+                                    left: -13px;
+                                };
+                                &:last-child {
+                                    margin-left: 0;
+                                }
+                            }
+                        }
+                        .ratings {
+                            i {
+                                margin: {
+                                    right: 0;
+                                    left: 2px;
+                                };
+                                &:last-child {
+                                    margin-left: 0;
+                                }
+                            }
+                        }
+                        .group-lesson {
+                            .users {
+                                div {
+                                    margin: {
+                                        right: 0;
+                                        left: -21px;
+                                    };
+                                    &:last-child {
+                                        margin-left: 0;
+                                    }
+                                }
+                            }
+                            .info {
+                                margin: {
+                                    left: 0;
+                                    right: 10px;
+                                };
+                            }
+                        }
+                        .file-name {
+                            i {
+                                margin: {
+                                    right: 0;
+                                    left: 8px;
+                                };
+                            }
+                        }
+                        .review {
+                            .ratings {
+                                i {
+                                    margin: {
+                                        right: 0;
+                                        left: 2px;
+                                    };
+                                    &:last-child {
+                                        margin-left: 0;
+                                    }
+                                }
+                            }
+                        }
+                        .speaker-info {
+                            span {
+                                margin: {
+                                    left: 0;
+                                    right: 12px;
+                                };
+                            }
+                        }
+                        .impressions {
+                            padding: {
+                                left: 0;
+                                right: 28px;
+                            };
+                            i {
+                                left: auto;
+                                right: 0;
+                            }
+                        }
+                        .clicks {
+                            padding: {
+                                left: 0;
+                                right: 28px;
+                            };
+                            i {
+                                left: auto;
+                                right: 0;
+                            }
+                        }
+                        .notice-info {
+                            div {
+                                .date {
+                                    padding: {
+                                        left: 0;
+                                        right: 16px;
+                                    };
+                                    i {
+                                        left: auto;
+                                        right: 0;
+                                    }
+                                }
+                            }
+                        }
+                        .caller-info {
+                            div {
+                                .dot {
+                                    left: auto;
+                                    right: -15px;
+                                }
+                            }
+                        }
+                        .campaign-info {
+                            padding: {
+                                left: 0;
+                                right: 13px;
+                            };
+                            &::before {
+                                left: auto;
+                                right: 0;
+                            }
+                        }
+                        &:first-child {
+                            border: {
+                                left-width: 0;
+                                right: 1px solid var(--borderColor);
+                            };
+                        }
+                        &:last-child {
+                            border: {
+                                right-width: 0;
+                                left: 1px solid var(--borderColor);
+                            };
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Paginator
+    .mat-mdc-paginator {
+        .mat-mdc-paginator-outer-container {
+            .mat-mdc-paginator-container {
+                .mat-mdc-paginator-page-size-value {
+                    margin: {
+                        left: 0;
+                        right: 4px;
+                    };
+                }
+                .mat-mdc-select-arrow-wrapper {
+                    margin: {
+                        left: 0;
+                        right: 5px;
+                    };
+                }
+            }
+        }
+        .mat-mdc-paginator-range-actions {
+            .mat-mdc-paginator-range-label {
+                margin: {
+                    left: 7px;
+                    right: 0;
+                };
+            }
+            .mat-mdc-icon-button {
+                margin: {
+                    left: 0;
+                    right: 5px;
+                };
+                &.mat-mdc-paginator-navigation-previous, &.mat-mdc-paginator-navigation-next {
+                    .mat-mdc-paginator-icon {
+                        transform: scaleX(-1);
+                    }
+                }
+            }
+        }
+    }
+    .pagination-card {
+        .pagination {
+            .pagination-item {
+                .mat-mdc-button {
+                    &.prev, &.next {
+                        i {
+                            transform: scaleX(-1);
+                        }
+                    }
+                }
+                &:first-child {
+                    margin: {
+                        left: 3px;
+                        right: 0;
+                    };
+                }
+                &:last-child {
+                    margin: {
+                        right: 3px;
+                        left: 0;
+                    };
+                }
+            }
+        }
+    }
+    .pagination-list {
+        .page-item {
+            &:first-child {
+                .page-link {
+                    border: {
+                        top-left-radius: 0;
+                        bottom-left-radius: 0;
+                        top-right-radius: var(--pagination-border-radius);
+                        bottom-right-radius: var(--pagination-border-radius);
+                    };
+                }
+            }
+            &:last-child {
+                .page-link {
+                    border: {
+                        top-right-radius: 0;
+                        bottom-right-radius: 0;
+                        top-left-radius: var(--pagination-border-radius);
+                        bottom-left-radius: var(--pagination-border-radius);
+                    };
+                }
+            }
+        }
+    }
+
+    // Owl Carousel
+    .owl-carousel {
+        direction: ltr;
+    }
+
+    // Add New Popup
+    .add-new-popup {
+        direction: ltr;
+        
+        .popup-dialog {
+            direction: rtl;
+
+            .mat-mdc-card {
+                .mat-mdc-card-content {
+                    .btn-box {
+                        .mat-mdc-button {
+                            margin: {
+                                right: 0;
+                                left: 15px;
+                            };
+                            &.mat-primary {
+                                .mdc-button__label {
+                                    padding: {
+                                        left: 0;
+                                        right: 25px;
+                                    };
+                                    i {
+                                        left: auto;
+                                        right: 0;
+                                    }
+                                }                    
+                            }
+                            &:last-child {
+                                margin-left: 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.style-two {
+            .popup-dialog {
+                .mat-mdc-card {
+                    .mat-mdc-card-content {
+                        .mat-horizontal-stepper-wrapper {
+                            .mat-horizontal-content-container {
+                                .form-group {
+                                    .icon {
+                                        padding: {
+                                            right: 0;
+                                            left: 15px;
+                                        };
+                                        .plus-icon {
+                                            left: 0;
+                                            right: auto;
+                                        }
+                                    }
+                                }
+                                .mat-mdc-radio-group {
+                                    .mat-mdc-radio-button {
+                                        margin: {
+                                            left: 0;
+                                        };
+                                        .mat-internal-form-field {
+                                            padding: {
+                                                left: 0;
+                                                right: 35px;
+                                            };
+                                            .mdc-radio {
+                                                left: auto;
+                                                right: -10px;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.style-three {
+            .popup-dialog {
+                .mat-mdc-card {
+                    .mat-mdc-card-header {
+                        .mat-mdc-card-header-text {
+                            padding: {
+                                left: 0;
+                                right: 45px;
+                            };
+                        }
+                    }
+                    .mat-mdc-card-content {
+                        padding: {
+                            left: 0;
+                            right: 45px;
+                        };
+                        .mat-mdc-card {
+                            .mat-mdc-card-header {
+                                .mat-mdc-card-header-text {
+                                    padding-right: 0;
+                                }
+                            }
+                            .mat-mdc-card-content {
+                                .team-members-list {
+                                    .item {
+                                        padding: {
+                                            right: 7px;
+                                            left: 20px;
+                                        };
+                                        margin: {
+                                            right: 0;
+                                            left: 8px;
+                                        };
+                                    }
+                                }
+                                .uploaded-files-list {
+                                    .item {
+                                        img {
+                                            left: auto;
+                                            right: 0;
+                                        }
+                                        .mat-mdc-button {
+                                            right: auto;
+                                            left: 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Breadcrumb
+    .breadcrumb-card {
+        .breadcrumb {
+            .breadcrumb-item {
+                a {
+                    padding: {
+                        left: 0;
+                        right: 22px;
+                    };
+                    i {
+                        left: auto;
+                        right: 0;
+                    }
+                }
+                &:before {
+                    left: -22px;
+                    right: auto;
+                    content: "\ea64";
+                }
+                &:first-child {
+                    margin: {
+                        left: 13px;
+                        right: 0;
+                    };
+                }
+                &:last-child {
+                    margin: {
+                        right: 13px;
+                        left: 0;
+                    };
+                }
+            }
+        }
+    }
+    .t-breadcrumb-item {
+        &+.t-breadcrumb-item {
+            padding: {
+                left: 0;
+                right: var(--breadcrumb-item-padding-x);
+            };
+            &::before {
+                float: right;
+                padding: {
+                    right: 0;
+                    left: var(--breadcrumb-item-padding-x);
+                };
+            }
+        }
+    }
+
+    // File Uploader
+    .file-uploader {
+        .upload-input {
+            .icon {
+                float: right;
+            }
+            .upload-text {
+                padding: {
+                    left: 0;
+                    right: 12px;
+                };
+            }
+        }
+    }
+
+    // Menu
+    .mat-mdc-menu-panel {
+        direction: rtl;
+
+        &.card-header-menu {
+            .mat-mdc-menu-content {
+                ul {
+                    li {
+                        .mat-mdc-menu-item {
+                            .mat-mdc-menu-item-text {
+                                i {
+                                    left: auto;
+                                    right: 20px;
+                                }
+                                &::before {
+                                    left: auto;
+                                    right: 0;
+                                }
+                            }
+                            .mat-mdc-menu-submenu-icon {
+                                left: 10px;
+                                right: auto;
+                            }
+                            &.with-icon {
+                                .mat-mdc-menu-item-text {
+                                    padding: {
+                                        left: 20px;
+                                        right: 47px;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Autocomplete
+    .mat-mdc-option {
+        .mdc-list-item__primary-text {
+            margin: {
+                right: 0;
+                left: auto;
+            };
+        }
+    }
+
+    // Bottom Sheet
+    .mat-bottom-sheet-container {
+        direction: rtl;
+    }
+
+    // Calendar
+    .mat-datepicker-content {
+        direction: rtl;
+
+        .mat-calendar-arrow {
+            margin: {
+                left: 0;
+                right: 5px;
+            };
+        }
+        .mat-datepicker-content-container {
+            .mat-calendar {
+                .mat-calendar-header {
+                    .mat-calendar-next-button {
+                        margin: {
+                            left: 0;
+                            right: 5px;
+                        };
+                    }
+                    .mat-calendar-controls {
+                        .mat-calendar-next-button {
+                            svg {
+                                transform: scaleX(-1);
+                            }
+                        }
+                        .mat-calendar-previous-button {
+                            svg {
+                                transform: scaleX(-1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .mat-calendar-body-range-end:not(.mat-calendar-body-in-comparison-range)::before, .mat-calendar-body-range-end::after, .mat-calendar-body-comparison-end:not(.mat-calendar-body-comparison-bridge-end)::before, .mat-calendar-body-comparison-end::after, .mat-calendar-body-preview-end .mat-calendar-body-cell-preview {
+            border: {
+                top-right-radius: 0;
+                bottom-right-radius: 0;
+                top-left-radius: 999px;
+                bottom-left-radius: 999px;
+            };
+        }
+        .mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before, .mat-calendar-body-range-start::after, .mat-calendar-body-comparison-start:not(.mat-calendar-body-comparison-bridge-start)::before, .mat-calendar-body-comparison-start::after, .mat-calendar-body-preview-start .mat-calendar-body-cell-preview {
+            border: {
+                top-left-radius: 0;
+                bottom-left-radius: 0;
+                top-right-radius: 999px;
+                bottom-right-radius: 999px;
+            };
+        }
+    }
+
+    // Form Field
+    .mat-mdc-form-field {
+        .mat-mdc-form-field-icon-suffix {
+            padding: {
+                left: 4px;
+                right: 0;
+            };
+        }
+    }
+    .mat-mdc-form-field-has-icon-suffix {
+        .mat-mdc-text-field-wrapper {
+            padding: {
+                left: 0;
+                right: 16px;
+            };
+        }
+    }
+    .mdc-notched-outline {
+        direction: ltr;
+        text-align: end;
+
+        .mdc-notched-outline__notch {
+            width: 100%;
+        }
+    }
+
+    // NGX Editor
+    .NgxEditor__Wrapper {
+        .NgxEditor__MenuBar {
+            .NgxEditor__Dropdown {
+                .NgxEditor__Dropdown--Text {
+                    &::after {
+                        margin: {
+                            left: 0;
+                            right: 5px;
+                        };
+                    }
+                }
+            }
+        }
+    }
+
+    // Progress Bar
+    .mdc-linear-progress__bar {
+        transform-origin: top right;
+    }
+
+    // Button
+    .mat-mdc-extended-fab {
+        .mdc-button__label {
+            i {
+                margin: {
+                    right: 0;
+                    left: 5px;
+                };
+            }
+        }
+    }
+
+    // Badges
+    .mat-badge-after {
+        .mat-badge-content {
+            left: auto;
+            right: 100%;
+        }
+    }
+
+    // Button Toggle
+    .mat-button-toggle-group-appearance-standard {
+        .mat-button-toggle-appearance-standard+.mat-button-toggle-appearance-standard {
+            border: {
+                left-width: 0;
+                right: solid 1px var(--mat-standard-button-toggle-divider-color);
+            };
+        }
+    }
+    .mat-button-toggle {
+        .mat-pseudo-checkbox {
+            margin: {
+                right: 0;
+                left: 12px;
+            };
+        }
+    }
+
+    // Chips
+    .mdc-evolution-chip--with-avatar {
+        &.mdc-evolution-chip--with-primary-graphic {
+            .mdc-evolution-chip__action--primary {
+                padding: {
+                    right: 0;
+                    left: 12px;
+                };
+            }
+        }
+    }
+    .mat-mdc-standard-chip {
+        &.mdc-evolution-chip--with-trailing-action {
+            .mdc-evolution-chip__action--primary {
+                padding: {
+                    left: 0;
+                    right: 12px;
+                };
+            }
+        }
+    }
+
+    // Expansion
+    .mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
+        margin: {
+            left: 16px;
+            right: 0;
+        };
+    }
+
+    // Radio Button
+    .mat-mdc-radio-group {
+        .mat-mdc-radio-button {
+            margin: {
+                right: 0;
+                left: 10px;
+            };
+        }
+    }
+
+    // List
+    .mdc-list-item--with-leading-icon {
+        &.mdc-list-item {
+            padding: {
+                left: 16px;
+                right: 0;
+            };
+        }
+    }
+    .mdc-list-item--with-trailing-checkbox {
+        .mdc-list-item__end {
+            margin: {
+                left: 8px;
+                right: 24px;
+            };
+        }
+        &.mdc-list-item {
+            padding: {
+                right: 16px;
+                left: 0;
+            };
+        }
+    }
+    .mdc-list-item--with-trailing-radio {
+        &.mdc-list-item {
+            padding: {
+                right: 16px;
+                left: 0;
+            };
+        }
+        .mdc-list-item__end {
+            margin: {
+                left: 8px;
+                right: 24px;
+            };
+        }
+    }
+
+    // Sidenav
+    .mat-drawer-transition {
+        .mat-drawer-content {
+            margin: {
+                left: 0 !important;
+                right: 360px;
+            };
+        }
+    }
+    .mat-drawer {
+        transform: translate3d(100%, 0, 0);
+    }
+
+    // Slide Toggle
+    .mat-mdc-slide-toggle {
+        .mdc-form-field > label {
+            padding: {
+                left: 0;
+                right: 10px;
+            };
+        }
+    }
+
+    // Stepper
+    .mat-horizontal-stepper-header {
+        .mat-step-icon {
+            margin: {
+                left: 8px;
+                right: 0;
+            };
+        }
+    }
+    .mat-horizontal-stepper-wrapper {
+        .mat-horizontal-stepper-header {
+            padding: {
+                right: 0;
+                left: 12px;
+            };
+        }
+    }
+    .mat-vertical-stepper-header {
+        .mat-step-icon {
+            margin: {
+                right: 0;
+                left: 12px;
+            };
+        }
+    }
+
+    // Dialog
+    .mat-mdc-dialog-container {
+        direction: rtl;
+
+        .mat-mdc-dialog-actions .mat-button-base+.mat-button-base, .mat-mdc-dialog-actions .mat-mdc-button-base+.mat-mdc-button-base {
+            margin: {
+                left: 0;
+                right: 8px;
+            };
+        }
+    }
+
+    // Listbox
+    .example-listbox {
+        .example-option {
+            padding: {
+                left: 5px;
+                right: 25px;
+            };
+            &.example-option[aria-selected=true] {
+                &::before {
+                    left: auto;
+                    right: 0;
+                }
+            }
+        }
+    }
+
+    // Example Box
+    .example-box {
+        margin: {
+            right: 0;
+            left: 25px;
+        };
+        &:last-child {
+            margin-left: 0;
+        }
+    }
+    .example-handle {
+        right: auto;
+        left: 10px;
+    }
+
+    // Margin
+    .mr-15 {
+        margin: {
+            right: 0 !important;
+            left: 15px !important;
+        };
+    }
+    .ml-15 {
+        margin: {
+            right: 15px !important;
+            left: 0 !important;
+        };
+    }
+    .mr-20 {
+        margin: {
+            right: 0 !important;
+            left: 20px !important;
+        };
+    }
+    .ml-20 {
+        margin: {
+            right: 20px !important;
+            left: 0 !important;
+        };
+    }
+    .mr-10 {
+        margin: {
+            right: 0 !important;
+            left: 10px !important;
+        };
+    }
+    .ml-10 {
+        margin: {
+            right: 10px !important;
+            left: 0 !important;
+        };
+    }
+    .mr-17 {
+        margin: {
+            right: 0 !important;
+            left: 17px !important;
+        };
+    }
+    .ml-17 {
+        margin: {
+            right: 17px !important;
+            left: 0 !important;
+        };
+    }
+    .mr-12 {
+        margin: {
+            right: 0 !important;
+            left: 12px !important;
+        };
+    }
+    .ml-12 {
+        margin: {
+            right: 12px !important;
+            left: 0 !important;
+        };
+    }
+
+}
+
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    .rtl-enabled {
+
+        // Card
+        .mat-mdc-card {
+            .mat-mdc-card-header {
+                .mat-mdc-card-header-text {
+                    .mat-mdc-card-subtitle {
+                        .mat-mdc-button {
+                            &.card-header-menu {
+                                .mdc-button__label {
+                                    padding: {
+                                        right: 0;
+                                        left: 17px;
+                                    };
+                                    &::before {
+                                        right: auto;
+                                        left: -2px;
+                                    }
+                                }
+                            }
+                        }
+                        .buttons-list {
+                            .mat-mdc-button {
+                                margin: {
+                                    left: 0;
+                                    right: 12px;
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            .mat-mdc-card-content {
+                .form-btn-box {
+                    .mat-mdc-button {
+                        margin: {
+                            right: 0;
+                            left: 15px;
+                        };
+                        &.mat-primary {
+                            .mdc-button__label {
+                                padding: {
+                                    left: 0;
+                                    right: 25px;
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Table
+        .mat-mdc-table {
+            &.mdc-data-table__table {
+                .mdc-data-table__content {
+                    .mat-mdc-row {
+                        .mat-mdc-cell {
+                            .product-info {
+                                .info {
+                                    margin: {
+                                        left: 0;
+                                        right: 10px;
+                                    };
+                                }
+                            }
+                            .customer-info {
+                                span {
+                                    margin: {
+                                        left: 0;
+                                        right: 10px;
+                                    };
+                                }
+                            }
+                            .user-info {
+                                .image {
+                                    margin: {
+                                        right: 0;
+                                        left: 10px;
+                                    };
+                                }
+                            }
+                            .speaker-info {
+                                span {
+                                    margin: {
+                                        left: 0;
+                                        right: 10px;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .table-style-two {
+            .mat-mdc-table {
+                &.mdc-data-table__table {
+                    .mat-mdc-header-row {
+                        .mat-mdc-header-cell {
+                            &:first-child {
+                                padding: {
+                                    left: 17px;
+                                    right: 17px;
+                                };
+                            }
+                            &:last-child {
+                                padding: {
+                                    right: 17px;
+                                    left: 17px;
+                                };
+                            }
+                        }
+                    }
+                    .mdc-data-table__content {
+                        .mat-mdc-row {
+                            .mat-mdc-cell {
+                                &:first-child {
+                                    padding: {
+                                        left: 17px;
+                                        right: 17px;
+                                    };
+                                }
+                                &:last-child {
+                                    padding: {
+                                        right: 17px;
+                                        left: 17px;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .table-style-three {
+            .mat-mdc-table {
+                &.mdc-data-table__table {
+                    .mat-mdc-header-row {
+                        .mat-mdc-header-cell {
+                            &:first-child {
+                                padding: {
+                                    left: 17px;
+                                    right: 17px;
+                                };
+                            }
+                            &:last-child {
+                                padding: {
+                                    right: 17px;
+                                    left: 17px;
+                                };
+                            }
+                        }
+                    }
+                    .mdc-data-table__content {
+                        .mat-mdc-row {
+                            .mat-mdc-cell {
+                                &:first-child {
+                                    padding: {
+                                        left: 17px;
+                                        right: 17px;
+                                    };
+                                }
+                                &:last-child {
+                                    padding: {
+                                        right: 17px;
+                                        left: 17px;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .table-style-five {
+            .mat-mdc-table {
+                &.mdc-data-table__table {
+                    .mat-mdc-header-row {
+                        .mat-mdc-header-cell {
+                            &:first-child {
+                                padding: {
+                                    left: 17px;
+                                    right: 0;
+                                };
+                            }
+                            &:last-child {
+                                padding: {
+                                    right: 17px;
+                                    left: 0;
+                                };
+                            }
+                        }
+                    }
+                    .mdc-data-table__content {
+                        .mat-mdc-row {
+                            .mat-mdc-cell {
+                                &:first-child {
+                                    padding: {
+                                        left: 17px;
+                                        right: 0;
+                                    };
+                                }
+                                &:last-child {
+                                    padding: {
+                                        right: 17px;
+                                        left: 0;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add New Popup
+        .add-new-popup {
+            &.style-three {
+                .popup-dialog {
+                    .mat-mdc-card {
+                        .mat-mdc-card-header {
+                            .mat-mdc-card-header-text {
+                                padding-right: 0;
+                            }
+                        }
+                        .mat-mdc-card-content {
+                            padding-right: 0;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+/* Min width 576px to Max width 767px */
+@media only screen and (min-width : 576px) and (max-width : 767px) {
+
+    .rtl-enabled {
+
+        // Table
+        .table-style-two {
+            .mat-mdc-table {
+                &.mdc-data-table__table {
+                    .mat-mdc-header-row {
+                        .mat-mdc-header-cell {
+                            &:first-child {
+                                padding: {
+                                    left: 20px;
+                                    right: 20px;
+                                };
+                            }
+                            &:last-child {
+                                padding: {
+                                    right: 20px;
+                                    left: 20px;
+                                };
+                            }
+                        }
+                    }
+                    .mdc-data-table__content {
+                        .mat-mdc-row {
+                            .mat-mdc-cell {
+                                &:first-child {
+                                    padding: {
+                                        left: 20px;
+                                        right: 20px;
+                                    };
+                                }
+                                &:last-child {
+                                    padding: {
+                                        right: 20px;
+                                        left: 20px;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .table-style-three {
+            .mat-mdc-table {
+                &.mdc-data-table__table {
+                    .mat-mdc-header-row {
+                        .mat-mdc-header-cell {
+                            &:first-child {
+                                padding: {
+                                    left: 20px;
+                                    right: 20px;
+                                };
+                            }
+                            &:last-child {
+                                padding: {
+                                    right: 20px;
+                                    left: 20px;
+                                };
+                            }
+                        }
+                    }
+                    .mdc-data-table__content {
+                        .mat-mdc-row {
+                            .mat-mdc-cell {
+                                &:first-child {
+                                    padding: {
+                                        left: 20px;
+                                        right: 20px;
+                                    };
+                                }
+                                &:last-child {
+                                    padding: {
+                                        right: 20px;
+                                        left: 20px;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .table-style-five {
+            .mat-mdc-table {
+                &.mdc-data-table__table {
+                    .mat-mdc-header-row {
+                        .mat-mdc-header-cell {
+                            &:first-child {
+                                padding: {
+                                    left: 20px;
+                                    right: 0;
+                                };
+                            }
+                            &:last-child {
+                                padding: {
+                                    right: 20px;
+                                    left: 0;
+                                };
+                            }
+                        }
+                    }
+                    .mdc-data-table__content {
+                        .mat-mdc-row {
+                            .mat-mdc-cell {
+                                &:first-child {
+                                    padding: {
+                                        left: 20px;
+                                        right: 0;
+                                    };
+                                }
+                                &:last-child {
+                                    padding: {
+                                        right: 20px;
+                                        left: 0;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+/* Min width 768px to Max width 991px */
+@media only screen and (min-width : 768px) and (max-width : 991px) {
+
+    .rtl-enabled {
+
+        // Add New Popup
+        .add-new-popup {
+            &.style-three {
+                .popup-dialog {
+                    .mat-mdc-card {
+                        .mat-mdc-card-header {
+                            .mat-mdc-card-header-text {
+                                padding-right: 0;
+                            }
+                        }
+                        .mat-mdc-card-content {
+                            padding-right: 0;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}

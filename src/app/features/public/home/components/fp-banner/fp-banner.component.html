@@ -1,0 +1,102 @@
+<div
+    class="banner-area"
+    [class.component-dark-theme]="themeService.isDarkTheme()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+>
+    <div class="container position-relative z-1">
+
+        <!-- Hero Content -->
+        <div class="banner-content text-center ml-auto mr-auto">
+
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                مدیریت هوشمند کسب‌وکار زیبایی
+            </div>
+
+            <h1>
+                همه‌چیز برای مدیریت
+                <span>حرفه‌ای‌تر</span>
+                کسب‌وکار زیبایی شما
+            </h1>
+
+            <p>
+                Shinera به شما کمک می‌کند مشتری‌ها، خدمات، نوبت‌ها، تیم و
+                عملکرد سالن را در یک فضای ساده و یکپارچه مدیریت کنید.
+            </p>
+
+            <div class="banner-actions">
+
+                <a
+                    routerLink="/dashboard"
+                    mat-button
+                    class="primary-button"
+                >
+                    <i class="material-symbols-outlined">
+                        arrow_back
+                    </i>
+                    شروع رایگان
+                </a>
+
+                <a
+                    href="#features"
+                    mat-button
+                    class="secondary-button"
+                >
+                    مشاهده امکانات
+                </a>
+
+            </div>
+
+            <div class="hero-note">
+                <i class="material-symbols-outlined">
+                    check_circle
+                </i>
+
+                بدون نیاز به نصب · شروع سریع · مدیریت ساده
+            </div>
+
+        </div>
+
+        <!-- Dashboard Preview -->
+        <div class="banner-image text-center">
+
+            <div class="dashboard-glow"></div>
+
+            <img
+                src="images/front-pages/dashboard.png"
+                alt="Shinera Dashboard"
+            >
+
+        </div>
+
+        <!-- Background Shapes -->
+        <div class="shape1">
+            <img
+                src="images/front-pages/shape3.png"
+                alt=""
+            >
+        </div>
+
+        <div class="shape2">
+            <img
+                src="images/front-pages/shape2.png"
+                alt=""
+            >
+        </div>
+
+        <div class="shape3">
+            <img
+                src="images/front-pages/shape4.png"
+                alt=""
+            >
+        </div>
+
+        <div class="shape4">
+            <img
+                src="images/front-pages/shape5.png"
+                alt=""
+            >
+        </div>
+
+    </div>
+</div>

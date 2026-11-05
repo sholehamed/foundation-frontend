@@ -1,0 +1,17 @@
+{
+  "WIDGETS":{
+    "CUSTOMERSATISFACTION":{
+      "HEADER":"Customer Satisfaction Rate",
+      "POSITIVE":"Positive",
+      "NEGATIVE":"Negative"
+    }
+  },
+  "HEADER": {
+    "CHOOSE_LANGUAGE": "Choose Language"
+  },
+  "LANGUAGES": {
+    "PERSIAN": "Persian",
+    "ENGLISH": "English",
+    "FRENCH": "French"
+  }
+}

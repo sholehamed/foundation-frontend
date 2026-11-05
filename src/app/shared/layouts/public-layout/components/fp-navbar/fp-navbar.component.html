@@ -1,0 +1,211 @@
+<div
+    class="navbar-area transition"
+    [ngClass]="{ sticky: isSticky }"
+    [class.component-dark-theme]="themeService.isDarkTheme()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+>
+    <div class="container">
+
+        <nav
+            class="navbar navbar-expand-lg"
+            [class.active]="classApplied"
+        >
+
+            <!-- =====================================================
+                 Logo
+            ====================================================== -->
+
+            <a
+                class="navbar-brand"
+                routerLink="/"
+                (click)="closeMenu()"
+            >
+                <img
+                    class="logo-light"
+                    src="shinera-light-logo.png"
+                    alt="Shinera"
+                >
+
+                <img
+                    class="logo-dark"
+                    src="shinera-dark-logo.png"
+                    alt="Shinera"
+                >
+            </a>
+
+
+            <!-- =====================================================
+                 Mobile Toggle
+            ====================================================== -->
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                [class.active]="classApplied"
+                (click)="toggleClass()"
+                [attr.aria-expanded]="classApplied"
+                aria-label="باز کردن منو"
+            >
+                <span class="burger-menu">
+                    <span class="top-bar"></span>
+                    <span class="middle-bar"></span>
+                    <span class="bottom-bar"></span>
+                </span>
+            </button>
+
+
+            <!-- =====================================================
+                 Navigation
+            ====================================================== -->
+
+            <div
+                class="navbar-collapse"
+                [class.mobile-open]="classApplied"
+            >
+
+                <!-- =================================================
+                     Mobile Navigation
+                ================================================== -->
+
+                <div class="mobile-nav-grid">
+
+                    <a
+                        href="#features"
+                        class="mobile-nav-card"
+                        (click)="closeMenu()"
+                    >
+                        <span class="mobile-nav-icon">
+                            <i class="material-symbols-outlined">
+                                widgets
+                            </i>
+                        </span>
+
+                        <span class="mobile-nav-content">
+                            <strong>امکانات</strong>
+                            <small>ویژگی‌های شاینرا</small>
+                        </span>
+
+                        <i class="material-symbols-outlined mobile-arrow">
+                            arrow_back
+                        </i>
+                    </a>
+
+
+                    <a
+                        href="#pricing"
+                        class="mobile-nav-card"
+                        (click)="closeMenu()"
+                    >
+                        <span class="mobile-nav-icon">
+                            <i class="material-symbols-outlined">
+                                payments
+                            </i>
+                        </span>
+
+                        <span class="mobile-nav-content">
+                            <strong>پلن‌ها</strong>
+                            <small>انتخاب اشتراک</small>
+                        </span>
+
+                        <i class="material-symbols-outlined mobile-arrow">
+                            arrow_back
+                        </i>
+                    </a>
+
+
+                    <a
+                        href="#faq"
+                        class="mobile-nav-card"
+                        (click)="closeMenu()"
+                    >
+                        <span class="mobile-nav-icon">
+                            <i class="material-symbols-outlined">
+                                help
+                            </i>
+                        </span>
+
+                        <span class="mobile-nav-content">
+                            <strong>سوالات متداول</strong>
+                            <small>پاسخ پرسش‌های شما</small>
+                        </span>
+
+                        <i class="material-symbols-outlined mobile-arrow">
+                            arrow_back
+                        </i>
+                    </a>
+
+
+                    <a
+                        href="#contact"
+                        class="mobile-nav-card"
+                        (click)="closeMenu()"
+                    >
+                        <span class="mobile-nav-icon">
+                            <i class="material-symbols-outlined">
+                                contact_page
+                            </i>
+                        </span>
+
+                        <span class="mobile-nav-content">
+                            <strong>ارتباط با ما</strong>
+                            <small>در تماس باشیم</small>
+                        </span>
+
+                        <i class="material-symbols-outlined mobile-arrow">
+                            arrow_back
+                        </i>
+                    </a>
+
+                </div>
+
+
+                <!-- =================================================
+                     Actions
+                ================================================== -->
+
+                <div class="mobile-menu-actions">
+
+                    <button
+                        type="button"
+                        class="theme-toggle"
+                        mat-icon-button
+                        [attr.aria-label]="
+                            themeService.isDarkTheme()
+                                ? 'فعال کردن حالت روشن'
+                                : 'فعال کردن حالت تاریک'
+                        "
+                        (click)="toggleTheme()"
+                    >
+                        <i class="material-symbols-outlined">
+                            {{
+                                themeService.isDarkTheme()
+                                    ? 'light_mode'
+                                    : 'dark_mode'
+                            }}
+                        </i>
+                    </button>
+
+
+                   
+
+
+                    <a
+                        routerLink="start"
+                        mat-button
+                        class="register-button"
+                    >
+                        شروع کار
+
+                        <i class="material-symbols-outlined">
+                            arrow_back
+                        </i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </div>
+</div>

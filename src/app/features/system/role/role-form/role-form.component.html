@@ -1,0 +1,26 @@
+<mat-card dir="rtl">
+  <mat-card-content>
+    <h2>{{ roleId ? 'ویرایش نقش' : 'ایجاد نقش' }}</h2>
+    @if (error()) { <p role="alert">{{ error() }}</p> }
+    @if (loading()) { <p>در حال بارگذاری...</p> }
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <mat-form-field appearance="outline">
+        <mat-label>نام نقش</mat-label>
+        <input matInput formControlName="name" autocomplete="off" />
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+          <mat-error>نام نقش الزامی است.</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>توضیحات</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
+      </mat-form-field>
+      <mat-slide-toggle formControlName="isActive">فعال</mat-slide-toggle>
+      <div class="actions">
+        <button mat-button type="button" (click)="back()">بازگشت</button>
+        <button mat-flat-button color="primary" type="submit"
+          [disabled]="form.invalid || loading() || isSaving">ذخیره</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

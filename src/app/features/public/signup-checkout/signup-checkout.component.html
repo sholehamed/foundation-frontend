@@ -1,0 +1,601 @@
+<div class="signup-main" style="margin-top: 100px">
+  <section class="intro">
+    <h1>کسب‌وکارت را بساز، پلنت را انتخاب کن و شروع کن.</h1>
+    <p>
+      اطلاعات را وارد کن تا حساب مالک و فضای کاری واقعی ساخته شود. فعال‌سازی اشتراک پولی در مرحله جداگانه انجام خواهد شد.
+    </p>
+  </section>
+
+  <div class="checkout-grid">
+    <section class="wizard-card">
+      <nav class="stepper" aria-label="مراحل ثبت‌نام">
+        @for (step of steps; track $index) {
+          <button
+            type="button"
+            class="step"
+            [class.active]="currentStep() === $index"
+            [class.done]="currentStep() > $index"
+            (click)="goToStep($index)"
+          >
+            <span class="step-index">
+              @if (currentStep() > $index) {
+                <span class="material-symbols-outlined">check</span>
+              } @else {
+                {{ $index + 1 }}
+              }
+            </span>
+
+            <span class="step-copy">
+              <strong>{{ step.title }}</strong>
+              <small>{{ step.subtitle }}</small>
+            </span>
+          </button>
+        }
+      </nav>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="step-body">
+          @switch (currentStep()) {
+            @case (0) {
+              <section formGroupName="subscription" class="section-block">
+                <div class="section-head">
+                  <div>
+                    <span class="section-kicker">پلن اشتراک</span>
+                    <h2>پلنی که با مدل کسب‌وکارت هماهنگ است را انتخاب کن</h2>
+                  </div>
+
+                  <div class="billing-toggle">
+                    <button
+                      type="button"
+                      [class.active]="billingCycle === 'monthly'"
+                      (click)="setBillingCycle('monthly')"
+                    >
+                      ماهانه
+                    </button>
+                    <button
+                      type="button"
+                      [class.active]="billingCycle === 'yearly'"
+                      (click)="setBillingCycle('yearly')"
+                    >
+                      سالانه
+                      <small>مقرون‌به‌صرفه‌تر</small>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="plans-grid">
+                  @for (plan of plans; track plan.key) {
+                    <button
+                      type="button"
+                      class="plan-card"
+                      [class.selected]="
+                        form.controls.subscription.controls.planKey.value === plan.key
+                      "
+                      (click)="selectPlan(plan)"
+                    >
+                      @if (plan.badge) {
+                        <span class="plan-badge">{{ plan.badge }}</span>
+                      }
+
+                      <div class="plan-check">
+                        <span class="material-symbols-outlined">
+                          {{
+                            form.controls.subscription.controls.planKey.value === plan.key
+                              ? 'radio_button_checked'
+                              : 'radio_button_unchecked'
+                          }}
+                        </span>
+                      </div>
+
+                      <h3>{{ plan.title }}</h3>
+                      <p>{{ plan.subtitle }}</p>
+
+                      <div class="price">
+                        <strong>
+                          {{
+                            formatMoney(
+                              billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice
+                            )
+                          }}
+                        </strong>
+                        <span>تومان / {{ billingCycle === 'yearly' ? 'سال' : 'ماه' }}</span>
+                      </div>
+
+                      <ul>
+                        @for (feature of plan.features; track feature) {
+                          <li>
+                            <span class="material-symbols-outlined">check</span>
+                            {{ feature }}
+                          </li>
+                        }
+                      </ul>
+                    </button>
+                  }
+                </div>
+
+                <div class="inline-field">
+                  <mat-form-field appearance="outline">
+                    <mat-label>کد تخفیف</mat-label>
+                    <input matInput formControlName="promoCode" placeholder="مثلاً SHINERA1405" />
+                    <span matSuffix class="material-symbols-outlined">sell</span>
+                  </mat-form-field>
+                </div>
+              </section>
+            }
+
+            @case (1) {
+              <section formGroupName="owner" class="section-block">
+                <div class="section-head simple">
+                  <div>
+                    <span class="section-kicker">حساب مالک</span>
+                    <h2>حساب اصلی مدیریت را ایجاد کن</h2>
+                    <p>
+                      این حساب مالک فضای کاری خواهد بود و دسترسی‌های مدیریتی از اینجا شروع می‌شود.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <mat-form-field appearance="outline">
+                    <mat-label>نام</mat-label>
+                    <input matInput formControlName="firstName" />
+                    @if (
+                      form.controls.owner.controls.firstName.touched &&
+                      form.controls.owner.controls.firstName.invalid
+                    ) {
+                      <mat-error>نام را وارد کن.</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>نام خانوادگی</mat-label>
+                    <input matInput formControlName="lastName" />
+                    @if (
+                      form.controls.owner.controls.lastName.touched &&
+                      form.controls.owner.controls.lastName.invalid
+                    ) {
+                      <mat-error>نام خانوادگی را وارد کن.</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>شماره موبایل</mat-label>
+                    <input
+                      matInput
+                      inputmode="numeric"
+                      formControlName="mobile"
+                      placeholder="09123456789"
+                    />
+                    @if (
+                      form.controls.owner.controls.mobile.touched &&
+                      form.controls.owner.controls.mobile.invalid
+                    ) {
+                      <mat-error>شماره موبایل معتبر وارد کن.</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>ایمیل</mat-label>
+                    <input
+                      matInput
+                      type="email"
+                      formControlName="email"
+                      placeholder="name@example.com"
+                    />
+                    @if (
+                      form.controls.owner.controls.email.touched &&
+                      form.controls.owner.controls.email.invalid
+                    ) {
+                      <mat-error>ایمیل معتبر وارد کن.</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>رمز عبور</mat-label>
+                    <input
+                      matInput
+                      type="password"
+                      formControlName="password"
+                      autocomplete="new-password"
+                    />
+                    @if (
+                      form.controls.owner.controls.password.touched &&
+                      form.controls.owner.controls.password.invalid
+                    ) {
+                      <mat-error>حداقل ۸ کاراکتر.</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>تکرار رمز عبور</mat-label>
+                    <input
+                      matInput
+                      type="password"
+                      formControlName="confirmPassword"
+                      autocomplete="new-password"
+                    />
+                    @if (
+                      form.controls.owner.touched && form.controls.owner.hasError('fieldsMismatch')
+                    ) {
+                      <mat-error>رمزهای عبور یکسان نیستند.</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="soft-note">
+                  <span class="material-symbols-outlined">shield_lock</span>
+                  <div>
+                    <strong>نکته امنیتی</strong>
+                    <p>
+                      رمز عبور نباید در RegistrationDraft به‌صورت متن خام ذخیره شود. سمت سرور آن را
+                      همان لحظه هش کن یا بعد از پرداخت لینک تنظیم رمز بده.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            }
+
+            @case (2) {
+              <section class="section-block">
+                <div class="section-head simple">
+                  <div>
+                    <span class="section-kicker">کسب‌وکار و فضای کاری</span>
+                    <h2>اطلاعاتی که هویت فضای کاری را می‌سازد</h2>
+                    <p>
+                      در رابط کاربری از واژه Tenant استفاده نمی‌کنیم؛ کاربر فقط «فضای کاری» و
+                      «کسب‌وکار» را می‌بیند.
+                    </p>
+                  </div>
+                </div>
+
+                <div formGroupName="business" class="subsection">
+                  <div class="subsection-title">
+                    <span class="material-symbols-outlined">storefront</span>
+                    <div>
+                      <h3>مشخصات کسب‌وکار</h3>
+                      <p>برای پروفایل، فاکتور و تنظیمات اولیه.</p>
+                    </div>
+                  </div>
+
+                  <div class="form-grid">
+                    <mat-form-field appearance="outline">
+                      <mat-label>نام کسب‌وکار</mat-label>
+                      <input matInput formControlName="displayName" placeholder="مثلاً سالن آیدا" />
+                      @if (
+                        form.controls.business.controls.displayName.touched &&
+                        form.controls.business.controls.displayName.invalid
+                      ) {
+                        <mat-error>نام کسب‌وکار را وارد کن.</mat-error>
+                      }
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>نوع فعالیت</mat-label>
+                      <mat-select formControlName="activityType">
+                        <mat-option value="solo">متخصص مستقل</mat-option>
+                        <mat-option value="salon">سالن زیبایی</mat-option>
+                        <mat-option value="studio">استودیو</mat-option>
+                        <mat-option value="clinic">کلینیک زیبایی</mat-option>
+                        <mat-option value="other">سایر</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>تلفن کسب‌وکار</mat-label>
+                      <input matInput formControlName="phone" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>شهر</mat-label>
+                      <input matInput formControlName="city" />
+                      @if (
+                        form.controls.business.controls.city.touched &&
+                        form.controls.business.controls.city.invalid
+                      ) {
+                        <mat-error>شهر را وارد کن.</mat-error>
+                      }
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full">
+                      <mat-label>آدرس</mat-label>
+                      <textarea matInput rows="3" formControlName="address"></textarea>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>کد پستی</mat-label>
+                      <input matInput formControlName="postalCode" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>اینستاگرام</mat-label>
+                      <input matInput formControlName="instagram" placeholder="@yourpage" />
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div formGroupName="workspace" class="subsection">
+                  <div class="subsection-title">
+                    <span class="material-symbols-outlined">domain</span>
+                    <div>
+                      <h3>فضای کاری Shinera</h3>
+                      <p>این بخش مستقیماً به Tenant تبدیل می‌شود.</p>
+                    </div>
+                  </div>
+
+                  <div class="workspace-slug">
+                    <mat-form-field appearance="outline">
+                      <mat-label>آدرس اختصاصی</mat-label>
+                      <input matInput dir="ltr" formControlName="slug" placeholder="aida" />
+                      <span matSuffix class="slug-suffix">.shinera.ir</span>
+
+                      @if (
+                        form.controls.workspace.controls.slug.touched &&
+                        form.controls.workspace.controls.slug.invalid
+                      ) {
+                        <mat-error>
+                          فقط حروف انگلیسی کوچک، عدد و خط تیره؛ حداقل ۳ کاراکتر.
+                        </mat-error>
+                      }
+                    </mat-form-field>
+
+                    <span class="field-help">
+                      بعداً می‌توانی Custom Domain را هم از تنظیمات اضافه کنی.
+                    </span>
+                  </div>
+
+                  <div class="hidden-defaults">
+                    <span>fa-IR</span>
+                    <span>Asia/Tehran</span>
+                    <span>IRR</span>
+                  </div>
+                </div>
+
+                <div formGroupName="branch" class="subsection branch-section">
+                  <div class="branch-toggle-row">
+                    <div class="subsection-title">
+                      <span class="material-symbols-outlined">account_tree</span>
+                      <div>
+                        <h3>اطلاعات شعبه</h3>
+                        <p>
+                          اگر لازم است اطلاعات شعبه اصلی جدا از پروفایل کسب‌وکار ثبت شود، فعالش کن.
+                        </p>
+                      </div>
+                    </div>
+
+                    <mat-slide-toggle formControlName="enabled"> ثبت شعبه اصلی </mat-slide-toggle>
+                  </div>
+
+                  @if (hasBranch) {
+                    <div class="branch-fields">
+                      <div class="form-grid">
+                        <mat-form-field appearance="outline">
+                          <mat-label>نام شعبه</mat-label>
+                          <input matInput formControlName="name" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                          <mat-label>تلفن شعبه</mat-label>
+                          <input matInput formControlName="phone" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                          <mat-label>شهر</mat-label>
+                          <input matInput formControlName="city" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full">
+                          <mat-label>آدرس شعبه</mat-label>
+                          <textarea matInput rows="3" formControlName="address"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </section>
+            }
+
+            @case (3) {
+              <section class="section-block review-section">
+                <div class="section-head simple">
+                  <div>
+                    <span class="section-kicker">تأیید نهایی</span>
+                    <h2>اطلاعات را مرور کن و فضای کاری را بساز</h2>
+                    <p>
+                      حساب مالک، اطلاعات کسب‌وکار و شعبه اصلی هم‌زمان در سرور ثبت می‌شوند. انتخاب پلن هنوز پرداخت یا فعال‌سازی اشتراک نیست.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="review-grid">
+                  <article class="review-card">
+                    <div class="review-icon">
+                      <span class="material-symbols-outlined">workspace_premium</span>
+                    </div>
+                    <div>
+                      <span>پلن</span>
+                      <strong>{{ selectedPlan.title }}</strong>
+                      <small>
+                        {{ billingCycle === 'yearly' ? 'پرداخت سالانه' : 'پرداخت ماهانه' }}
+                      </small>
+                    </div>
+                    <button type="button" (click)="currentStep.set(0)">ویرایش</button>
+                  </article>
+
+                  <article class="review-card">
+                    <div class="review-icon">
+                      <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div>
+                      <span>مالک</span>
+                      <strong>
+                        {{ form.controls.owner.controls.firstName.value }}
+                        {{ form.controls.owner.controls.lastName.value }}
+                      </strong>
+                      <small>{{ form.controls.owner.controls.mobile.value }}</small>
+                    </div>
+                    <button type="button" (click)="currentStep.set(1)">ویرایش</button>
+                  </article>
+
+                  <article class="review-card">
+                    <div class="review-icon">
+                      <span class="material-symbols-outlined">store</span>
+                    </div>
+                    <div>
+                      <span>کسب‌وکار</span>
+                      <strong>{{ form.controls.business.controls.displayName.value }}</strong>
+                      <small> {{ form.controls.workspace.controls.slug.value }}.shinera.ir </small>
+                    </div>
+                    <button type="button" (click)="currentStep.set(2)">ویرایش</button>
+                  </article>
+                </div>
+
+                <div class="payment-box">
+                  <div class="payment-head">
+                    <div>
+                      <span class="section-kicker">برآورد هزینه پلن (غیرقطعی)</span>
+                      <h3>
+                        {{ formatMoney(selectedPrice) }}
+                        <small>تومان</small>
+                      </h3>
+                    </div>
+
+                    <span class="payment-method">
+                      <span class="material-symbols-outlined">credit_card</span>
+                      بدون پرداخت در این مرحله
+                    </span>
+                  </div>
+
+                  <div formGroupName="legal" class="legal">
+                    <mat-checkbox formControlName="acceptTerms">
+                      قوانین استفاده و شرایط اشتراک Shinera را می‌پذیرم.
+                    </mat-checkbox>
+
+                    <mat-checkbox formControlName="acceptPrivacy">
+                      سیاست حریم خصوصی و پردازش اطلاعات را مطالعه کرده‌ام.
+                    </mat-checkbox>
+                    <app-captcha formControlName="captchaCode" (tokenChange)="onCaptchaTokenChange($event)" />
+                  </div>
+
+                  @if (form.controls.legal.touched && form.controls.legal.invalid) {
+                    <p class="form-error">برای ادامه، تأیید هر دو مورد الزامی است.</p>
+                  }
+
+                  @if (signupResult()) {
+                    <div class="mock-success" role="status">
+                      <span class="material-symbols-outlined">check_circle</span>
+                      <div><strong>فضای کاری ساخته شد. در حال انتقال به صفحه ورود...</strong></div>
+                    </div>
+                  }
+                </div>
+              </section>
+            }
+          }
+        </div>
+
+        @if (signupError()) {
+          <p class="form-error" role="alert" style="margin: 12px 24px">{{ signupError() }}</p>
+        }
+
+        <footer class="wizard-actions">
+          <button
+            mat-button
+            type="button"
+            class="secondary-action"
+            [disabled]="currentStep() === 0 || submitting()"
+            (click)="previous()"
+          >
+            <span class="material-symbols-outlined">arrow_forward</span>
+            مرحله قبل
+          </button>
+
+          @if (currentStep() < steps.length - 1) {
+            <button mat-flat-button type="button" class="primary-action" [disabled]="checkingSlug() || submitting()" (click)="next()">
+              {{ checkingSlug() ? 'در حال بررسی آدرس...' : 'ادامه' }}
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+          } @else {
+            <button mat-flat-button [disabled]="submitting() || !!signupResult()">
+              @if (!submitting()) {
+                <span class="material-symbols-outlined" matButtonIcon>lock</span>
+              }
+              <span>
+                {{ submitting() ? 'در حال ساخت فضای کاری...' : 'ساخت فضای کاری' }}
+              </span>
+            </button>
+          }
+        </footer>
+      </form>
+    </section>
+
+    <aside class="summary-card">
+      <div class="summary-sticky">
+        <div class="summary-top">
+          <span class="summary-kicker">خلاصه سفارش</span>
+          <span class="secure-chip">
+            <span class="material-symbols-outlined">verified_user</span>
+            امن
+          </span>
+        </div>
+
+        <div class="selected-plan">
+          <div>
+            <span>پلن انتخابی</span>
+            <h3>{{ selectedPlan.title }}</h3>
+            <p>{{ selectedPlan.subtitle }}</p>
+          </div>
+
+          @if (selectedPlan.badge) {
+            <span class="mini-badge">{{ selectedPlan.badge }}</span>
+          }
+        </div>
+
+        <div class="summary-lines">
+          <div>
+            <span>دوره پرداخت</span>
+            <strong>{{ billingCycle === 'yearly' ? 'سالانه' : 'ماهانه' }}</strong>
+          </div>
+
+          <div>
+            <span>تعداد شعبه در پلن</span>
+            <strong>تا {{ selectedPlan.branchLimit }} شعبه</strong>
+          </div>
+
+          <div>
+            <span>وضعیت اشتراک</span>
+            <strong>در انتظار فعال‌سازی</strong>
+          </div>
+        </div>
+
+        <div class="summary-total">
+          <span>هزینه نمایشی پلن</span>
+          <div>
+            <strong>{{ formatMoney(selectedPrice) }}</strong>
+            <small>تومان</small>
+          </div>
+        </div>
+
+        <div class="summary-note">
+          <span class="material-symbols-outlined">info</span>
+          <p>
+            فضای کاری و شعبه اصلی اکنون ساخته می‌شوند؛ هیچ مبلغی در این مرحله دریافت نمی‌شود. قیمت‌ها صرفاً نمایشی هستند و اشتراک پولی هنوز فعال نمی‌شود.
+          </p>
+        </div>
+
+        <div class="benefits">
+          <div>
+            <span class="material-symbols-outlined">done_all</span>
+            ایجاد فضای کاری خودکار
+          </div>
+          <div>
+            <span class="material-symbols-outlined">admin_panel_settings</span>
+            ساخت حساب مالک
+          </div>
+          <div>
+            <span class="material-symbols-outlined">bolt</span>
+            ورود به فضای کاری بعد از ثبت‌نام
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

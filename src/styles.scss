@@ -1,0 +1,705 @@
+@use '@angular/material' as mat;
+
+// Utilities CSS
+@use './utilities';
+
+// Variable CSS
+@use './variable';
+
+// UI Kit CSS
+@use './ui-kit';
+
+// Dark Mode CSS
+@use './dark';
+
+// RTL CSS
+@use './rtl';
+
+/* =========================================================
+   Fonts
+========================================================= */
+
+/* Material Symbols */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/materialsymbols.woff2') format('woff2');
+}
+
+/* ---------------------------------------------------------
+   Shabnam - Regular
+--------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Shabnam';
+  src: url('/fonts/Shabnam-FD.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Shabnam';
+  src: url('/fonts/Shabnam-Medium-FD.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Shabnam';
+  src: url('/fonts/Shabnam-Bold-FD.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* =========================================================
+   Material Symbols
+========================================================= */
+
+.material-icons,
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+
+  font-weight: 400;
+  font-style: normal;
+
+  font-size: 24px;
+  line-height: 1;
+
+  letter-spacing: normal;
+  text-transform: none;
+
+  display: inline-block;
+
+  white-space: nowrap;
+  word-wrap: normal;
+
+  direction: ltr;
+
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+}
+
+/* =========================================================
+   Shinera Design Tokens
+========================================================= */
+
+:root {
+  --transition: 0.5s;
+
+  /* -----------------------------------------------------
+       Brand
+    ----------------------------------------------------- */
+
+  --primaryColor: #a65d6d;
+  --primaryHoverColor: #934f60;
+
+  /* -----------------------------------------------------
+       Typography
+    ----------------------------------------------------- */
+
+  --fontFamily: 'Shabnam', sans-serif;
+
+  --fontSize: 14px;
+
+  --headingColor: #27232a;
+  --bodyColor: #737078;
+  --mutedColor: #969198;
+
+  /* -----------------------------------------------------
+       Surface
+    ----------------------------------------------------- */
+
+  --bodyBgColor: #ffffff;
+  --cardBgColor: #ffffff;
+  --surfaceColor: #faf8f9;
+
+  /* -----------------------------------------------------
+       Border
+    ----------------------------------------------------- */
+
+  --borderColor: #e8e0e2;
+
+  /* -----------------------------------------------------
+       Common
+    ----------------------------------------------------- */
+
+  --whiteColor: #ffffff;
+  --blackColor: #27232a;
+
+  /* -----------------------------------------------------
+       States
+    ----------------------------------------------------- */
+
+  --successColor: #2e8b57;
+  --errorColor: #d64545;
+  --warningColor: #d99a2b;
+}
+
+/* =========================================================
+   Global Reset
+========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+
+  color: var(--bodyColor);
+  background-color: var(--bodyBgColor);
+
+  font: {
+    size: var(--fontSize);
+    family: var(--fontFamily);
+  }
+}
+
+/* =========================================================
+   Typography
+========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+
+  color: var(--headingColor);
+
+  font-family: var(--fontFamily);
+
+  font-style: normal;
+
+  line-height: 1.45;
+
+  letter-spacing: 0;
+
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+h4 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+h5 {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+h6 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 15px;
+
+  color: var(--bodyColor);
+
+  font-family: var(--fontFamily);
+  font-size: var(--fontSize);
+  font-weight: 400;
+
+  line-height: 1.9;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+small {
+  font-size: 12px;
+}
+
+/* =========================================================
+   Links
+========================================================= */
+
+a {
+  color: var(--blackColor);
+
+  font-family: var(--fontFamily);
+
+  text-decoration: none;
+
+  outline: 0 !important;
+
+  transition: var(--transition);
+
+  &:hover {
+    color: var(--primaryColor);
+    text-decoration: none;
+  }
+}
+
+/* =========================================================
+   Forms
+========================================================= */
+
+button,
+input,
+textarea,
+select {
+  font-family: var(--fontFamily);
+}
+
+button {
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  color: var(--headingColor);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--mutedColor);
+  opacity: 1;
+}
+
+/* =========================================================
+   Focus
+========================================================= */
+
+:focus {
+  outline: 0 !important;
+}
+
+/* =========================================================
+   Images
+========================================================= */
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================================================
+   Material / Angular CDK
+========================================================= */
+
+.cdk-visually-hidden {
+  margin: 0;
+}
+
+/* =========================================================
+   Table
+========================================================= */
+
+.d-table {
+  width: 100%;
+  height: 100%;
+
+  &-cell {
+    vertical-align: middle;
+  }
+}
+
+/* =========================================================
+   Section Title
+========================================================= */
+
+.section-title {
+  max-width: 785px;
+
+  margin-bottom: 90px;
+
+  .sub-title {
+    span {
+      border: 1px solid var(--primaryColor);
+
+      &::before {
+        background: var(--primaryColor);
+      }
+
+      &::after {
+        background: var(--primaryColor);
+      }
+    }
+
+    &::before {
+      background: var(--primaryColor);
+    }
+
+    &::after {
+      background: var(--primaryColor);
+    }
+  }
+
+  h2 {
+    font-size: 36px;
+    letter-spacing: -1px;
+    color: var(--headingColor);
+  }
+
+  // h2 {
+
+  //     margin-bottom: 0;
+
+  //     color: var(--headingColor);
+
+  //     font-size: 36px;
+  //     font-weight: 700;
+
+  //     line-height: 1.5;
+
+  //     letter-spacing: 0;
+  // }
+}
+
+/* =========================================================
+   Common Card Utilities
+========================================================= */
+
+.card-borderd {
+  .mat-mdc-card {
+    border: 1px solid var(--borderColor) !important;
+  }
+}
+
+.card-without-border-radius {
+  .mat-mdc-card {
+    border-radius: 0 !important;
+  }
+}
+
+.card-with-box-shadow {
+  .mat-mdc-card {
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.12) !important;
+
+    &.shadow-none {
+      box-shadow: 0 8px 24px rgba(149, 157, 165, 0.12) !important;
+    }
+  }
+}
+
+.card-box-shadow {
+  .mat-mdc-card {
+    box-shadow: unset !important;
+  }
+}
+
+/* =========================================================
+   Global Material Typography
+========================================================= */
+
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button-base {
+  font-family: var(--fontFamily) !important;
+
+  font-weight: 500;
+}
+
+.mat-mdc-form-field,
+.mat-mdc-input-element,
+.mat-mdc-floating-label,
+.mat-mdc-select,
+.mat-mdc-option {
+  font-family: var(--fontFamily) !important;
+}
+
+/* =========================================================
+   Spacing Utilities
+========================================================= */
+
+.ptb-150 {
+  padding: {
+    top: 150px;
+    bottom: 150px;
+  }
+}
+
+.pt-150 {
+  padding-top: 150px;
+}
+
+.pb-150 {
+  padding-bottom: 150px;
+}
+
+.ptb-120 {
+  padding: {
+    top: 120px;
+    bottom: 120px;
+  }
+}
+
+.pt-120 {
+  padding-top: 120px;
+}
+
+.pb-120 {
+  padding-bottom: 120px;
+}
+
+/* =========================================================
+   Mobile
+========================================================= */
+
+@media only screen and (max-width: 767px) {
+  body {
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: 34px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  h3 {
+    font-size: 23px;
+  }
+
+  h4 {
+    font-size: 20px;
+  }
+
+  h5 {
+    font-size: 17px;
+  }
+
+  h6 {
+    font-size: 15px;
+  }
+
+  p {
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
+  .ptb-150 {
+    padding: {
+      top: 60px;
+      bottom: 60px;
+    }
+  }
+
+  .pt-150 {
+    padding-top: 60px;
+  }
+
+  .pb-150 {
+    padding-bottom: 60px;
+  }
+
+  .ptb-120 {
+    padding: {
+      top: 30px;
+      bottom: 30px;
+    }
+  }
+
+  .pt-120 {
+    padding-top: 30px;
+  }
+
+  .pb-120 {
+    padding-bottom: 30px;
+  }
+
+  .section-title {
+    max-width: 100%;
+
+    margin-bottom: 35px;
+
+    h2 {
+      font-size: 24px;
+
+      line-height: 1.55;
+
+      letter-spacing: 0;
+    }
+  }
+}
+
+/* =========================================================
+   Tablet
+========================================================= */
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .ptb-150 {
+    padding: {
+      top: 80px;
+      bottom: 80px;
+    }
+  }
+
+  .pt-150 {
+    padding-top: 80px;
+  }
+
+  .pb-150 {
+    padding-bottom: 80px;
+  }
+
+  .ptb-120 {
+    padding: {
+      top: 50px;
+      bottom: 50px;
+    }
+  }
+
+  .pt-120 {
+    padding-top: 50px;
+  }
+
+  .pb-120 {
+    padding-bottom: 50px;
+  }
+
+  .section-title {
+    max-width: 650px;
+
+    margin-bottom: 50px;
+
+    h2 {
+      font-size: 28px;
+
+      line-height: 1.5;
+
+      letter-spacing: 0;
+    }
+  }
+}
+
+/* =========================================================
+   Desktop
+========================================================= */
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .ptb-150 {
+    padding: {
+      top: 100px;
+      bottom: 100px;
+    }
+  }
+
+  .pt-150 {
+    padding-top: 100px;
+  }
+
+  .pb-150 {
+    padding-bottom: 100px;
+  }
+
+  .ptb-120 {
+    padding: {
+      top: 70px;
+      bottom: 70px;
+    }
+  }
+
+  .pt-120 {
+    padding-top: 70px;
+  }
+
+  .pb-120 {
+    padding-bottom: 70px;
+  }
+
+  .section-title {
+    max-width: 810px;
+
+    margin-bottom: 65px;
+
+    h2 {
+      font-size: 34px;
+
+      line-height: 1.5;
+
+      letter-spacing: 0;
+    }
+  }
+}
+
+/* =========================================================
+   Large Desktop
+========================================================= */
+
+@media only screen and (min-width: 1200px) {
+  .section-title h2 {
+    font-size: 36px;
+  }
+}
+.front-pages {
+  min-height: 100vh;
+}
+
+.front-content {
+  padding-top: 120px;
+}
+.custom-input {
+    .main-label {
+        color: var(--headingColor);
+    }
+
+    input {
+        width: 100%;
+
+        color: var(--headingColor);
+        background-color: var(--cardBgColor);
+
+        border: 1px solid var(--borderColor);
+
+        &::placeholder {
+            color: var(--mutedColor);
+        }
+
+        &:focus {
+            border-color: var(--primaryColor);
+        }
+    }
+
+    .input-icon {
+        color: var(--mutedColor);
+    }
+
+    .error-message {
+        color: var(--errorColor);
+    }
+}

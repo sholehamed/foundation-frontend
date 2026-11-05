@@ -1,0 +1,548 @@
+<!-- Theme Settings -->
+<div
+[ngClass]="{'active': themeService.isNavbarToggled()}"
+    [class.component-dark-theme]="themeService.isDarkTheme()"
+    class="settings-sidebar bg-white transition box-shadow"
+    [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+>
+    <div class="settings-header bg-primary d-flex align-items-center justify-content-between">
+        <h4 class="m-0 lh-1 text-white fw-semibold">
+            Theme Settings
+        </h4>
+        <button
+            [ngClass]="{'active': themeService.isNavbarToggled()}"
+            (click)="toggle()"
+            class="close-btn text-white p-0 h-auto border-radius-0"
+            type="button"
+            mat-button
+        >
+            <i class="material-symbols-outlined">
+                close
+            </i>
+        </button>
+    </div>
+    <ng-scrollbar visibility="hover">
+        <div class="settings-body">
+            <span class="title d-block text-black fw-semibold">
+                LTR/RTL Mode
+            </span>
+            <button
+                class="switch-btn ltr-rtl-btn bg-transparent border-none p-0"
+                (click)="toggleRTLEnabledTheme()"
+                [class.active]="themeService.isRTLEnabledTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            LTR
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            RTL
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Light/Dark Mode
+            </span>
+            <button
+                class="switch-btn light-dark-btn bg-transparent border-none p-0"
+                (click)="toggleTheme()"
+                [class.active]="themeService.isDarkTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Light
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Dark
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Horizontal Layout
+            </span>
+            <button
+                class="switch-btn horizontal-layout-btn bg-transparent border-none p-0"
+                (click)="toggleNavbarTheme()"
+                [class.active]="themeService.isNavbarTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Sidebar
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Navbar
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Body BG Color
+            </span>
+            <button
+                class="switch-btn body-bg-color-btn bg-transparent border-none p-0"
+                (click)="toggleBodyBGTheme()"
+                [class.active]="themeService.isBodyBGTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            BG Gray
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            BG White
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Left/Right Sidebar
+            </span>
+            <button
+                class="switch-btn left-right-sidebar-btn bg-transparent border-none p-0"
+                (click)="toggleRightSidebarTheme()"
+                [class.active]="themeService.isRightSidebarTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Left
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Right
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Compact Sidebar
+            </span>
+            <button
+                class="switch-btn compact-sidebar-btn bg-transparent border-none p-0"
+                (click)="toggleHideSidebarTheme()"
+                [class.active]="themeService.isHideSidebarTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Show
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Hide
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Card Border
+            </span>
+            <button
+                class="switch-btn card-border-btn bg-transparent border-none p-0"
+                (click)="toggleCardBorderedTheme()"
+                [class.active]="themeService.isCardBorderedTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Without
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            With
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Card Shape
+            </span>
+            <button
+                class="switch-btn card-shape-btn bg-transparent border-none p-0"
+                (click)="toggleCardWithoutBorderRadiusTheme()"
+                [class.active]="themeService.isCardWithoutBorderRadiusTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Radius
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Square
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Card Box Shadow
+            </span>
+            <button
+                class="switch-btn card-shadow-btn bg-transparent border-none p-0"
+                (click)="toggleCardWithBoxShadowTheme()"
+                [class.active]="themeService.isCardWithBoxShadowTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Without
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            With
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Sidebar
+            </span>
+            <button
+                class="switch-btn sidebar-btn bg-transparent border-none p-0"
+                (click)="toggleSidebarTheme()"
+                [class.active]="themeService.isSidebarDarkTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Light
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Dark
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            <span class="title d-block text-black fw-semibold">
+                Header
+            </span>
+            <button
+                class="switch-btn header-btn bg-transparent border-none p-0"
+                (click)="toggleHeaderTheme()"
+                [class.active]="themeService.isHeaderDarkTheme()"
+            >
+                <div class="first">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Light
+                        </span>
+                    </div>
+                </div>
+                <div class="second">
+                    <div class="box position-relative">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="sub-title d-flex align-items-center">
+                        <div class="dot-checkbox position-relative"></div>
+                        <span class="d-block fw-semibold">
+                            Dark
+                        </span>
+                    </div>
+                </div>
+            </button>
+            <mat-divider></mat-divider>
+            
+        </div>
+    </ng-scrollbar>
+</div>
+

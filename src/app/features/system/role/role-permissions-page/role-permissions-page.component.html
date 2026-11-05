@@ -1,0 +1,30 @@
+<app-page-header />
+
+<div class="role-permissions-page" dir="rtl">
+  <div class="role-permissions-page__toolbar">
+    <h2>دسترسی‌های نقش</h2>
+
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="loading || saving"
+      (click)="save()"
+    >
+      <mat-icon>save</mat-icon>
+      ذخیره
+    </button>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="loading || saving"
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+ <app-role-permission-tree
+  [nodes]="nodes()"
+  [selectedPermissionIds]="selectedPermissionIds()"
+  [disabled]="isSaving"
+  (selectionChanged)="onPermissionSelectionChanged($event)"
+></app-role-permission-tree>
+</div>

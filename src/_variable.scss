@@ -1,0 +1,479 @@
+// Color
+html {
+    --mat-divider-color: #ECF0FF;
+    --mdc-linear-progress-track-shape: 10px;
+    --mdc-linear-progress-track-color: #ECF0FF;
+    --mdc-linear-progress-active-indicator-color: var(--primaryColor);
+    --mdc-circular-progress-active-indicator-color: var(--primaryColor);
+    --mat-form-field-hover-state-layer-opacity: 0.04;
+    --mdc-filled-text-field-input-text-color: var(--blackColor);
+    --mdc-filled-text-field-label-text-color: var(--bodyColor);
+    --mdc-filled-text-field-caret-color: var(--primaryColor);
+    --mdc-filled-text-field-focus-active-indicator-color: var(--primaryColor);
+    --mdc-filled-text-field-focus-label-text-color: var(--primaryColor);
+    --mdc-filled-text-field-hover-label-text-color: var(--bodyColor);
+    --mdc-filled-text-field-error-focus-label-text-color: var(--dangerColor);
+    --mdc-filled-text-field-error-label-text-color: var(--dangerColor);
+    --mdc-filled-text-field-error-active-indicator-color: var(--dangerColor);
+    --mdc-filled-text-field-error-focus-active-indicator-color: var(--dangerColor);
+    --mat-form-field-trailing-icon-color: var(--blackColor);
+    --mat-datepicker-calendar-container-text-color: var(--blackColor);
+    --mat-datepicker-calendar-container-shape: 7px;
+    --mat-datepicker-calendar-container-background-color: var(--whiteColor);
+    --mat-datepicker-calendar-container-elevation-shadow: 0px 4px 45px 0px rgba(0, 0, 0, 0.10);
+    --mat-select-enabled-arrow-color: var(--bodyColor);
+    --mat-select-focused-arrow-color: var(--primaryColor);
+    --mdc-filled-text-field-hover-active-indicator-color: transparent;
+    --mat-full-pseudo-checkbox-unselected-icon-color: rgba(0, 0, 0, .40);
+    --mdc-checkbox-unselected-icon-color: rgba(0, 0, 0, .40);
+    --mdc-checkbox-selected-focus-icon-color: var(--primaryColor);
+    --mdc-checkbox-selected-hover-icon-color: var(--primaryColor);
+    --mdc-checkbox-selected-icon-color: var(--primaryColor);
+    --mdc-checkbox-selected-pressed-icon-color: var(--primaryColor);
+    --mdc-checkbox-selected-focus-state-layer-color: var(--primaryColor);
+    --mdc-checkbox-selected-hover-state-layer-color: var(--primaryColor);
+    --mdc-checkbox-unselected-pressed-state-layer-color: var(--primaryColor);
+    --mat-text-button-state-layer-color: var(--primaryColor);
+    --mat-autocomplete-background-color: var(--whiteColor);
+    --mat-autocomplete-container-elevation-shadow: 0px 4px 45px 0px rgba(0, 0, 0, 0.10);
+    --mat-autocomplete-container-shape: 7px;
+    --mdc-filled-button-container-color: var(--primaryColor);
+    --mdc-outlined-button-label-text-color: var(--primaryColor);
+    --mdc-outlined-button-outline-color: #D5D9E2;
+    --mdc-text-button-label-text-color: var(--primaryColor);
+    --mdc-protected-button-label-text-color: var(--primaryColor);
+    --mdc-filled-button-container-shape: 7px;
+    --mdc-outlined-button-container-shape: 7px;
+    --mdc-protected-button-container-shape: 7px;
+    --mdc-text-button-container-shape: 7px;
+    --mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--primaryColor);
+    --mat-full-pseudo-checkbox-selected-icon-color: var(--primaryColor);
+    --mdc-outlined-text-field-caret-color: var(--primaryColor);
+    --mdc-outlined-text-field-focus-outline-color: var(--primaryColor);
+    --mdc-outlined-text-field-focus-label-text-color: var(--primaryColor);
+    --mat-form-field-focus-select-arrow-color: var(--primaryColor);
+    --mdc-switch-selected-focus-state-layer-color: var(--primaryColor);
+    --mdc-switch-selected-hover-state-layer-color: var(--primaryColor);
+    --mdc-switch-selected-pressed-state-layer-color: var(--primaryColor);
+    --mdc-switch-selected-focus-track-color: var(--primaryColor);
+    --mdc-switch-selected-hover-track-color: var(--primaryColor);
+    --mdc-switch-selected-pressed-track-color: var(--primaryColor);
+    --mdc-switch-selected-track-color: var(--primaryColor);
+    --mdc-radio-selected-focus-icon-color: var(--primaryColor);
+    --mdc-radio-selected-hover-icon-color: var(--primaryColor);
+    --mdc-radio-selected-icon-color: var(--primaryColor);
+    --mdc-radio-selected-pressed-icon-color: var(--primaryColor);
+    --mat-radio-checked-ripple-color: var(--primaryColor);
+    --mdc-slider-handle-color: var(--primaryColor);
+    --mdc-slider-focus-handle-color: var(--primaryColor);
+    --mdc-slider-hover-handle-color: var(--primaryColor);
+    --mdc-slider-active-track-color: var(--primaryColor);
+    --mdc-slider-label-container-color: var(--primaryColor);
+    --mat-slider-ripple-color: var(--primaryColor);
+    --mdc-tab-indicator-active-indicator-color: var(--primaryColor);
+    --mat-tab-header-active-focus-indicator-color: var(--primaryColor);
+    --mat-tab-header-active-hover-indicator-color: var(--primaryColor);
+    --mat-protected-button-state-layer-color: var(--primaryColor);
+    --mat-outlined-button-state-layer-color: var(--primaryColor);
+    --mat-datepicker-calendar-date-selected-state-background-color: var(--primaryColor);
+    --mat-datepicker-calendar-date-today-selected-state-outline-color: var(--primaryColor);
+    --mat-datepicker-calendar-date-today-outline-color: var(--primaryColor);
+    --mat-datepicker-calendar-date-preview-state-outline-color: var(--primaryColor);
+    --mat-stepper-header-selected-state-icon-background-color: var(--primaryColor);
+    --mat-stepper-header-edit-state-icon-background-color: var(--primaryColor);
+    --mdc-fab-small-container-shape: 7px;
+    --mat-bottom-sheet-container-shape: 7px;
+    --mat-bottom-sheet-container-background-color: var(--whiteColor);
+    --mdc-list-list-item-supporting-text-color: var(--bodyColor);
+    --mdc-list-list-item-label-text-color: var(--blackColor);
+    --mat-list-active-indicator-shape: 7px;
+    --mdc-fab-container-shape: 7px;
+    --mdc-extended-fab-container-shape: 7px;
+    --mdc-chip-elevated-selected-container-color: #F6F7F9;
+    --mdc-dialog-container-shape: 7px;
+    --mdc-dialog-container-color: var(--whiteColor);
+    --mat-expansion-container-shape: 7px;
+    --mat-expansion-container-background-color: var(--whiteColor);
+    --mat-expansion-container-text-color: var(--blackColor);
+    --mat-expansion-actions-divider-color: var(--borderColor);
+    --mat-menu-container-color: var(--whiteColor);
+    --mat-menu-container-shape: 7px;
+    --mat-menu-item-icon-color: var(--blackColor);
+    --mat-standard-button-toggle-divider-color: var(--borderColor);
+    --mat-radio-label-text-color: var(--blackColor);
+    --mat-select-enabled-trigger-text-color: var(--blackColor);
+    --mdc-radio-unselected-icon-color: #c1c7d2;
+    --mdc-radio-disabled-selected-icon-color: var(--blackColor);
+    --mdc-radio-disabled-unselected-icon-color: var(--blackColor);
+    --mdc-radio-unselected-hover-icon-color: var(--blackColor);
+    --mat-sidenav-container-background-color: var(--whiteColor);
+    --mat-sidenav-container-divider-color: var(--borderColor);
+    --mat-sidenav-container-shape: 0;
+    --mat-stepper-container-color: transparent;
+    --mat-stepper-header-icon-background-color: var(--blackColor);
+    --mat-stepper-header-selected-state-label-text-color: var(--blackColor);
+    --mat-stepper-header-label-text-color: var(--blackColor);
+    --mat-stepper-line-color: var(--borderColor);
+    --mat-stepper-header-focus-state-layer-shape: 7px;
+    --mat-stepper-header-hover-state-layer-shape: 7px;
+    --mat-toolbar-container-background-color: #F6F7F9;
+    --mat-toolbar-container-text-color: var(--blackColor);
+    --mat-tree-container-background-color: #F6F7F9;
+    --mat-tree-node-text-color: var(--blackColor);
+    --mat-tab-header-divider-color: var(--borderColor);
+    --mdc-icon-button-icon-color: var(--blackColor);
+    --mdc-list-list-item-focus-label-text-color: var(--blackColor);
+    --mat-tab-header-inactive-label-text-color: var(--blackColor);
+    --mat-tab-header-active-label-text-color: var(--blackColor);
+    --mdc-list-list-item-selected-trailing-icon-color: var(--primaryColor);
+    --mdc-chip-with-icon-selected-icon-color: var(--blackColor);
+    --mat-tab-header-pagination-icon-color: var(--blackColor);
+    --mdc-switch-disabled-unselected-icon-color: #f2f2f2;
+    --mdc-list-list-item-leading-icon-color: var(--bodyColor);
+    --mdc-list-list-item-hover-label-text-color: var(--blackColor);
+    --mdc-switch-disabled-unselected-track-color: #f2f2f2;
+    --mdc-switch-unselected-focus-track-color: #f2f2f2;
+    --mat-tab-header-active-hover-label-text-color: var(--blackColor);
+    --mat-tab-header-active-ripple-color: var(--blackColor);
+    --mat-tab-header-inactive-ripple-color: var(--blackColor);
+    --mat-tab-header-inactive-focus-label-text-color: var(--blackColor);
+    --mat-tab-header-inactive-hover-label-text-color: var(--blackColor);
+    --mat-tab-header-active-focus-label-text-color: var(--blackColor);
+    --mdc-switch-unselected-hover-track-color: #f2f2f2;
+    --mdc-switch-unselected-icon-color: #f2f2f2;
+    --mdc-chip-selected-label-text-color: var(--blackColor);
+    --mdc-switch-unselected-pressed-track-color: #f2f2f2;
+    --mdc-switch-unselected-track-color: #f2f2f2;
+    --mat-sidenav-container-text-color: var(--blackColor);
+    --mat-sidenav-content-text-color: var(--blackColor);
+    --mat-table-row-item-label-text-color: var(--blackColor);
+    --mat-expansion-header-text-color: var(--blackColor);
+    --mat-expansion-header-description-color: var(--blackColor);
+    --mat-expansion-header-indicator-color: var(--blackColor);
+    --mdc-chip-outline-color: #c1c7d2;
+    --mat-standard-button-toggle-text-color: var(--blackColor);
+    --mat-standard-button-toggle-state-layer-color: var(--blackColor);
+    --mat-standard-button-toggle-selected-state-text-color: var(--blackColor);
+    --mat-divider-color: var(--borderColor);
+    --mat-card-subtitle-text-color: var(--blackColor);
+    --mdc-checkbox-disabled-selected-icon-color: rgba(26, 27, 31, 0.18);
+    --mdc-checkbox-disabled-unselected-icon-color: rgba(26, 27, 31, 0.18);
+    --mdc-chip-label-text-color: var(--blackColor);
+    --mat-select-panel-background-color: var(--whiteColor);
+    --mat-option-selected-state-label-text-color: var(--blackColor);
+    --mat-datepicker-calendar-body-label-text-color: var(--blackColor);
+    --mat-datepicker-calendar-navigation-button-icon-color: var(--bodyColor);
+    --mat-datepicker-calendar-period-button-text-color: var(--bodyColor);
+    --mat-datepicker-calendar-period-button-icon-color: var(--bodyColor);
+    --mat-datepicker-calendar-header-text-color: var(--blackColor);
+    --mat-option-label-text-color: var(--blackColor);
+    --mdc-dialog-supporting-text-color: var(--blackColor);
+    --mdc-dialog-subhead-color: var(--blackColor);
+    --mat-menu-item-label-text-color: var(--blackColor);
+    --mat-bottom-sheet-container-text-color: var(--blackColor);
+    --mat-sort-arrow-color: var(--bodyColor);
+    --mat-sys-on-surface-variant: var(--bodyColor);
+    --mat-sys-on-tertiary-container: var(--primaryColor);
+    --mat-sys-on-tertiary-fixed-variant: var(--primaryColor);
+    --mat-sys-primary: var(--primaryColor);
+    --mat-sys-surface-tint: var(--primaryColor);
+    --mat-sys-tertiary: var(--primaryColor);
+}
+
+// Letter Spacing
+html {
+    --mat-option-label-text-tracking: normal;
+    --mat-card-title-text-tracking: normal;
+    --mat-card-subtitle-text-tracking: normal;
+    --mdc-plain-tooltip-supporting-text-tracking: normal;
+    --mdc-filled-text-field-label-text-tracking: normal;
+    --mdc-outlined-text-field-label-text-tracking: normal;
+    --mat-form-field-container-text-tracking: normal;
+    --mat-form-field-subscript-text-tracking: normal;
+    --mat-select-trigger-text-tracking: normal;
+    --mdc-dialog-subhead-tracking: normal;
+    --mdc-dialog-supporting-text-tracking: normal;
+    --mdc-chip-label-text-tracking: normal;
+    --mat-switch-label-text-tracking: normal;
+    --mat-radio-label-text-tracking: normal;
+    --mdc-slider-label-label-text-tracking: normal;
+    --mat-menu-item-label-text-tracking: normal;
+    --mdc-list-list-item-label-text-tracking: normal;
+    --mdc-list-list-item-supporting-text-tracking: normal;
+    --mdc-list-list-item-trailing-supporting-text-tracking: normal;
+    --mat-paginator-container-text-tracking: normal;
+    --mat-tab-header-label-text-tracking: normal;
+    --mat-checkbox-label-text-tracking: normal;
+    --mdc-text-button-label-text-tracking: normal;
+    --mdc-protected-button-label-text-tracking: normal;
+    --mdc-filled-button-label-text-tracking: normal;
+    --mdc-outlined-button-label-text-tracking: normal;
+    --mdc-extended-fab-label-text-tracking: normal;
+    --mat-table-header-headline-tracking: normal;
+    --mat-table-row-item-label-text-tracking: normal;
+    --mat-table-footer-supporting-text-tracking: normal;
+    --mat-bottom-sheet-container-text-tracking: normal;
+    --mat-standard-button-toggle-label-text-tracking: normal;
+    --mat-expansion-header-text-tracking: normal;
+    --mat-expansion-container-text-tracking: normal;
+    --mat-toolbar-title-text-tracking: normal;
+    --mat-sys-body-large-tracking: normal;
+}
+
+// Font Family
+html {
+    --mat-option-label-text-font: var(--fontFamily);
+    --mat-card-title-text-font: var(--fontFamily);
+    --mat-card-subtitle-text-font: var(--fontFamily);
+    --mdc-plain-tooltip-supporting-text-font: var(--fontFamily);
+    --mdc-filled-text-field-label-text-font: var(--fontFamily);
+    --mdc-outlined-text-field-label-text-font: var(--fontFamily);
+    --mat-form-field-container-text-font: var(--fontFamily);
+    --mat-form-field-subscript-text-font: var(--fontFamily);
+    --mat-select-trigger-text-font: var(--fontFamily);
+    --mdc-dialog-subhead-font: var(--fontFamily);
+    --mdc-dialog-supporting-text-font: var(--fontFamily);
+    --mdc-chip-label-text-font: var(--fontFamily);
+    --mat-switch-label-text-font: var(--fontFamily);
+    --mat-radio-label-text-font: var(--fontFamily);
+    --mdc-slider-label-label-text-font: var(--fontFamily);
+    --mat-menu-item-label-text-font: var(--fontFamily);
+    --mdc-list-list-item-label-text-font: var(--fontFamily);
+    --mdc-list-list-item-supporting-text-font: var(--fontFamily);
+    --mdc-list-list-item-trailing-supporting-text-font: var(--fontFamily);
+    --mat-paginator-container-text-font: var(--fontFamily);
+    --mat-tab-header-label-text-font: var(--fontFamily);
+    --mat-checkbox-label-text-font: var(--fontFamily);
+    --mdc-text-button-label-text-font: var(--fontFamily);
+    --mdc-protected-button-label-text-font: var(--fontFamily);
+    --mdc-filled-button-label-text-font: var(--fontFamily);
+    --mdc-outlined-button-label-text-font: var(--fontFamily);
+    --mdc-extended-fab-label-text-font: var(--fontFamily);
+    --mdc-snackbar-supporting-text-font: var(--fontFamily);
+    --mat-table-header-headline-font: var(--fontFamily);
+    --mat-table-row-item-label-text-font: var(--fontFamily);
+    --mat-table-footer-supporting-text-font: var(--fontFamily);
+    --mat-badge-text-font: var(--fontFamily);
+    --mat-bottom-sheet-container-text-font: var(--fontFamily);
+    --mat-standard-button-toggle-label-text-font: var(--fontFamily);
+    --mat-datepicker-calendar-text-font: var(--fontFamily);
+    --mat-expansion-header-text-font: var(--fontFamily);
+    --mat-expansion-container-text-font: var(--fontFamily);
+    --mat-stepper-container-text-font: var(--fontFamily);
+    --mat-stepper-header-label-text-font: var(--fontFamily);
+    --mat-toolbar-title-text-font: var(--fontFamily);
+    --mat-tree-node-text-font: var(--fontFamily);
+    --mat-sys-body-large-font: var(--fontFamily);
+    --mat-sys-body-medium-font: var(--fontFamily);
+    --mat-sys-body-small-font: var(--fontFamily);
+    --mat-sys-display-large-font: var(--fontFamily);
+    --mat-sys-display-medium-font: var(--fontFamily);
+    --mat-sys-display-small-font: var(--fontFamily);
+    --mat-sys-headline-large-font: var(--fontFamily);
+    --mat-sys-headline-medium-font: var(--fontFamily);
+    --mat-sys-headline-small-font: var(--fontFamily);
+    --mat-sys-label-large-font: var(--fontFamily);
+    --mat-sys-label-medium-font: var(--fontFamily);
+    --mat-sys-label-small-font: var(--fontFamily);
+    --mat-sys-title-large-font: var(--fontFamily);
+    --mat-sys-title-medium-font: var(--fontFamily);
+    --mat-sys-title-small-font: var(--fontFamily);
+}
+
+// Font Size
+html {
+    --mat-option-label-text-size: var(--fontSize);
+    --mat-card-title-text-size: 22px;
+    --mat-card-subtitle-text-size: var(--fontSize);
+    --mdc-plain-tooltip-supporting-text-size: var(--fontSize);
+    --mdc-filled-text-field-label-text-size: var(--fontSize);
+    --mdc-outlined-text-field-label-text-size: var(--fontSize);
+    --mat-form-field-container-text-size: var(--fontSize);
+    --mat-form-field-subscript-text-size: var(--fontSize);
+    --mat-select-trigger-text-size: var(--fontSize);
+    --mdc-dialog-supporting-text-size: var(--fontSize);
+    --mdc-chip-label-text-size: var(--fontSize);
+    --mat-switch-label-text-size: var(--fontSize);
+    --mat-radio-label-text-size: var(--fontSize);
+    --mdc-slider-label-label-text-size: var(--fontSize);
+    --mat-menu-item-label-text-size: var(--fontSize);
+    --mdc-list-list-item-label-text-size: var(--fontSize);
+    --mdc-list-list-item-supporting-text-size: var(--fontSize);
+    --mdc-list-list-item-trailing-supporting-text-size: var(--fontSize);
+    --mat-paginator-container-text-size: var(--fontSize);
+    --mat-paginator-select-trigger-text-size: var(--fontSize);
+    --mat-tab-header-label-text-size: var(--fontSize);
+    --mat-checkbox-label-text-size: var(--fontSize);
+    --mdc-text-button-label-text-size: var(--fontSize);
+    --mdc-protected-button-label-text-size: var(--fontSize);
+    --mdc-filled-button-label-text-size: var(--fontSize);
+    --mdc-outlined-button-label-text-size: var(--fontSize);
+    --mdc-extended-fab-label-text-size: var(--fontSize);
+    --mdc-snackbar-supporting-text-size: var(--fontSize);
+    --mat-table-row-item-label-text-size: var(--fontSize);
+    --mat-table-footer-supporting-text-size: var(--fontSize);
+    --mat-badge-text-size: 12px;
+    --mat-badge-large-size-text-size: 12px;
+    --mat-badge-small-size-text-size: 0;
+    --mat-bottom-sheet-container-text-size: var(--fontSize);
+    --mat-standard-button-toggle-label-text-size: var(--fontSize);
+    --mat-datepicker-calendar-text-size: var(--fontSize);
+    --mat-datepicker-calendar-body-label-text-size: var(--fontSize);
+    --mat-datepicker-calendar-period-button-text-size: var(--fontSize);
+    --mat-datepicker-calendar-header-text-size: var(--fontSize);
+    --mat-expansion-header-text-size: var(--fontSize);
+    --mat-expansion-container-text-size: var(--fontSize);
+    --mat-grid-list-tile-header-primary-text-size: 400 14px / 24px var(--fontFamily);
+    --mat-grid-list-tile-header-secondary-text-size: 400 13px / 20px var(--fontFamily);
+    --mat-grid-list-tile-footer-primary-text-size: 400 14px / 24px var(--fontFamily);
+    --mat-grid-list-tile-footer-secondary-text-size: 400 13px / 20px var(--fontFamily);
+    --mat-stepper-header-label-text-size: var(--fontSize);
+    --mat-stepper-header-error-state-label-text-size: var(--fontSize);
+    --mat-stepper-header-selected-state-label-text-size: var(--fontSize);
+    --mat-toolbar-title-text-size: 22px;
+    --mat-tree-node-text-size: var(--fontSize);
+    --mat-sys-body-large-size: var(--fontSize);
+}
+
+// Font Weight
+html {
+    --mat-menu-item-label-text-weight: normal;
+    --mdc-text-button-label-text-weight: normal;
+}
+
+// Button
+.mat-accent {
+    &.mat-mdc-fab, &.mat-mdc-mini-fab {
+        --mdc-extended-fab-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-extended-fab-focus-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-extended-fab-hover-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-extended-fab-pressed-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-focus-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-hover-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-pressed-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-small-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-small-focus-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-small-hover-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mdc-fab-small-pressed-container-elevation-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        --mat-fab-foreground-color: var(--blackColor);
+        --mat-fab-state-layer-color: var(--blackColor);
+        --mat-fab-small-foreground-color: var(--blackColor);
+        --mat-fab-small-state-layer-color: var(--blackColor);
+    }
+}
+
+// Badge
+.mat-badge {
+    --mat-badge-background-color: var(--primaryColor);
+    --mat-badge-disabled-state-background-color: rgba(96, 93, 255, 0.38);
+}
+
+// Radio
+.mat-accent {
+    &.mat-mdc-radio-button {
+        --mdc-radio-selected-focus-icon-color: var(--primaryColor);
+        --mdc-radio-selected-hover-icon-color: var(--primaryColor);
+        --mdc-radio-selected-icon-color: var(--primaryColor);
+        --mdc-radio-selected-pressed-icon-color: var(--primaryColor);
+        --mat-radio-checked-ripple-color: var(--primaryColor);
+    }
+}
+
+// Slide Toggle
+.mat-accent {
+    &.mat-mdc-slide-toggle {
+        --mdc-switch-selected-focus-state-layer-color: var(--primaryColor);
+        --mdc-switch-selected-hover-state-layer-color: var(--primaryColor);
+        --mdc-switch-selected-pressed-state-layer-color: var(--primaryColor);
+        --mdc-switch-selected-focus-handle-color: #e0e0ff;
+        --mdc-switch-selected-hover-handle-color: #e0e0ff;
+        --mdc-switch-selected-pressed-handle-color: #e0e0ff;
+        --mdc-switch-selected-focus-track-color: var(--primaryColor);
+        --mdc-switch-selected-hover-track-color: var(--primaryColor);
+        --mdc-switch-selected-pressed-track-color: var(--primaryColor);
+        --mdc-switch-selected-track-color: var(--primaryColor);
+        --mat-switch-disabled-unselected-track-outline-color: var(--blackColor);
+        --mat-switch-label-text-color: var(--blackColor);
+        --mdc-switch-selected-icon-color: var(--blackColor);
+        --mat-switch-track-outline-color: #D5D9E2;
+    }
+}
+
+// Stepper
+.mat-primary {
+    --mat-stepper-header-selected-state-icon-background-color: var(--primaryColor);
+    --mat-stepper-header-edit-state-icon-background-color: var(--primaryColor);
+}
+
+// Checkbox
+.mat-accent {
+    &.mat-mdc-checkbox {
+        --mdc-checkbox-selected-focus-icon-color: var(--primaryColor);
+        --mdc-checkbox-selected-hover-icon-color: var(--primaryColor);
+        --mdc-checkbox-selected-icon-color: var(--primaryColor);
+        --mdc-checkbox-selected-pressed-icon-color: var(--primaryColor);
+        --mdc-checkbox-selected-focus-state-layer-color: var(--primaryColor);
+        --mdc-checkbox-selected-hover-state-layer-color: var(--primaryColor);
+        --mdc-checkbox-unselected-pressed-state-layer-color: var(--primaryColor);
+        --mat-checkbox-label-text-color: var(--blackColor);
+    }
+}
+
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    // Font Size
+    html {
+        --mat-option-label-text-size: 13px;
+        --mat-card-title-text-size: 22px;
+        --mat-card-subtitle-text-size: 13px;
+        --mdc-plain-tooltip-supporting-text-size: 13px;
+        --mdc-filled-text-field-label-text-size: 13px;
+        --mdc-outlined-text-field-label-text-size: 13px;
+        --mat-form-field-container-text-size: 13px;
+        --mat-form-field-subscript-text-size: 13px;
+        --mat-select-trigger-text-size: 13px;
+        --mdc-dialog-supporting-text-size: 13px;
+        --mdc-chip-label-text-size: 13px;
+        --mat-switch-label-text-size: 13px;
+        --mat-radio-label-text-size: 13px;
+        --mdc-slider-label-label-text-size: 13px;
+        --mat-menu-item-label-text-size: 13px;
+        --mdc-list-list-item-label-text-size: 13px;
+        --mdc-list-list-item-supporting-text-size: 13px;
+        --mdc-list-list-item-trailing-supporting-text-size: 13px;
+        --mat-paginator-container-text-size: 13px;
+        --mat-paginator-select-trigger-text-size: 13px;
+        --mat-tab-header-label-text-size: 13px;
+        --mat-checkbox-label-text-size: 13px;
+        --mdc-text-button-label-text-size: 13px;
+        --mdc-protected-button-label-text-size: 13px;
+        --mdc-filled-button-label-text-size: 13px;
+        --mdc-outlined-button-label-text-size: 13px;
+        --mdc-extended-fab-label-text-size: 13px;
+        --mdc-snackbar-supporting-text-size: 13px;
+        --mat-table-row-item-label-text-size: 13px;
+        --mat-table-footer-supporting-text-size: 13px;
+        --mat-badge-small-size-text-size: 0;
+        --mat-bottom-sheet-container-text-size: 13px;
+        --mat-standard-button-toggle-label-text-size: 13px;
+        --mat-datepicker-calendar-text-size: 13px;
+        --mat-datepicker-calendar-body-label-text-size: 13px;
+        --mat-datepicker-calendar-period-button-text-size: 13px;
+        --mat-datepicker-calendar-header-text-size: 13px;
+        --mat-expansion-header-text-size: 13px;
+        --mat-expansion-container-text-size: 13px;
+        --mat-grid-list-tile-header-primary-text-size: 400 13px / 24px var(--fontFamily);
+        --mat-grid-list-tile-header-secondary-text-size: 400 13px / 20px var(--fontFamily);
+        --mat-grid-list-tile-footer-primary-text-size: 400 13px / 24px var(--fontFamily);
+        --mat-grid-list-tile-footer-secondary-text-size: 400 13px / 20px var(--fontFamily);
+        --mat-stepper-header-label-text-size: 13px;
+        --mat-stepper-header-error-state-label-text-size: 13px;
+        --mat-stepper-header-selected-state-label-text-size: 13px;
+        --mat-toolbar-title-text-size: 22px;
+        --mat-tree-node-text-size: 13px;
+        --mat-sys-body-large-size: 13px;
+    }
+    
+}

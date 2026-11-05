@@ -1,0 +1,293 @@
+<mat-card
+    class="pricing-style-3-card border-radius border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+    id="pricing"
+>
+    <mat-card-content>
+
+        <!-- Section Header -->
+        <div class="pricing-header text-center">
+            <div class="section-eyebrow">
+                <span class="eyebrow-line"></span>
+                پلن‌های Shinera
+                <span class="eyebrow-line"></span>
+            </div>
+
+            <h2>
+                پلنی متناسب با اندازه
+                <span>کسب‌وکار شما</span>
+            </h2>
+
+            <p>
+                چه به‌صورت مستقل فعالیت کنید و چه یک سالن و تیم داشته باشید،
+                Shinera متناسب با نیاز کسب‌وکارتان در کنار شماست.
+            </p>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="row justify-content-center pricing-row">
+
+            <!-- Solo -->
+            <div class="col-xl-3 col-md-6">
+                <div class="single-pricing-box">
+
+                    <div class="plan-icon">
+                        <i class="material-symbols-outlined">
+                            person
+                        </i>
+                    </div>
+
+                    <div class="title">
+                        <span>Solo</span>
+                    </div>
+
+                    <h3>
+                        برای متخصص مستقل
+                    </h3>
+
+                    <p class="plan-description">
+                        برای زمانی که کسب‌وکارت را به‌تنهایی مدیریت می‌کنی.
+                    </p>
+
+                    <div class="price">
+                        <strong>—</strong>
+                        <span>تومان / ماه</span>
+                    </div>
+
+                    <button type="button" mat-button routerLink="/start" [queryParams]="{ plan: 'solo' }">
+                        شروع با Solo
+                        <i class="material-symbols-outlined">
+                            arrow_back
+                        </i>
+                    </button>
+
+                    <div class="features-title">
+                        امکانات پلن
+                    </div>
+
+                    <ul class="features-list">
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت مشتریان
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت خدمات
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت نوبت‌ها
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            برنامه کاری شخصی
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            داشبورد کسب‌وکار
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <!-- Solo Pro -->
+            <div class="col-xl-3 col-md-6">
+                <div class="single-pricing-box">
+
+                    <div class="plan-icon">
+                        <i class="material-symbols-outlined">
+                            auto_awesome
+                        </i>
+                    </div>
+
+                    <div class="title">
+                        <span>Solo Pro</span>
+                    </div>
+
+                    <h3>
+                        برای متخصص حرفه‌ای
+                    </h3>
+
+                    <p class="plan-description">
+                        امکانات بیشتر برای مدیریت حرفه‌ای‌تر و رشد کسب‌وکار.
+                    </p>
+
+                    <div class="price">
+                        <strong>—</strong>
+                        <span>تومان / ماه</span>
+                    </div>
+
+                    <button type="button" mat-button routerLink="/start" [queryParams]="{ plan: 'solo-pro' }">
+                        شروع با Solo Pro
+                        <i class="material-symbols-outlined">
+                            arrow_back
+                        </i>
+                    </button>
+
+                    <div class="features-title">
+                        امکانات پلن
+                    </div>
+
+                    <ul class="features-list">
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            همه امکانات Solo
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            امکانات مدیریتی بیشتر
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            گزارش‌های پیشرفته‌تر
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت حرفه‌ای مشتریان
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            امکانات بیشتر برای رشد
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <!-- Salon -->
+            <div class="col-xl-3 col-md-6">
+                <div class="single-pricing-box">
+
+                    <div class="plan-icon">
+                        <i class="material-symbols-outlined">
+                            groups
+                        </i>
+                    </div>
+
+                    <div class="title">
+                        <span>Salon</span>
+                    </div>
+
+                    <h3>
+                        برای سالن زیبایی
+                    </h3>
+
+                    <p class="plan-description">
+                        برای سالن‌هایی که مدیریت تیم و مجموعه را یکپارچه می‌کنند.
+                    </p>
+
+                    <div class="price">
+                        <strong>—</strong>
+                        <span>تومان / ماه</span>
+                    </div>
+
+                    <button type="button" mat-button routerLink="/start" [queryParams]="{ plan: 'salon' }">
+                        شروع با Salon
+                        <i class="material-symbols-outlined">
+                            arrow_back
+                        </i>
+                    </button>
+
+                    <div class="features-title">
+                        امکانات پلن
+                    </div>
+
+                    <ul class="features-list">
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            همه امکانات پایه
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت اعضای تیم
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت خدمات سالن
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            برنامه کاری تیم
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت مجموعه
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <!-- Salon Pro -->
+            <div class="col-xl-3 col-md-6">
+                <div class="single-pricing-box pro-card">
+
+                    <div class="pro-badge">
+                        حرفه‌ای
+                    </div>
+
+                    <div class="plan-icon">
+                        <i class="material-symbols-outlined">
+                            workspace_premium
+                        </i>
+                    </div>
+
+                    <div class="title">
+                        <span>Salon Pro</span>
+                    </div>
+
+                    <h3>
+                        برای سالن‌های در حال رشد
+                    </h3>
+
+                    <p class="plan-description">
+                        امکانات کامل‌تر برای مدیریت حرفه‌ای و توسعه مجموعه.
+                    </p>
+
+                    <div class="price">
+                        <strong>—</strong>
+                        <span>تومان / ماه</span>
+                    </div>
+
+                    <button type="button" mat-button routerLink="/start" [queryParams]="{ plan: 'salon-pro' }">
+                        شروع با Salon Pro
+                        <i class="material-symbols-outlined">
+                            arrow_back
+                        </i>
+                    </button>
+
+                    <div class="features-title">
+                        امکانات پلن
+                    </div>
+
+                    <ul class="features-list">
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            همه امکانات Salon
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            امکانات مدیریتی پیشرفته
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            گزارش‌ها و تحلیل‌های بیشتر
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            مدیریت حرفه‌ای تیم
+                        </li>
+                        <li>
+                            <i class="material-symbols-outlined">check</i>
+                            امکانات مناسب رشد مجموعه
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+
+    </mat-card-content>
+</mat-card>

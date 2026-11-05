@@ -1,0 +1,211 @@
+<div
+    dir="rtl"
+    class="sign-in-area"
+    [class.dark-theme]="themeService.isDarkTheme()"
+>
+    <!-- Background decorations -->
+    <div class="page-glow page-glow-one"></div>
+    <div class="page-glow page-glow-two"></div>
+
+    <div
+        class="shinera-auth"
+        [class.component-dark-theme]="themeService.isDarkTheme()"
+        [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+    >
+
+        <div class="auth-card">
+
+            <!-- =========================
+                 Login
+            ========================== -->
+
+            <div class="form-panel">
+
+                <div class="form-content">
+
+                    <!-- Logo -->
+                    <div class="logo-wrapper">
+
+                        <img
+                            src="shinera-light-logo.png"
+                            class="light-logo"
+                            alt="Shinera"
+                        >
+
+                        <img
+                            src="shinera-dark-logo.png"
+                            class="dark-logo"
+                            alt="Shinera"
+                        >
+
+                    </div>
+
+
+                    <!-- Title -->
+                    <div class="title">
+
+                        <h1>
+                            ورود به حساب کاربری
+                        </h1>
+
+                        <p>
+                            اطلاعات حساب خود را برای ادامه وارد کنید.
+                        </p>
+
+                    </div>
+
+
+                    @if (hasJustRegistered) {
+                        <p role="status" style="padding: 12px 16px; border: 1px solid #2e8b57; border-radius: 10px; color: #2e8b57">
+                            فضای کاری ساخته شد. با شماره موبایل و رمز عبوری که ثبت کردی وارد شو.
+                        </p>
+                    }
+
+                    <!-- Form -->
+                    <form
+                        [formGroup]="loginForm"
+                        (ngSubmit)="GetToken()"
+                    >
+
+                        <div class="field-wrapper">
+
+                            <app-custom-input
+                                type="text"
+                                [label]="login_context === 'tenant' ? 'شماره موبایل' : 'نام کاربری'"
+                                [placeholder]="login_context === 'tenant' ? 'شماره موبایل ثبت‌شده را وارد کنید' : 'نام کاربری خود را وارد کنید'"
+                                [dir]="'rtl'"
+                                controlName="username">
+                            </app-custom-input>
+
+                        </div>
+
+
+                        <div class="field-wrapper">
+
+                            <app-custom-input
+                                type="password"
+                                label="رمز عبور"
+                                placeholder="رمز عبور خود را وارد کنید"
+                                controlName="password">
+                            </app-custom-input>
+
+                        </div>
+
+
+                        <!-- Captcha -->
+                        <div class="captcha-wrapper">
+
+                            <app-captcha
+                                formControlName="captchaCode"
+                                (tokenChange)="onCaptchaTokenChange($event)">
+                            </app-captcha>
+
+                            @if (submitted) {
+                                <mat-error class="captcha-error">
+                                    کد کپچا الزامی است
+                                </mat-error>
+                            }
+
+                        </div>
+
+
+                        <!-- Forgot password -->
+                        <div class="form-options">
+
+                            <a
+                                routerLink="/auth/forgot-password"
+                                class="forgot-password"
+                            >
+                                رمز عبور را فراموش کرده‌اید؟
+                            </a>
+
+                        </div>
+
+
+                        <!-- Login -->
+                        <button
+                            type="submit"
+                            mat-button
+                            class="login-button"
+                        >
+
+                            <span>
+                                ورود
+                            </span>
+
+                            <i class="material-symbols-outlined">
+                                arrow_back
+                            </i>
+
+                        </button>
+
+
+                        <!-- Register -->
+                        <div class="register-area">
+
+                            <span>
+                                حساب کاربری ندارید؟
+                            </span>
+
+                            <a
+                                [href]="registrationUrl"
+                                class="register-link"
+                            >
+                                ثبت نام
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 Pure Visual
+            ========================== -->
+
+            <div class="visual-panel">
+
+                <div class="visual-grid"></div>
+
+                <div class="visual-orb orb-one"></div>
+                <div class="visual-orb orb-two"></div>
+                <div class="visual-orb orb-three"></div>
+
+                <div class="visual-line line-one"></div>
+                <div class="visual-line line-two"></div>
+
+                <div class="visual-center">
+
+                    <div class="brand-halo halo-one"></div>
+                    <div class="brand-halo halo-two"></div>
+
+                    <div class="brand-mark">
+
+                        <div class="brand-mark-glow"></div>
+
+                        <img
+                            src="shinera-dark-logo.png"
+                            alt="Shinera"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="visual-dot dot-one"></div>
+                <div class="visual-dot dot-two"></div>
+                <div class="visual-dot dot-three"></div>
+                <div class="visual-dot dot-four"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

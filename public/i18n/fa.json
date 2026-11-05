@@ -1,0 +1,17 @@
+{
+  "WIDGETS": {
+    "CUSTOMERSATISFACTION": {
+      "HEADER": "میزان رضایت مشتریان",
+      "POSITIVE": "مثبت",
+      "NEGATIVE": "منفی"
+    }
+  },
+  "HEADER": {
+    "CHOOSE_LANGUAGE": "انتخاب زبان"
+  },
+  "LANGUAGES": {
+    "PERSIAN": "فارسی",
+    "ENGLISH": "انگلیسی",
+    "FRENCH": "فرانسوی"
+  }
+}

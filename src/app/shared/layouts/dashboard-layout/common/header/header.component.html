@@ -1,0 +1,373 @@
+<div
+    [class.card-without-border-radius]="themeService.isCardWithoutBorderRadiusTheme()"
+    [class.card-with-box-shadow]="themeService.isCardWithBoxShadowTheme()"
+    class="header-area bg-white border-bottom-radius transition"
+    [ngClass]="{'active': isSidebarToggled(), 'sticky': isSticky}"
+    [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+    [class.right-sidebar]="themeService.isRightSidebarTheme()"
+    [class.hide-sidebar]="themeService.isHideSidebarTheme()"
+    [class.card-borderd]="themeService.isCardBorderedTheme()"
+    [class.dark-header]="themeService.isHeaderDarkTheme()"
+>
+    <div class="inner-area d-md-flex align-items-center justify-content-between">
+        <div class="header-left-side d-flex align-items-center">
+            <div
+                class="burger-menu transition position-relative lh-1"
+                [ngClass]="{'active': isSidebarToggled()}"
+                (click)="toggle()"
+            >
+                <i class="material-symbols-outlined">
+                    menu
+                </i>
+            </div>
+            <a routerLink="/dashboard" class="logo">
+                <img src="images/logo.svg" alt="logo">
+            </a>
+            <a routerLink="/dashboard" class="logo white-logo">
+                <img src="images/white-logo.svg" alt="logo">
+            </a>
+            <form class="search-box position-relative">
+                <input type="text" class="input-search" placeholder="Search here.....">
+                <button type="submit" class="bg-transparent p-0 border-none transition">
+                    <i class="material-symbols-outlined">
+                        search
+                    </i>
+                </button>
+            </form>
+            <div class="connected-apps-menu">
+                <button type="button" mat-button [matMenuTriggerFor]="messagesMenu" class="menu-btn">
+                    <i class="material-symbols-outlined">
+                        apps
+                    </i>
+                </button>
+                <mat-menu class="apps-menu-dropdown" #messagesMenu="matMenu" xPosition="before">
+                    <ul class="p-0 mt-0 mb-0 list-unstyled text-center">
+                        <li>
+                            <a href="https://www.figma.com/" target="_blank" class="d-block">
+                                <img src="images/icons/figma.svg" alt="figma">
+                                <span class="d-block">
+                                    Figma
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://dribbble.com/" target="_blank" class="d-block">
+                                <img src="images/icons/dribbble.svg" alt="dribbble">
+                                <span class="d-block">
+                                    Dribbble
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://open.spotify.com/" target="_blank" class="d-block">
+                                <img src="images/icons/spotify.svg" alt="spotify">
+                                <span class="d-block">
+                                    Spotify
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://gitlab.com/" target="_blank" class="d-block">
+                                <img src="images/icons/gitlab.svg" alt="gitlab">
+                                <span class="d-block">
+                                    Gitlab
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://drive.google.com/drive/u/0/home" target="_blank" class="d-block">
+                                <img src="images/icons/google-drive.svg" alt="google-drive">
+                                <span class="d-block">
+                                    GDrive
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://trello.com/" target="_blank" class="d-block">
+                                <img src="images/icons/trello.svg" alt="trello">
+                                <span class="d-block">
+                                    Trello
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://slack.com/" target="_blank" class="d-block">
+                                <img src="images/icons/slack.svg" alt="slack">
+                                <span class="d-block">
+                                    Slack
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.pinterest.com/" target="_blank" class="d-block">
+                                <img src="images/icons/pinterest.svg" alt="pinterest">
+                                <span class="d-block">
+                                    Pinterest
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.facebook.com/" target="_blank" class="d-block">
+                                <img src="images/icons/facebook.svg" alt="facebook">
+                                <span class="d-block">
+                                    Facebook
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/" target="_blank" class="d-block">
+                                <img src="images/icons/linkedin.svg" alt="linkedin">
+                                <span class="d-block">
+                                    LinkedIn
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </mat-menu>
+            </div>
+        </div>
+        <ul class="header-right-side d-flex align-items-center m-0 p-0 list-unstyled">
+            <li>
+                <button
+                    mat-button
+                    (click)="toggleTheme()"
+                    class="dark-swtich-btn"
+                >
+                    <i class="material-symbols-outlined">
+                        light_mode
+                    </i>
+                </button>
+            </li>
+            <li>
+                <button type="button" mat-button [matMenuTriggerFor]="languageMenu" class="language-menu-btn">
+                    <i class="material-symbols-outlined">
+                        translate
+                    </i>
+                </button>
+                <mat-menu class="language-menu-dropdown" #languageMenu="matMenu" xPosition="before">
+                    <span class="title fw-semibold text-black d-block">
+                        Choose Language
+                    </span>
+                    <ul class="menu-body p-0 mb-0 mt-0 list-unstyled">
+                        <li>
+                            <button mat-button>
+                                <img src="images/flags/usa.svg" alt="usa">
+                                English
+                            </button>
+                        </li>
+                        <li>
+                            <button mat-button>
+                                <img src="images/flags/france.svg" alt="france">
+                                French
+                            </button>
+                        </li>
+                        <li>
+                            <button mat-button>
+                                <img src="images/flags/germany.svg" alt="germany">
+                                German
+                            </button>
+                        </li>
+                        <li>
+                            <button mat-button>
+                                <img src="images/flags/portugal.svg" alt="portugal">
+                                Portuguese
+                            </button>
+                        </li>
+                        <li>
+                            <button mat-button>
+                                <img src="images/flags/spain.svg" alt="spain">
+                                Spanish
+                            </button>
+                        </li>
+                    </ul>
+                </mat-menu>
+            </li>
+            <li>
+                <button
+                    mat-button
+                    (click)="toggleFullscreen()"
+                    class="fullscreen-btn"
+                >
+                    <i class="material-symbols-outlined">
+                        {{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
+                    </i>
+                </button>
+            </li>
+            <li>
+                <button mat-button [matMenuTriggerFor]="notificationsMenu" class="notifications-menu-btn">
+                    <i class="material-symbols-outlined">
+                        notifications
+                    </i>
+                    <div class="dot rounded-circle"></div>
+                </button>
+                <mat-menu class="notifications-menu-dropdown" #notificationsMenu="matMenu" xPosition="before">
+                    <div class="title d-flex align-items-center justify-content-between">
+                        <span class="fw-semibold text-black">
+                            Notifications
+                            <span class="text-body fw-normal">
+                                (03)
+                            </span>
+                        </span>
+                        <a href="javascript:void(0);" class="text-primary">
+                            Clear All
+                        </a>
+                    </div>
+                    <ul class="menu-body p-0 mt-0 list-unstyled">
+                        <li class="position-relative">
+                            <div class="icon rounded-circle d-flex align-items-center justify-content-center position-absolute text-center transition">
+                                <i class="material-symbols-outlined">
+                                    sms
+                                </i>
+                            </div>
+                            <span class="sub-title d-block text-black">
+                                You have requested to <strong class="fw-semibold">withdrawal</strong>
+                            </span>
+                            <span class="time d-block">
+                                2 hrs ago
+                            </span>
+                            <a routerLink="/dashboard/notifications" class="d-block left-0 top-0 bottom-0 right-0 z-1 position-absolute"></a>
+                        </li>
+                        <li class="position-relative">
+                            <div class="icon rounded-circle d-flex align-items-center justify-content-center position-absolute text-center transition">
+                                <i class="material-symbols-outlined">
+                                    person
+                                </i>
+                            </div>
+                            <span class="sub-title d-block text-black">
+                                <strong class="fw-semibold">A new user</strong> added in Trezo
+                            </span>
+                            <span class="time d-block">
+                                3 hrs ago
+                            </span>
+                            <a routerLink="/dashboard/notifications" class="d-block left-0 top-0 bottom-0 right-0 z-1 position-absolute"></a>
+                            <span class="unread d-inline-block rounded-circle bg-primary position-absolute"></span>
+                        </li>
+                        <li class="position-relative">
+                            <div class="icon rounded-circle d-flex align-items-center justify-content-center position-absolute text-center transition">
+                                <i class="material-symbols-outlined">
+                                    mark_email_unread
+                                </i>
+                            </div>
+                            <span class="sub-title d-block text-black">
+                                You have requested to <strong class="fw-semibold">withdrawal</strong>
+                            </span>
+                            <span class="time d-block">
+                                1 day ago
+                            </span>
+                            <a routerLink="/dashboard/notifications" class="d-block left-0 top-0 bottom-0 right-0 z-1 position-absolute"></a>
+                        </li>
+                    </ul>
+                    <div class="menu-footer text-center">
+                        <a routerLink="/dashboard/notifications" class="d-inline-block fw-medium position-relative text-primary">
+                            See All Notifications
+                        </a>
+                    </div>
+                </mat-menu>
+            </li>
+            <li>
+                <button mat-button [matMenuTriggerFor]="profileMenu" class="profile-menu-btn">
+<app-avatar-upload   [value]="auth.getUserPicture()" [refresh]="false"  [editable]="false" class="rounded-circle" style="margin-left: 5px;"  [size]="42"> </app-avatar-upload>  
+                  <span class="fw-semibold text-black">
+                        {{auth.getFullName()}}
+                    </span>
+                </button>
+                <mat-menu class="profile-menu-dropdown" #profileMenu="matMenu" xPosition="before">
+                    <div class="admin d-flex align-items-center">
+                        <app-avatar-upload   [value]="auth.getUserPicture()" [refresh]="false"  [editable]="false"  [size]="60"> </app-avatar-upload>
+                        <div>
+                            <span class="d-block text-black fw-medium">
+                                {{auth.getFullName()}}
+                            </span>
+                            <span class="d-block">
+                                Marketing Manager
+                            </span>
+                        </div>
+                    </div>
+                    <ul class="list p-0 mt-0 mb-0 list-unstyled">
+                        <li>
+                            <a routerLink="/dashboard/my-profile" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    account_circle
+                                </i>
+                                My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLink="/dashboard/apps/chat" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    chat
+                                </i>
+                                Messages
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLink="/dashboard/apps" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    format_list_bulleted
+                                </i>
+                                My Task
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLink="/dashboard/ecommerce-page/checkout" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    credit_card
+                                </i>
+                                Billing
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="border-top"></div>
+                    <ul class="list p-0 mt-0 mb-0 list-unstyled">
+                        <li>
+                            <a routerLink="/dashboard/settings" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    settings
+                                </i>
+                                Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLink="/dashboard/faq" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    support
+                                </i>
+                                Support
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLink="/authentication/lock-screen" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    lock
+                                </i>
+                                Lock Screen
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLink="/authentication/logout" class="d-block position-relative">
+                                <i class="material-symbols-outlined">
+                                    logout
+                                </i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </mat-menu>
+            </li>
+            <li>
+                <button
+                    mat-button
+                    type="button"
+                    class="settings-btn"
+                    (click)="settingsButtonToggle()"
+                    [ngClass]="{'active': isToggled}"
+                >
+                    <i class="material-symbols-outlined">
+                        settings
+                    </i>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <app-navbar />
+</div>

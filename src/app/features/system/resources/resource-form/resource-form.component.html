@@ -1,0 +1,37 @@
+<app-page-header />
+
+<form [formGroup]="userForm" (submit)="Submit()" >
+    <div class="row">
+        <div class="col-lg-12">
+            <mat-card class="add-user-card mb-25 border-radius d-block bg-white border-0 shadow-none">
+                <mat-card-content>
+                    <div class="row " style="margin-top: 10px;">
+                           <app-custom-input [validationErrors]="[{type:'required',message:'کد  الزامی میباشد'}]" class="col-sm-4" appNoAutofill  type="text"  label="کد"   controlName="code"></app-custom-input> 
+                           <app-custom-select [searchable]="true" (searchChanged)="searchModule($event)" placeholder="ماژول" [autoSelectFirst]="true"  [options]="modules()" controlName="moduleId" label="ماژول"></app-custom-select>
+                            <app-custom-input [validationErrors]="[{type:'required',message:'عنوان  الزامی میباشد'}]" class="col-sm-4"   type="text"  label="عنوان" controlName="title"></app-custom-input>
+                            <app-custom-input [validationErrors]="[{type:'required',message:'اولویت  الزامی میباشد'}]" class="col-sm-4"   type="number"  label="اولویت" controlName="sortOrder"></app-custom-input>
+                        </div>
+                        <div class="row">
+                            <app-custom-text-erea class="col-sm-12"   type="text"  label="توضیحات" controlName="description"></app-custom-text-erea>     
+                        </div>
+                        <div class="row">
+                            
+                            <app-custom-toggle class="col-sm-4"  label="فعال است"   controlName="isActive">   </app-custom-toggle>
+                    </div>
+                     <div class="form-btn-box">
+                <button type="submit" mat-button color="primary" >
+                    <i class="material-symbols-outlined">
+                        save
+                    </i>
+                    ذخیره
+                </button>
+                <button (click)="back()" type="button" mat-button color="warn">
+                    لغو
+                </button>
+            </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+     
+    </div>
+</form>

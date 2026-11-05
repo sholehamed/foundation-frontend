@@ -1,0 +1,434 @@
+.faq-area {
+    overflow: hidden;
+
+    --faq-heading-color: var(--headingColor);
+    --faq-text-color: var(--bodyColor);
+    --faq-muted-color: var(--mutedColor);
+    --faq-accent-color: var(--primaryColor);
+    --faq-card-bg: var(--cardBgColor);
+    --faq-surface-color: var(--surfaceColor);
+    --faq-border-color: var(--borderColor);
+
+    --faq-accent-soft: color-mix(
+        in srgb,
+        var(--primaryColor) 18%,
+        var(--cardBgColor)
+    );
+
+    --faq-accent-line: color-mix(
+        in srgb,
+        var(--primaryColor) 35%,
+        transparent
+    );
+
+    --faq-hover-bg: color-mix(
+        in srgb,
+        var(--primaryColor) 4%,
+        var(--cardBgColor)
+    );
+
+    --faq-shadow-color: rgba(0, 0, 0, .045);
+}
+
+
+/* --------------------------------
+   Section Title
+-------------------------------- */
+
+.section-title {
+
+    max-width: 850px;
+
+    .sub-title {
+
+        margin-bottom: 17px;
+
+        span {
+
+            color: var(--faq-accent-color) !important;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            letter-spacing: .2px;
+
+            &::before,
+            &::after {
+
+                content: "";
+
+                position: absolute;
+
+                top: 50%;
+
+                width: 22px;
+                height: 1px;
+
+                background: var(--faq-accent-line);
+
+                transform: translateY(-50%);
+            }
+
+            &::before {
+                right: calc(100% + 10px);
+            }
+
+            &::after {
+                left: calc(100% + 10px);
+            }
+        }
+    }
+
+
+    h2 {
+
+        color: var(--faq-heading-color);
+
+        font-size: 38px;
+
+        line-height: 1.35;
+
+        letter-spacing: -1px;
+    }
+
+
+    .section-description {
+
+        max-width: 650px;
+
+        margin: 17px auto 0;
+
+        color: var(--faq-text-color);
+
+        font-size: 14px;
+
+        line-height: 1.9;
+    }
+}
+
+
+/* --------------------------------
+   Accordion
+-------------------------------- */
+
+::ng-deep {
+
+    .faq-accordion {
+
+        max-width: 780px;
+
+        margin-top: 45px;
+
+
+        &.mat-accordion {
+
+            .mat-expansion-panel {
+
+                overflow: hidden;
+
+                margin-bottom: 12px;
+
+                border: 1px solid var(--faq-border-color);
+
+                border-radius: 10px;
+
+                color: var(--faq-heading-color);
+
+                background-color: var(--faq-card-bg);
+
+                box-shadow: none;
+
+                transition:
+                    border-color .25s ease,
+                    box-shadow .25s ease;
+
+
+                &.mat-expanded {
+
+                    border-color: var(--faq-accent-soft);
+
+                    box-shadow:
+                        0 10px 30px var(--faq-shadow-color);
+                }
+
+
+                &.mat-expansion-panel-spacing {
+
+                    margin: 0 0 12px;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                }
+
+
+                .mat-expansion-panel-header {
+
+                    height: auto;
+
+                    min-height: 62px;
+
+                    padding: 16px 22px;
+
+                    color: var(--faq-heading-color);
+
+                    font-size: 15px;
+
+                    font-weight: 600;
+
+                    transition: background-color .2s ease;
+
+
+                    &:hover {
+
+                        background-color: var(--faq-hover-bg);
+                    }
+                }
+
+
+                .mat-expansion-panel-header-title {
+
+                    color: var(--faq-heading-color);
+
+                    margin-right: 15px;
+                }
+
+
+                .mat-expansion-panel-content {
+
+                    .mat-expansion-panel-body {
+
+                        padding: 0 22px 20px;
+
+                        color: var(--faq-text-color);
+
+                        font-size: 13px;
+
+                        line-height: 1.9;
+
+
+                        p {
+                            margin-bottom: 0;
+                        }
+
+
+                        ol,
+                        ul {
+
+                            padding-left: 18px;
+
+                            margin: {
+                                top: 15px;
+                                bottom: 15px;
+                            };
+
+
+                            li {
+
+                                line-height: 1.8;
+
+                                margin-bottom: 7px;
+
+
+                                &:last-child {
+                                    margin-bottom: 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+
+            /* RTL */
+
+            &.component-rtl-enabled {
+
+                .mat-expansion-panel {
+
+                    .mat-expansion-panel-header-title {
+
+                        margin: {
+                            right: 0;
+                            left: 15px;
+                        };
+                    }
+
+
+                    .mat-expansion-panel-content {
+
+                        .mat-expansion-panel-body {
+
+                            ol,
+                            ul {
+
+                                padding: {
+                                    left: 0;
+                                    right: 18px;
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/* --------------------------------
+   Mobile
+-------------------------------- */
+
+@media only screen and (max-width: 767px) {
+
+    .faq-area {
+        padding-top: 90px;
+    }
+
+
+    .section-title {
+
+        max-width: 100%;
+
+        .sub-title {
+
+            margin-bottom: 13px;
+
+            span {
+                font-size: 11px;
+            }
+        }
+
+
+        h2 {
+
+            font-size: 26px;
+
+            line-height: 1.4;
+
+            letter-spacing: -.4px;
+        }
+
+
+        .section-description {
+
+            margin-top: 12px;
+
+            font-size: 12px;
+
+            line-height: 1.8;
+        }
+    }
+
+
+    ::ng-deep {
+
+        .faq-accordion {
+
+            max-width: 100%;
+
+            margin-top: 28px;
+
+
+            &.mat-accordion {
+
+                .mat-expansion-panel {
+
+                    margin-bottom: 9px;
+
+                    border-radius: 8px;
+
+
+                    .mat-expansion-panel-header {
+
+                        min-height: 56px;
+
+                        padding: 13px 16px;
+
+                        font-size: 13px;
+                    }
+
+
+                    .mat-expansion-panel-content {
+
+                        .mat-expansion-panel-body {
+
+                            padding: 0 16px 16px;
+
+                            font-size: 11px;
+
+                            line-height: 1.8;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/* --------------------------------
+   Tablet
+-------------------------------- */
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+
+    .faq-area {
+        padding-top: 110px;
+    }
+
+
+    .section-title {
+
+        h2 {
+            font-size: 32px;
+        }
+
+        .section-description {
+            font-size: 13px;
+        }
+    }
+
+
+    ::ng-deep {
+
+        .faq-accordion {
+
+            max-width: 100%;
+
+            margin-top: 35px;
+
+
+            &.mat-accordion {
+
+                .mat-expansion-panel {
+
+                    .mat-expansion-panel-header {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/* --------------------------------
+   Small Desktop
+-------------------------------- */
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+
+    .section-title {
+
+        h2 {
+            font-size: 34px;
+        }
+    }
+}

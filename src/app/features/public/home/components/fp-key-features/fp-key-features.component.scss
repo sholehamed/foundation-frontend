@@ -1,0 +1,310 @@
+.key-features-area {
+    overflow: hidden;
+
+    --features-heading-color: var(--headingColor);
+    --features-text-color: var(--bodyColor);
+    --features-muted-color: var(--mutedColor);
+    --features-accent-color: var(--primaryColor);
+    --features-border-color: var(--borderColor);
+
+    --customers-color: var(--primaryColor);
+    --customers-bg: color-mix(
+        in srgb,
+        var(--primaryColor) 10%,
+        var(--cardBgColor)
+    );
+
+    --appointments-color: #8d6b55;
+    --appointments-bg: #f8eee5;
+
+    --team-color: #78627e;
+    --team-bg: #f0eaf3;
+
+    &.component-dark-theme {
+        --customers-bg: color-mix(
+            in srgb,
+            var(--primaryColor) 12%,
+            var(--cardBgColor)
+        );
+
+        --appointments-bg: color-mix(
+            in srgb,
+            var(--appointments-color) 12%,
+            var(--cardBgColor)
+        );
+
+        --team-bg: color-mix(
+            in srgb,
+            var(--team-color) 12%,
+            var(--cardBgColor)
+        );
+    }
+}
+
+
+/* --------------------------------
+   Section Title
+-------------------------------- */
+
+.section-title {
+    max-width: 850px;
+
+    .sub-title {
+        margin-bottom: 18px;
+
+        span {
+            color: var(--features-accent-color) !important;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            letter-spacing: .3px;
+
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+
+                top: 50%;
+
+                width: 22px;
+                height: 1px;
+
+                background-color: color-mix(
+                    in srgb,
+                    var(--features-accent-color) 35%,
+                    transparent
+                );
+
+                transform: translateY(-50%);
+            }
+
+            &::before {
+                right: calc(100% + 10px);
+            }
+
+            &::after {
+                left: calc(100% + 10px);
+            }
+        }
+    }
+
+    h2 {
+        color: var(--features-heading-color);
+
+        font-size: 38px;
+        line-height: 1.3;
+        letter-spacing: -1px;
+    }
+
+    .section-description {
+        max-width: 650px;
+
+        margin: 18px auto 0;
+
+        color: var(--features-text-color);
+
+        font-size: 15px;
+        line-height: 1.9;
+    }
+}
+
+
+/* --------------------------------
+   Feature Box
+-------------------------------- */
+
+.single-key-feature-box {
+    margin-bottom: 30px;
+    padding: 10px 15px;
+
+    .icon {
+        width: 78px;
+        height: 78px;
+
+        margin-bottom: 22px;
+
+        border-radius: 18px;
+
+        i {
+            font-size: 34px;
+        }
+    }
+
+    h3 {
+        margin-bottom: 12px;
+
+        color: var(--features-heading-color);
+
+        font-size: 21px;
+        line-height: 1.4;
+    }
+
+    p {
+        max-width: 360px;
+
+        margin-bottom: 0;
+
+        color: var(--features-text-color);
+
+        font-size: 13px;
+        line-height: 1.9;
+    }
+}
+
+
+/* --------------------------------
+   Icons
+-------------------------------- */
+
+.customers-icon {
+    color: var(--customers-color);
+    background-color: var(--customers-bg);
+}
+
+.appointments-icon {
+    color: var(--appointments-color);
+    background-color: var(--appointments-bg);
+}
+
+.team-icon {
+    color: var(--team-color);
+    background-color: var(--team-bg);
+}
+
+
+/* --------------------------------
+   Mobile
+-------------------------------- */
+
+@media only screen and (max-width: 767px) {
+
+    .key-features-area {
+        padding-top: 90px;
+        padding-bottom: 70px;
+    }
+
+    .section-title {
+        max-width: 100%;
+
+        .sub-title {
+            margin-bottom: 14px;
+
+            span {
+                font-size: 11px;
+            }
+        }
+
+        h2 {
+            font-size: 26px;
+            line-height: 1.4;
+            letter-spacing: -.4px;
+        }
+
+        .section-description {
+            margin-top: 12px;
+
+            font-size: 12px;
+            line-height: 1.8;
+        }
+    }
+
+    .single-key-feature-box {
+        padding: 0 10px;
+        text-align: center;
+
+        .icon {
+            width: 70px;
+            height: 70px;
+
+            margin: {
+                left: auto;
+                right: auto;
+                bottom: 17px;
+            };
+
+            border-radius: 15px;
+
+            i {
+                font-size: 30px;
+            }
+        }
+
+        h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            max-width: 100%;
+            font-size: 12px;
+        }
+    }
+}
+
+
+/* --------------------------------
+   Tablet
+-------------------------------- */
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+
+    .key-features-area {
+        padding-top: 110px;
+        padding-bottom: 90px;
+    }
+
+    .section-title {
+        h2 {
+            font-size: 32px;
+        }
+
+        .section-description {
+            font-size: 14px;
+        }
+    }
+
+    .single-key-feature-box {
+        text-align: center;
+
+        .icon {
+            margin: {
+                left: auto;
+                right: auto;
+                bottom: 18px;
+            };
+        }
+
+        h3 {
+            font-size: 19px;
+        }
+
+        p {
+            max-width: 100%;
+        }
+    }
+}
+
+
+/* --------------------------------
+   Small Desktop
+-------------------------------- */
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+
+    .section-title {
+        h2 {
+            font-size: 34px;
+        }
+    }
+
+    .single-key-feature-box {
+        h3 {
+            font-size: 20px;
+        }
+
+        p {
+            max-width: 100%;
+        }
+    }
+}

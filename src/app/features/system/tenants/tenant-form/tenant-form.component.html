@@ -1,0 +1,38 @@
+<app-page-header/>
+<form [formGroup]="form" (submit)="Submit()" >
+    <div class="row">
+        <div class="col-lg-12">
+            <mat-card class="add-user-card mb-25 border-radius d-block bg-white border-0 shadow-none">
+                <mat-card-content>
+                    <div class="row">
+                      <app-avatar-upload label="لوگوی شرکت" class="col-4" formControlName="favicon"/>
+                      <app-avatar-upload label="favicon" class="col-4" formControlName="logo"/>
+                    </div>
+                    <div class="row " style="margin-top: 10px;">
+                           <app-custom-input class="col-sm-4" appNoAutofill  type="text"  label="نام"   controlName="name"></app-custom-input> 
+                            <app-custom-input placeholder="مثلا company1" [validationErrors]="[{type:'required',message:'نام مستعار الزامی میباشد'}]" class="col-sm-4"   type="text"  label="نام مستعار" controlName="slug"></app-custom-input>     
+                            <app-custom-input placeholder="مثلا company1.ir" class="col-sm-4"   type="text"  label="دامنه" controlName="domain"></app-custom-input>     
+                            
+                            
+                        </div>
+                        <div class="row">
+                            
+                            <app-custom-toggle class="col-sm-4"  label="فعال است"   controlName="isActive">   </app-custom-toggle>
+                    </div>
+                     <div class="form-btn-box">
+                <button type="submit" mat-button color="primary" >
+                    <i class="material-symbols-outlined">
+                        save
+                    </i>
+                    ذخیره
+                </button>
+                <button (click)="back()" type="button" mat-button color="warn">
+                    لغو
+                </button>
+            </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+     
+    </div>
+</form>

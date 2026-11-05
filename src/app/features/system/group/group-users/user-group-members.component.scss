@@ -1,0 +1,23 @@
+
+    .members-page { display: flex; flex-direction: column; gap: .75rem; }
+    .toolbar { display: flex; gap: .75rem; align-items: center; }
+    .add-single { width: min(520px, 100%); }
+    .spacer { flex: 1; }
+    .bulk-actions {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .5rem .75rem;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .table-wrap { overflow: auto; border-radius: 8px; }
+    table { width: 100%; }
+    .actions-col { width: 120px; text-align: center; }
+    .cell-main .name { font-weight: 600; }
+    .cell-main .meta { font-size: 12px; opacity: .75; }
+    .badge { padding: 2px 10px; border-radius: 999px; background: #e8f5e9; color: #1b5e20; font-size: 12px; }
+    .badge.inactive { background: #ffebee; color: #b71c1c; }
+    .opt { display: flex; flex-direction: column; }
+    .opt .meta { font-size: 12px; opacity: .75; }
+    .empty { padding: 2rem; text-align: center; opacity: .7; }
+  

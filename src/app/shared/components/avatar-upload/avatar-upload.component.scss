@@ -1,0 +1,89 @@
+.avatar-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+}
+
+.avatar-container.readonly {
+  cursor: default;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ddd;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.avatar-container:hover .overlay {
+  opacity: 1;
+}
+
+.reload-button {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+  font-size: 16px;
+  line-height: 28px;
+  padding: 0;
+}
+
+.hidden-file-input {
+  display: none;
+}
+/* کانتینر اصلی که کل فیلد را در بر می‌گیرد */
+.avatar-field-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start; /* در حالت RTL/LTR به صورت خودکار تراز می‌شود */
+  gap: 8px; /* فاصله استاندارد بین هدر و آواتار */
+  font-family: inherit; /* استفاده از فونت اصلی پروژه */
+}
+
+/* استایل برچسب/هدر فیلد */
+.avatar-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151; /* رنگ خاکستری تیره استاندارد (Tailwind gray-700) */
+  margin-bottom: 2px;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+/* تغییر رنگ هدر در حالت Focus یا Hover روی آواتار قابل ویرایش (اختیاری برای UI بهتر) */
+.avatar-field-wrapper:hover .avatar-field-label {
+  color: #1f2937; /* کمی تیره‌تر هنگام هوور */
+}
+
+/* مطمئن شوید که کانتینر آواتار پوزیشن relative دارد تا فرزندان مطلق (absolute) آن درست قرار گیرند */
+.avatar-container {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  /* استایل‌های قبلی خودتان را اینجا حفظ کنید */
+}

@@ -1,0 +1,2 @@
+import { a as MatIconRegistry, c as getMatIconNameNotFoundError, i as MatIconModule, l as getMatIconNoHttpProviderError, n as MAT_ICON_LOCATION, o as getMatIconFailedToSanitizeLiteralError, r as MatIcon, s as getMatIconFailedToSanitizeUrlError, t as MAT_ICON_DEFAULT_OPTIONS } from "./icon-D2ltpsxv.js";
+export { MAT_ICON_DEFAULT_OPTIONS, MAT_ICON_LOCATION, MatIcon, MatIconModule, MatIconRegistry, getMatIconFailedToSanitizeLiteralError, getMatIconFailedToSanitizeUrlError, getMatIconNameNotFoundError, getMatIconNoHttpProviderError };

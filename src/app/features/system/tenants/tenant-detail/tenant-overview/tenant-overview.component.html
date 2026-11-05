@@ -1,0 +1,13 @@
+@if (error()) {
+  <p role="alert">دریافت اطلاعات کسب‌وکار ناموفق بود.</p>
+} @else if (details(); as tenant) {
+  <dl dir="rtl">
+    <dt>نام کسب‌وکار</dt><dd>{{ tenant.name }}</dd>
+    <dt>فضای کاری</dt><dd>{{ tenant.slug }}</dd>
+    <dt>دامنه</dt><dd>{{ tenant.domain || '—' }}</dd>
+    <dt>وضعیت</dt><dd>{{ tenant.isActive ? 'فعال' : 'غیرفعال' }}</dd>
+  </dl>
+  <a [routerLink]="['/system/tenants', tenant.id, 'edit']">ویرایش اطلاعات</a>
+} @else {
+  <p>در حال دریافت اطلاعات...</p>
+}

@@ -1,0 +1,90 @@
+<mat-tree
+  class="permission-tree"
+  [dataSource]="dataSource"
+  [treeControl]="treeControl"
+>
+  <mat-nested-tree-node
+    *matTreeNodeDef="let node"
+    class="permission-tree__node"
+  >
+    <div
+      class="permission-tree__row"
+      [ngClass]="getNodeLevelClass(node)"
+      [class.permission-tree__row--inactive]="!node.isActive"
+    >
+      <button
+        mat-icon-button
+        type="button"
+        class="permission-tree__toggle"
+        [disabled]="!hasChild(0, node)"
+        (click)="$event.stopPropagation(); treeControl.toggle(node)"
+      >
+        <mat-icon *ngIf="hasChild(0, node)">
+          {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_left' }}
+        </mat-icon>
+      </button>
+
+      <mat-checkbox
+        *ngIf="node.type === 'permission' || hasAnyActivePermission(node)"
+        color="primary"
+        class="permission-tree__checkbox"
+        [checked]="isSelected(node)"
+        [indeterminate]="node.type !== 'permission' && isIndeterminate(node)"
+        [disabled]="
+          disabled ||
+          (node.type === 'permission'
+            ? !node.isActive
+            : !hasAnyActivePermission(node))
+        "
+        (click)="$event.stopPropagation()"
+        (change)="toggleNode(node, $event.checked)"
+      ></mat-checkbox>
+
+      <span
+        *ngIf="node.type !== 'permission' && !hasAnyActivePermission(node)"
+        class="permission-tree__checkbox-placeholder"
+      ></span>
+
+      <div class="permission-tree__content">
+        <div class="permission-tree__main">
+          <span class="permission-tree__title">
+            {{ node.title }}
+          </span>
+
+          <span class="permission-tree__code" *ngIf="node.code">
+            {{ node.code }}
+          </span>
+
+          <span class="permission-tree__type">
+            {{ getNodeTypeTitle(node) }}
+          </span>
+
+          <span
+            class="permission-tree__status"
+            [class.permission-tree__status--active]="node.isActive"
+            [class.permission-tree__status--inactive]="!node.isActive"
+          >
+            {{ node.isActive ? 'فعال' : 'غیرفعال' }}
+          </span>
+        </div>
+
+        <div
+          class="permission-tree__description"
+          *ngIf="node.description"
+          [matTooltip]="node.description"
+          matTooltipPosition="above"
+        >
+          {{ node.description }}
+        </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="hasChild(0, node)"
+      class="permission-tree__children"
+      [class.permission-tree__children--collapsed]="!treeControl.isExpanded(node)"
+    >
+      <ng-container matTreeNodeOutlet></ng-container>
+    </div>
+  </mat-nested-tree-node>
+</mat-tree>

@@ -1,0 +1,178 @@
+
+<app-page-header/>
+ <div class="bulk-actions" *ngIf="selection.selected.length > 0">
+      <span>{{ selection.selected.length }} مورد انتخاب شده</span>
+      <span class="spacer"></span>
+
+      <button mat-flat-button color="warn" type="button" (click)="removeSelected()" [disabled]="loading()">
+        <mat-icon>delete</mat-icon>
+        حذف انتخاب‌شده‌ها
+      </button>
+
+      <button mat-button type="button" (click)="selection.clear()" [disabled]="loading()">پاک کردن انتخاب</button>
+    </div>
+<app-grid #grid
+  [columns]="columns"
+  [data]="list()"
+  [enableActions]="true"
+  [enableSelection]="true"
+  
+  (queryChange)="load($event)"
+>
+ <ng-template gridCellTemplate="logo" let-value="value">
+      <app-avatar-upload   [value]="value" [refresh]="false"  [editable]="false"  [size]="60"> </app-avatar-upload>
+            
+    </ng-template>
+<!-- <ng-template gridHeaderFilterTemplate="firstName">
+    <app-text-filter [grid]="grid" field="firstName" label="جستجوی نام "></app-text-filter>
+  </ng-template>
+  <ng-template gridHeaderFilterTemplate="lastName">
+    <app-text-filter [grid]="grid" field="lastName" label="جستجوی نام خانوادگی "></app-text-filter>
+  </ng-template>
+<ng-template [gridHeaderFilterTemplate]="'userName'">
+    <app-text-filter [grid]="grid" field="userName" label="جستجوی  نام کاربری"></app-text-filter>
+</ng-template> -->
+
+ <ng-template #HeaderActions>
+                 <button 
+                        class="add-btn refined-add-btn"
+                        type="button"
+                        (click)="openBulkAdd()"
+                        mat-button>
+                        <i class="material-symbols-outlined">add</i>
+                        جدید
+                    </button>
+             
+             
+        </ng-template>
+        <ng-template gridCellTemplate="avatar" let-value="value">
+      <app-avatar-upload   [value]="value" [refresh]="false"  [editable]="false"  [size]="60"> </app-avatar-upload>
+            
+    </ng-template>
+<ng-template #actionTemplate let-row>
+               
+    </ng-template>
+</app-grid>
+
+
+
+
+
+
+
+
+  <!-- <div class="members-page">
+    <div class="toolbar">
+      <mat-form-field appearance="outline" class="add-single" subscriptSizing="dynamic">
+        <mat-label>افزودن عضو</mat-label>
+        
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectUserToAdd($event.option.value)">
+          <ng-container *ngIf="(filteredUsers$ | async) as users">
+            <mat-option *ngFor="let u of users; trackBy: trackUser" [value]="u">
+              <div class="opt">
+                <div class="name">{{ u.firstName }} {{u.lastName}}</div>
+                <div class="meta">{{ u.email || u.username || '' }}</div>
+              </div>
+            </mat-option>
+            <mat-option *ngIf="users.length === 0" disabled>موردی یافت نشد</mat-option>
+          </ng-container>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-stroked-button type="button" (click)="openBulkAdd()">
+        افزودن گروهی
+        <i class="material-symbols-outlined">group_add</i>
+      </button>
+
+      <span class="spacer"></span>
+
+      <button mat-icon-button type="button" (click)="reload()" [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+
+    <mat-progress-bar *ngIf="loading()" mode="indeterminate"></mat-progress-bar>
+
+    <div class="bulk-actions" *ngIf="selection.selected.length > 0">
+      <span>{{ selection.selected.length }} مورد انتخاب شده</span>
+      <span class="spacer"></span>
+
+      <button mat-flat-button color="warn" type="button" (click)="removeSelected()" [disabled]="loading()">
+        <mat-icon>delete</mat-icon>
+        حذف انتخاب‌شده‌ها
+      </button>
+
+      <button mat-button type="button" (click)="selection.clear()" [disabled]="loading()">پاک کردن انتخاب</button>
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="rows()" class="mat-elevation-z1">
+
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox
+              [checked]="isAllSelected()"
+              [indeterminate]="isIndeterminate()"
+              (change)="toggleAll()"
+              [disabled]="loading()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="selection.toggle(row)"
+              [checked]="selection.isSelected(row)"
+              [disabled]="loading()">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="displayName">
+          <th mat-header-cell *matHeaderCellDef>نام</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="cell-main">
+              <div class="name">{{ row.displayName }}</div>
+              <div class="meta">
+                {{ row.email || row.username || row.mobile || '' }}
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef>وضعیت</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [class.inactive]="!row.isActive">
+              {{ row.isActive ? 'فعال' : 'غیرفعال' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-col">عملیات</th>
+          <td mat-cell *matCellDef="let row" class="actions-col">
+            <button mat-icon-button color="warn" (click)="removeOne(row)" [disabled]="loading()"
+                    aria-label="حذف عضو">
+              <mat-icon>person_remove</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row)"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)">
+    </mat-paginator>
+
+    <div class="empty" *ngIf="!loading() && rows().length === 0">
+      عضوی یافت نشد.
+    </div>
+  </div>
+  -->

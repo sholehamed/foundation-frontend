@@ -1,0 +1,39 @@
+<app-page-header/>
+<form [formGroup]="form" (submit)="Submit();form.markAsDirty()" >
+    <div class="row">
+        <div class="col-lg-12">
+            <mat-card class="add-user-card mb-25 border-radius d-block bg-white border-0 shadow-none">
+                <mat-card-content>
+                    <div class="row">
+                      <app-avatar-upload label="آواتار" class="col-4" formControlName="avatar"/>
+                    </div>
+                    <div class="row " style="margin-top: 10px;">
+                           <app-custom-input class="col-sm-4" appNoAutofill  type="text"  label="نام" [validationErrors]="[{type:'required',message:'نام مستعار الزامی میباشد'}]"   controlName="firstName"></app-custom-input> 
+                           <app-custom-input class="col-sm-4" appNoAutofill  type="text"  label="نام خانوادگی" [validationErrors]="[{type:'required',message:'نام خانوادگی  الزامی میباشد'}]"   controlName="lastName"></app-custom-input> 
+                           <app-custom-input class="col-sm-4" appNoAutofill  type="text"  label="نام کاربری" [validationErrors]="[{type:'required',message:'نام  کاربری الزامی میباشد'},    { type: 'usernameTaken', message: 'این نام کاربری قبلاً ثبت شده است' }]" [remoteValidator]="checkUsername"   controlName="userName"></app-custom-input> 
+                            <app-custom-input placeholder="مثلا test@gmail.com" [validationErrors]="[{type:'required',message:' ایمیل الزامی میباشد'}]" class="col-sm-4"   type="text"  label="ایمیل" controlName="email"></app-custom-input>     
+                            <app-custom-input placeholder="مثلا test@gmail.com" [validationErrors]="[{type:'required',message:' ایمیل الزامی میباشد'}]" class="col-sm-4"   type="password"  label="رمزعبور" controlName="password"></app-custom-input>     
+
+                            
+                        </div>
+                        <div class="row">
+                            
+                            <app-custom-toggle class="col-sm-4"  label="فعال است"   controlName="isActive">   </app-custom-toggle>
+                    </div>
+                     <div class="form-btn-box">
+                <button  type="submit" mat-button color="primary" >
+                    <i class="material-symbols-outlined">
+                        save
+                    </i>
+                    ذخیره
+                </button>
+                <button  (click)="back()" type="button" mat-button color="warn">
+                    لغو
+                </button>
+            </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+     
+    </div>
+</form>

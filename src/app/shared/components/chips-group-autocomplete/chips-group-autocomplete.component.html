@@ -1,0 +1,73 @@
+ <div class="form-group">
+      @if (label) {
+        <label class="main-label d-block fw-medium text-black" [for]="id">
+          {{ label }}
+        </label>
+      }
+
+      <mat-form-field class="w-100">
+        @if (placeholder) {
+          <mat-label>{{ placeholder }}</mat-label>
+        }
+
+        <mat-chip-grid
+          #chipGrid
+          [attr.aria-label]="label || placeholder || 'Selection'">
+          @for (item of selectedItems; track trackOption(item)) {
+            <mat-chip-row
+              [removable]="!readonly"
+              (removed)="remove(item)">
+              <span class="chip-type">{{ resolveGroupLabel(item.type) }}</span>
+              <span class="chip-label">{{ item.name || item.id }}</span>
+
+              @if (!readonly) {
+                <button
+                  matChipRemove
+                  [attr.aria-label]="'Remove ' + item.name">
+                  <i class="material-symbols-outlined">cancel</i>
+                </button>
+              }
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+
+        <input
+          [id]="id"
+          [formControl]="searchCtrl"
+          [placeholder]="placeholder"
+          [matChipInputFor]="chipGrid"
+          [matAutocomplete]="auto"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [readonly]="readonly"
+          (matChipInputTokenEnd)="addFromText($event)"
+        />
+
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="selected($event)">
+          @for (group of filteredGroups; track group.key) {
+            <mat-optgroup  [label]="group.label">
+              @for (item of group.items; track trackOption(item)) {
+                <mat-option [value]="item">
+                  <div class="option-row">
+                    <!-- <span class="resource-badge">
+                      {{ group.label }}
+                    </span> -->
+
+                    <div class="option-content">
+                      <div class="option-title">{{ item.name }}</div>
+                    </div>
+                  </div>
+                </mat-option>
+              }
+            </mat-optgroup>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      @if (getErrorMessage()) {
+        <div class="error text-danger">
+          {{ getErrorMessage() }}
+        </div>
+      }
+    </div>

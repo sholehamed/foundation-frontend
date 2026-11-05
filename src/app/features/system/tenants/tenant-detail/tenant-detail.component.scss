@@ -1,0 +1,107 @@
+::ng-deep {
+    .settings-card {
+        .mat-mdc-card-content {
+            .nav-links {
+                margin-bottom: 10px;
+    
+                li {
+                    margin: {
+                        right: 15px;
+                        bottom: 15px;
+                    };
+                    .mat-mdc-button {
+                        height: auto;
+                        min-width: auto;
+                        font-weight: 500;
+                        border-radius: 7px;
+                        padding: 10.5px 15px;
+                        color: var(--primaryColor);
+                        background-color: transparent;
+                        border: 1px solid var(--primaryColor);
+        
+                        &.active, &:hover {
+                            color: var(--whiteColor);
+                            background-color: var(--primaryColor);
+                        }
+                    }
+                }
+            }
+        }
+        &.component-rtl-enabled {
+            .mat-mdc-card-content {
+                .nav-links {
+                    li {
+                        margin: {
+                            right: 0;
+                            left: 15px;
+                        };
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    ::ng-deep {
+        .settings-card {
+            .mat-mdc-card-content {
+                .nav-links {
+                    margin-bottom: 7px;
+        
+                    li {
+                        margin: {
+                            right: 10px;
+                            bottom: 10px;
+                        };
+                        .mat-mdc-button {
+                            padding: 10px 15px;
+                        }
+                    }
+                }
+            }
+            &.component-rtl-enabled {
+                .mat-mdc-card-content {
+                    .nav-links {
+                        li {
+                            margin: {
+                                right: 0;
+                                left: 10px;
+                            };
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 576px to Max width 767px */
+@media only screen and (min-width : 576px) and (max-width : 767px) {
+
+    ::ng-deep {
+        .settings-card {
+            .mat-mdc-card-content {
+                .nav-links {
+                    margin-bottom: 10px;
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 768px to Max width 991px */
+@media only screen and (min-width : 768px) and (max-width : 991px) {}
+
+/* Min width 992px to Max width 1199px */
+@media only screen and (min-width : 992px) and (max-width : 1199px) {}
+
+/* Min width 1200px to Max width 1399px */
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {}
+
+/* Min width 1600px */
+@media only screen and (min-width: 1600px) {}

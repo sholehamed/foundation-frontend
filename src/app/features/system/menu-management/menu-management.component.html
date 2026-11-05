@@ -1,0 +1,170 @@
+<mat-sidenav-container class="menu-shell bg-white" dir="rtl">
+  <mat-sidenav mode="side" opened class="category-panel">
+    <div class="panel-header">
+      <div>
+        <h2>دسته‌بندی منوها</h2>
+        <span>مدیریت گروه‌های اصلی ناوبری</span>
+      </div>
+
+      <button mat-icon-button color="primary" matTooltip="افزودن دسته‌بندی" (click)="openCategoryDialog()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="categories()"
+      class="category-list"
+      (cdkDropListDropped)="dropCategory($event)"
+    >
+      <div
+        cdkDrag
+        class="category-item"
+        *ngFor="let category of categories()"
+        [class.active]="selectedCategory()?.id === category.id"
+        (click)="selectCategory(category)"
+      >
+        <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+        <span class="category-title">{{ category.title }}</span>
+        
+        <div class="category-actions">
+          <button mat-icon-button (click)="openCategoryDialog(category); $event.stopPropagation()">
+            <mat-icon class="edit-cat-btn">edit</mat-icon>
+          </button>
+          <mat-icon class="state-icon" [class.inactive]="!category.isActive">
+            {{ category.isActive ? 'check_circle' : 'pause_circle' }}
+          </mat-icon>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="page-toolbar">
+      <div class="toolbar-title">
+        <h1>مدیریت منو</h1>
+        <span *ngIf="selectedCategory()">
+          دسته فعلی: {{ selectedCategory()?.title }}
+        </span>
+      </div>
+      <span class="toolbar-spacer"></span>
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="!selectedCategory()"
+        (click)="createRootMenu()"
+      >
+        <mat-icon>add</mat-icon>
+        منوی ریشه جدید
+      </button>
+    </mat-toolbar>
+
+    <section class="tree-surface">
+      <div
+        cdkDropList
+        class="menu-tree-drop-list"
+        (cdkDropListDropped)="dropMenu($event)"
+      >
+        <mat-tree
+          [dataSource]="dataSource"
+          [treeControl]="treeControl"
+          class="menu-tree"
+        >
+          <mat-tree-node
+            *matTreeNodeDef="let node"
+            matTreeNodePadding
+            cdkDrag
+            class="menu-node"
+            [style.padding-right.px]="node.level * 24"
+          >
+            <ng-container
+              [ngTemplateOutlet]="nodeContent"
+              [ngTemplateOutletContext]="{ node: node }"
+            />
+          </mat-tree-node>
+
+          <mat-tree-node
+            *matTreeNodeDef="let node; when: hasChild"
+            matTreeNodePadding
+            cdkDrag
+            class="menu-node"
+            [style.padding-right.px]="node.level * 24"
+          >
+            <button mat-icon-button matTreeNodeToggle>
+              <mat-icon>
+                {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_left' }}
+              </mat-icon>
+            </button>
+
+            <ng-container
+              [ngTemplateOutlet]="nodeContent"
+              [ngTemplateOutletContext]="{ node: node }"
+            />
+          </mat-tree-node>
+        </mat-tree>
+      </div>
+    </section>
+  </mat-sidenav-content>
+
+  <mat-sidenav
+    mode="over"
+    position="end"
+    class="editor-drawer"
+    [opened]="drawerMode() !== null"
+    (closedStart)="closeDrawer()"
+  >
+    <app-menu-editor-drawer
+      [mode]="drawerMode()"
+      [category]="selectedCategory()"
+      [menu]="selectedMenu()"
+      (saved)="onMenuSaved($event)"
+      (cancelled)="closeDrawer()"
+    />
+  </mat-sidenav>
+</mat-sidenav-container>
+
+<ng-template #nodeContent let-node="node">
+  <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+
+  <mat-icon class="node-icon">
+    {{ node.icon || 'menu' }}
+  </mat-icon>
+
+  <div class="node-main">
+    <div class="node-title">{{ node.title }}</div>
+    <div class="node-meta">
+      <span>ترتیب: {{ node.order }}</span>
+      <span *ngIf="node.original.route">مسیر: {{ node.original.route }}</span>
+      <span *ngIf="node.original.externalUrl">لینک خارجی: {{ node.original.externalUrl }}</span>
+    </div>
+  </div>
+
+  <span class="node-spacer"></span>
+
+  <mat-icon
+    class="visibility-icon"
+    [matTooltip]="node.original.isHidden ? 'مخفی' : 'نمایان'"
+  >
+    {{ node.original.isHidden ? 'visibility_off' : 'visibility' }}
+  </mat-icon>
+
+  <mat-icon
+    class="activity-icon"
+    [class.inactive]="!node.original.isActive"
+    [matTooltip]="node.original.isActive ? 'فعال' : 'غیرفعال'"
+  >
+    {{ node.original.isActive ? 'toggle_on' : 'toggle_off' }}
+  </mat-icon>
+
+  <button mat-icon-button matTooltip="افزودن زیرمنو" (click)="createChildMenu(node)">
+    <mat-icon>subdirectory_arrow_left</mat-icon>
+  </button>
+
+  <button mat-icon-button matTooltip="ویرایش" (click)="editMenu(node)">
+    <mat-icon>edit</mat-icon>
+  </button>
+
+  <button mat-icon-button color="warn" matTooltip="حذف" (click)="deleteMenu(node)">
+    <mat-icon>delete</mat-icon>
+  </button>
+</ng-template>

@@ -1,0 +1,22 @@
+<div class="captcha-container">
+
+  <app-input-string
+    type="text"
+    label="کد کپچا"
+    placeholder="کد کپچا را از تصویر زیر وارد کنید"
+    [readonly]="false"
+    [required]="true"
+    [formControl]="captchaControl">
+  </app-input-string>
+
+  <div class="captcha-image-wrapper">
+    <app-captcha
+      #captcha
+      [captchaStyleName]="'NftCaptchaStyle'"
+      (captchaLoaded)="onCaptchaLoaded($event)"
+      (captchaChange)="capchaChange($event)"
+      (OnCaptchaIDChange)="CaptchaIDChange($event)">
+    </app-captcha>
+  </div>
+
+</div>

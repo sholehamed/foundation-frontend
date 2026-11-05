@@ -1,0 +1,42 @@
+<div class="drawer-shell bg-white">
+  <div class="drawer-header">
+    <div class="header-title">
+      <mat-icon>edit</mat-icon>
+      <div>
+        <h3>{{ titleText }}</h3>
+        <p *ngIf="category">دسته‌بندی: {{ category.title }}</p>
+      </div>
+    </div>
+
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <form class="drawer-form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
+        <app-custom-input controlName="title" [validationErrors]="[{type:'required',message:'عنوان الزامی است'}]" label="عنوان"/>
+        <app-custom-input controlName="icon" placeholder="مثلاً home, settings, dashboard" label="آیکون"/>
+        <app-custom-input [validationErrors]="[{type:'min',message:'ترتیب باید بزرگتر از صفر باشد'}]" type="number" controlName="order"  label="ترتیب"/>
+        <app-custom-select [validationErrors]="[{type:'required',message:'مجوز  الزامی میباشد'}]" [searchable]="true" (searchChanged)="searchPermission($event)" placeholder="منبع" [autoSelectFirst]="true"  [options]="permissions()" controlName="permissionId" label="مجوز"></app-custom-select>
+        <app-custom-input  controlName="route" placeholder="/admin/users"  label="مسیر"/>
+        <app-custom-input  controlName="externalUrl" class="full-width" placeholder="/admin/users" placeholder="https://example.com"  label="لینک خارجی"/>
+    </div>
+
+    <div class="toggles">
+        <app-custom-toggle controlName="isActive" label="فعال"/>
+        <app-custom-toggle controlName="isHidden" label="مخفی"/>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="drawer-footer">
+      <button mat-button type="button" (click)="close()">انصراف</button>
+      <button mat-flat-button color="primary" type="submit">
+        ذخیره
+      </button>
+    </div>
+  </form>
+</div>
