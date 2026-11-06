@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { FileService } from '../../../../components/avatar-upload/upload.service';
@@ -13,7 +13,7 @@ describe('SidebarComponent optional tenant logo', () => {
   let context: { current: { logo?: string } | null };
   let preview: ReturnType<typeof vi.fn>;
   let roles: ReturnType<typeof vi.fn>;
-  let fixture: ReturnType<typeof TestBed.createComponent<SidebarComponent>>;
+  let fixture: ComponentFixture<SidebarComponent>;
 
   beforeEach(async () => {
     context = { current: null };
