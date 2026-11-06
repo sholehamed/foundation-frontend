@@ -1,5 +1,13 @@
 # Angular full BFF integration — approved target; narrow Identity UI continuation merged
 
+## Backend real callback + live Identity validator — verified 2026-11-06
+
+- Backend [PR #26](https://github.com/sholehamed/foundation-backend/pull/26) merged at `fa76eb952d99353d1f66e9249ec63cc6e9ef4e21` after [CI #42208199510](https://github.com/sholehamed/foundation-backend/actions/runs/42208199510): **82 BFF + 60 Identity** tests all passed. Actual Foundation OpenIddict callback and Web live Identity DB validator were exercised for System and Tenant in two TestServers.
+- This verifies stamp-based invalidation and removal of stale BFF tickets, **not** browser BFF readiness. Distributed renewal/logout races, upstream revocation/logout-all, absolute/idle expiry, browser/SQL Server/reverse proxy and multi-instance acceptance remain open.
+- Angular still uses legacy Password Grant, localStorage and bearer interceptors. No Auth/Guard/Signals migration until BFF-05 release gates and real browser E2E. BFF remains disabled by default.
+- Track [backend #20](https://github.com/sholehamed/foundation-backend/issues/20) and [frontend #10](https://github.com/sholehamed/foundation-frontend/issues/10). Original F00 PR remains open.
+
+
 ## Backend BFF-05.3 verified handoff — 2026-11-06
 
 - Backend [PR #23](https://github.com/sholehamed/foundation-backend/pull/23) merged current-session CSRF/bootstrap/logout at `88239b7d3454fd03b87aa7bc20e70d1a820b088a`.
