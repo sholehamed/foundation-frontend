@@ -1,5 +1,14 @@
 # Angular full BFF integration — approved target; narrow Identity UI continuation merged
 
+## Backend BFF-05.3 verified handoff — 2026-11-06
+
+- Backend [PR #23](https://github.com/sholehamed/foundation-backend/pull/23) merged current-session CSRF/bootstrap/logout at `88239b7d3454fd03b87aa7bc20e70d1a820b088a`.
+- Backend [PR #24](https://github.com/sholehamed/foundation-backend/pull/24) merged Web-hosted live Identity validation at `a676919d0d7d777c2c72895c7e1c9a9cd7987aa7`. Final [CI #42206724851](https://github.com/sholehamed/foundation-backend/actions/runs/42206724851) passed **82 BFF and 58 Identity tests**, solution build green. The Web host now rechecks active user/Tenant/lockout, security-stamp and scoped grants against current DB on BFF cookie reads, using a server-only snapshot.
+- This is **not browser migration acceptance**: OIDC callback with the Web adapter, stale-ticket renewal races, token revocation/logout-all, absolute/idle expiry, SQL Server, multi-instance cache/keyring and actual browser same-origin/proxy flows remain outstanding.
+- Angular login, Signals session state, route guards and bearer interceptors remain on the existing legacy Password Grant / localStorage flow. Do **not** switch until the BFF-05 release gates and browser E2E are complete. Backend `Identity:Bff:Enabled` is disabled by default.
+- Tracking: [backend issue #20](https://github.com/sholehamed/foundation-backend/issues/20), [frontend issue #10](https://github.com/sholehamed/foundation-frontend/issues/10). The original F00 PR stays open.
+
+
 > Status: **Full-session Angular BFF migration NOT implemented; Identity UI OIDC continuation merged in PR #8.** Backend source of truth: [ADR-0001](https://github.com/sholehamed/foundation-backend/blob/main/docs/decisions/ADR-0001-browser-bff.md) and [HTTP contract](https://github.com/sholehamed/foundation-backend/blob/main/docs/reference/browser-auth-contract.md). Frontend tracking: [#3](https://github.com/sholehamed/foundation-frontend/issues/3).
 
 ## Frontend responsibilities
