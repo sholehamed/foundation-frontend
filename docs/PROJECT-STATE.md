@@ -31,7 +31,7 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 - `src/app/shared/guards/system-session.guard.ts` and `tenant-session.guard.ts` use browser token state.
 - `src/app/shared/pages/auth/sign-in/sign-in.component.ts` currently validates `returnUrl` strictly and accepts app routes only. **It cannot continue a `/api/connect/authorize` returnUrl**; BFF-03's interactive login continuation therefore requires an explicit dedicated safe flow. Do not loosen the current open-redirect protection or pass OAuth tokens to JavaScript as a shortcut.
 
-## Planned frontend work (only after backend readiness)
+## Planned full-session frontend work (only after backend readiness; narrow Identity continuation PR #8 is separate)
 
 1. Define a same-origin deployment/proxy for `/bff/*` and `/api/*`; do not rely on broad cross-origin credential requests.
 2. Add a separate OIDC-aware Identity login continuation without an arbitrary cross-origin returnUrl.
@@ -47,7 +47,7 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 - Read this document and [browser client contract](architecture/browser-bff-client.md).
 - Inspect current backend BFF-04 PR/CI state in GitHub; do not assume historical docs are the latest commit.
 - Keep code and documentation changes in the same feature PR.
-- No frontend migration PR is open or merged as of this checkpoint.
+- Draft PR #8 introduces only the Identity UI OIDC continuation; the full Angular BFF migration is not open/merged.
 
 ## Verified backend handoff after BFF-03 (2026-11-06)
 
@@ -64,3 +64,12 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 - For that continuation only, Angular calls `GET /api/system/Auth/csrf` and `POST /api/system/Auth/interactive-login` with credentials + antiforgery. It then performs a full-page navigation to the same-origin authorization endpoint. No OAuth token is stored in JavaScript.
 - Normal sign-in without a BFF authorization return path still uses the existing Password Grant and local token storage. No guards/interceptors/API token flow have been migrated.
 - Unit tests cover accepted/rejected continuation URL shapes. This branch is not merged or CI-verified yet.
+
+## BFF-04 Angular continuation review checkpoint — 2026-11-06
+
+- [Draft PR #8](https://github.com/sholehamed/foundation-frontend/pull/8) supplies the **Identity UI OIDC authorization continuation only**, not the BFF browser-session migration. Normal login still uses the legacy Password Grant / local token storage.
+- `validateBffAuthorizationReturnUrl` accepts only same-origin `/api/connect/authorize` navigation with the configured client, Authorization Code and S256 PKCE, strict state/nonce, HTTPS callback and matching account/tenant context. The backend remains authoritative for registered clients, callback, grants and identity.
+- `AuthService.interactiveLogin` requires the Identity UI to share an **exact origin** with its `/api` endpoint; it refuses cross-origin credentialed login. Set `apiUrl: '/api'` behind a same-origin reverse proxy for Identity UI environments. On `https://localhost:4200`, calling `https://localhost:7262/api` directly does **not** meet this requirement. This prevents CSRF-cookie read failures and avoids expanding credentialed CORS.
+- Corrected the pre-existing duplicate `TenantContextService.initialize()` startup call (the unconditional initializer ran on root marketing/system pages as well as tenant hosts).
+- Corrected a miscopied pre-existing `AdminFormComponent` test import discovered by CI. [Frontend BFF CI 42140302464](https://github.com/sholehamed/foundation-frontend/actions/runs/42140302464): **22/22 tests (12 test files)** and Development build successful.
+- `GET /bff/session`, BFF CSRF/logout/revocation, Signals auth store, removal of OAuth tokens from browser storage and full System/Tenant E2E are **not implemented**. Do not switch Angular guards/interceptors from the legacy flow until BFF-05/06 and browser E2E are ready.

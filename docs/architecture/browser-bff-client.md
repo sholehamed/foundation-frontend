@@ -38,7 +38,7 @@ interface BrowserSession {
 - `src/app/shared/services/token-storage.service.ts` stores OAuth tokens in localStorage.
 - `src/app/shared/interceptors/api-auth.interceptor.ts` injects bearer access token.
 - `src/app/shared/guards/system-session.guard.ts` and `tenant-session.guard.ts` trust local token presence.
-- `src/app/app.config.ts` initializes Tenant twice; migration must not trigger authenticated APIs for anonymous public pages.
+- `src/app/app.config.ts` previously initialized Tenant twice; Draft PR #8 fixes this without introducing authenticated API requests on public root pages.
 - `src/environments/environment*.ts` contains Shinera-specific domains and OAuth client settings.
 - `playwright.config.ts` and `e2e/README.md` refer to old cross-repo checkout and require new environment isolation.
 
@@ -72,3 +72,12 @@ interface BrowserSession {
 The legacy sign-in component may continue one narrowly allowed local return path: `/api/connect/authorize` for the configured BFF client with Authorization Code + S256 PKCE, non-empty state/nonce, HTTPS `/signin-oidc` callback, and matching `login_context` / tenant. The UI posts credentials to the cookie-based `interactive-login` endpoint after CSRF bootstrap, then performs a full document navigation to the local authorization endpoint. All client/redirect/PKCE/account validation remains authoritative in OpenIddict/Identity; the Angular check is only a navigation allowlist.
 
 All other login continues to use the current Password Grant until BFF-05 and cross-repo E2E are complete. Do not store BFF OAuth tokens in localStorage/sessionStorage.
+
+## BFF-04 Angular continuation review checkpoint — 2026-11-06
+
+- [Draft PR #8](https://github.com/sholehamed/foundation-frontend/pull/8) supplies the **Identity UI OIDC authorization continuation only**, not the BFF browser-session migration. Normal login still uses the legacy Password Grant / local token storage.
+- `validateBffAuthorizationReturnUrl` accepts only same-origin `/api/connect/authorize` navigation with the configured client, Authorization Code and S256 PKCE, strict state/nonce, HTTPS callback and matching account/tenant context. The backend remains authoritative for registered clients, callback, grants and identity.
+- `AuthService.interactiveLogin` requires the Identity UI to share an **exact origin** with its `/api` endpoint; it refuses cross-origin credentialed login. Set `apiUrl: '/api'` behind a same-origin reverse proxy for Identity UI environments. On `https://localhost:4200`, calling `https://localhost:7262/api` directly does **not** meet this requirement. This prevents CSRF-cookie read failures and avoids expanding credentialed CORS.
+- Corrected the pre-existing duplicate `TenantContextService.initialize()` startup call (the unconditional initializer ran on root marketing/system pages as well as tenant hosts).
+- Corrected a miscopied pre-existing `AdminFormComponent` test import discovered by CI. [Frontend BFF CI 42140302464](https://github.com/sholehamed/foundation-frontend/actions/runs/42140302464): **22/22 tests (12 test files)** and Development build successful.
+- `GET /bff/session`, BFF CSRF/logout/revocation, Signals auth store, removal of OAuth tokens from browser storage and full System/Tenant E2E are **not implemented**. Do not switch Angular guards/interceptors from the legacy flow until BFF-05/06 and browser E2E are ready.
