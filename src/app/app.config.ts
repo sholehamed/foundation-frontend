@@ -49,7 +49,6 @@ export const appConfig: ApplicationConfig = {
     { provide: MatPaginatorIntl, useClass: MatPaginatorIntlFa },
 
     provideHttpClient(withInterceptors([apiAuthInterceptor])),
-    provideAppInitializer(initializeTenant),
 
     provideRouter(
       routes,
@@ -58,8 +57,4 @@ export const appConfig: ApplicationConfig = {
     ),
     provideJalaliDateAdapter(),
   ],
-}
-function initializeTenant(): Promise<void> {
-  const tenantContextService = inject(TenantContextService)
-  return tenantContextService.initialize()
 }

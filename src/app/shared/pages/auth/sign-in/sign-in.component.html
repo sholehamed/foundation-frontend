@@ -61,6 +61,10 @@
                         </p>
                     }
 
+                    @if (loginError) {
+                        <p role="alert" class="login-error">{{ loginError }}</p>
+                    }
+
                     <!-- Form -->
                     <form
                         [formGroup]="loginForm"

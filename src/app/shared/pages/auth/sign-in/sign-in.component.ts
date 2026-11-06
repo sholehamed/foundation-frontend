@@ -7,7 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { environment } from '../../../../../environments/environment';
 import { CaptchaComponent } from '../../../components/share-captcha/share-captcha.component';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService, LoginContext } from '../../../services/auth.service';
+import { validateBffAuthorizationReturnUrl } from '../../../util/bff-login-continuation';
 import { CustomInputComponent } from '../../../components/input-string.component';
 import { CustomizerSettingsService } from '../../../services/customizer-settings.service';
 
@@ -33,8 +34,11 @@ import { CustomizerSettingsService } from '../../../services/customizer-settings
 })
 export class SignInComponent {
   @ViewChild(CaptchaComponent) captchaComponent?: CaptchaComponent;
-@Input()login_context:string='tenant'
-@Input() returnUrl!:string
+@Input() login_context: LoginContext = 'tenant';
+@Input() returnUrl?: string;
+@Input() tenant?: string;
+
+loginError = '';
 router:Router=inject(Router)
   readonly registrationUrl =
     window.location.protocol + '//' + environment.workspaceBaseDomain +
@@ -115,6 +119,7 @@ private getRedirectUrl(): string {
 
   GetToken(): void {
     this.submitted = true;
+    this.loginError = '';
     this.loginForm.markAllAsTouched();
 
     if (this.loginForm.invalid || !this.captchaToken) {
@@ -125,31 +130,61 @@ private getRedirectUrl(): string {
     const password = this.loginForm.controls.password.value;
     const captchaCode = this.loginForm.controls.captchaCode.value;
 
+    // The only non-application return path accepted by the legacy login UI is
+    // the server-validated OpenIddict authorization request for our BFF client.
+    if (this.returnUrl?.startsWith('/api/connect/authorize')) {
+      const continuation = validateBffAuthorizationReturnUrl(
+        this.returnUrl,
+        this.login_context,
+        this.tenant ?? this.authService.getCurrentTenantSlug(),
+        environment.bffClientId,
+      );
+
+      if (!continuation) {
+        this.loginError = 'درخواست ادامه ورود معتبر نیست. لطفاً فرایند ورود را از برنامه آغاز کنید.';
+        return;
+      }
+
+      this.authService.interactiveLogin(
+        username,
+        password,
+        captchaCode,
+        this.captchaToken,
+        this.login_context,
+        this.tenant ?? null,
+      ).subscribe({
+        next: () => window.location.assign(continuation),
+        error: () => this.resetCaptcha(),
+      });
+      return;
+    }
+
     this.authService.login(
       username,
       password,
       captchaCode,
-      this.captchaToken,this.login_context
+      this.captchaToken,
+      this.login_context,
     ).subscribe({
-  next: user => {
+      next: user => {
+        if (user.account_type !== this.login_context) {
+          this.authService.logout();
+          this.loginError = 'نوع حساب کاربری با این بخش مطابقت ندارد.';
+          return;
+        }
 
-    if (user.account_type !== this.login_context) {
-      this.authService.logout();
-      // Show invalid account context message.
-      return;
-    }
+        void this.router.navigateByUrl(
+          this.getRedirectUrl(),
+          { replaceUrl: true },
+        );
+      },
+      error: () => this.resetCaptcha(),
+    });
+  }
 
-    void this.router.navigateByUrl(
-      this.getRedirectUrl(),
-      { replaceUrl: true }
-    );
-  },
-
-  error: error => {
+  private resetCaptcha(): void {
     this.loginForm.controls.captchaCode.setValue('');
     this.captchaToken = '';
     this.captchaComponent?.reload();
-  }
-});
   }
 }
