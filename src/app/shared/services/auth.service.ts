@@ -40,6 +40,16 @@ export class AuthService {
     loginContext: LoginContext,
     tenant: string | null,
   ): Observable<void> {
+    // The Identity login UI and Authorization Server must share an origin:
+    // XSRF-TOKEN is JS-readable only on the host that issued it.
+    // Never use cross-origin credentialed CORS as an authentication workaround.
+    const apiOrigin = new URL(environment.apiUrl, window.location.origin).origin;
+    if (apiOrigin !== window.location.origin) {
+      return throwError(() => new Error(
+        'BFF interactive sign-in requires a same-origin /api reverse proxy.',
+      ));
+    }
+
     return this._http.get<void>(
       environment.apiUrl + '/system/Auth/csrf',
       { withCredentials: true },
