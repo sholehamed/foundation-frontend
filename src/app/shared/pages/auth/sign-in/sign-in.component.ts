@@ -187,6 +187,4 @@ private getRedirectUrl(): string {
     this.captchaToken = '';
     this.captchaComponent?.reload();
   }
-});
-  }
 }
