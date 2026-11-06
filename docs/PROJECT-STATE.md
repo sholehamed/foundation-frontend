@@ -6,7 +6,15 @@
 
 Read this before continuing in another chat. The canonical BFF architecture is maintained in [Backend ADR-0001](https://github.com/sholehamed/foundation-backend/blob/main/docs/decisions/ADR-0001-browser-bff.md). Backend task-level checkpoint: [PROJECT-STATE](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-STATE.md), [ROADMAP](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md).
 
-## Current merged status — 2026-11-06
+## Latest backend BFF handoff — 2026-11-06 (frontend remains on legacy auth)
+
+- [Backend BFF-04.3 PR #18](https://github.com/sholehamed/foundation-backend/pull/18) merged (signed fake-issuer OIDC middleware callback tests); [Backend BFF-05.1 PR #19](https://github.com/sholehamed/foundation-backend/pull/19) merged at `bcfc109488be75981dee7f3aead91e1bca38d976`. Latest PR-head [CI 42194597675](https://github.com/sholehamed/foundation-backend/actions/runs/42194597675): 58/58 BFF and 42/42 Identity tests, full build green.
+- Backend now has **opt-in** `GET /bff/session`, using only the isolated BFF cookie, rejecting a bearer-only caller with 401 and invalid cross-host System/Tenant contexts with 403. It returns minimal no-store account/context JSON and no OAuth tokens.
+- **Important:** a real OpenIddict Identity↔BFF two-host E2E is still missing ([backend #12](https://github.com/sholehamed/foundation-backend/issues/12)); CSRF, logout, revocation, live user/tenant validation and refresh hardening remain [backend #20](https://github.com/sholehamed/foundation-backend/issues/20). BFF is disabled by default. Do not switch Angular login, guards, interceptors or localStorage yet.
+- [Frontend BFF-06 Issue #10](https://github.com/sholehamed/foundation-frontend/issues/10) tracks eventual same-origin session-store/Signal/CSRF migration and Playwright tests. Angular still uses legacy Password Grant except the secure Identity UI continuation already merged as PR #8.
+- The two initial F00 PRs stay open by previous project decision. This current handoff supersedes older sections which describe the backend session API as not yet implemented.
+
+## Earlier frontend merged status — 2026-11-06
 
 - **Merged:** [Frontend PR #8](https://github.com/sholehamed/foundation-frontend/pull/8) at `e94c144e4293faa297290aa608c5e7409aeaa1c2`. Latest PR-head [CI 42140641581](https://github.com/sholehamed/foundation-frontend/actions/runs/42140641581): **22 unit tests (12 files)** + Development build passed. Includes a new `Frontend BFF safety CI` workflow in this repository.
 - **Scope:** only the old Identity login UI gains a strictly allowlisted OIDC Authorization Code continuation using same-origin CSRF/interactive-login, then a full-page local authorization redirect. Normal sign-in still uses Password Grant and browser localStorage tokens, intentionally unchanged.
@@ -29,7 +37,7 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 | BFF-01 protected ticket store | Merged | [PR #6](https://github.com/sholehamed/foundation-backend/pull/6) |
 | BFF-02 interactive Identity cookie | Merged | [PR #8](https://github.com/sholehamed/foundation-backend/pull/8) |
 | BFF-03 code + PKCE and scoped Identity principal | **Merged / 47 tests passed** | [PR #11](https://github.com/sholehamed/foundation-backend/pull/11), merge `c201e4c67d18c9d7896887a688eb31d3340d7930`, [CI run 42130167589](https://github.com/sholehamed/foundation-backend/actions/runs/42130167589) |
-| BFF-04/05 callback, BFF session and revocation | **BFF-04.2 OIDC client plumbing merged; callback E2E / BFF-05 session API pending** | [Issue #12](https://github.com/sholehamed/foundation-backend/issues/12), [merged return URL security PR #14](https://github.com/sholehamed/foundation-backend/pull/14), [Backend roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md) |
+| BFF-04/05 callback, BFF session and revocation | **BFF-04.3 middleware callback + BFF-05.1 read-only session API merged; real Identity two-host E2E, CSRF and revocation pending** | [Issue #12](https://github.com/sholehamed/foundation-backend/issues/12), [merged return URL security PR #14](https://github.com/sholehamed/foundation-backend/pull/14), [Backend roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md) |
 | BFF-06 Angular migration | Blocked on backend and full-stack E2E | [Browser client contract](architecture/browser-bff-client.md) |
 
 ## Current Angular runtime (not yet migrated)
@@ -81,4 +89,4 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 - `AuthService.interactiveLogin` requires the Identity UI to share an **exact origin** with its `/api` endpoint; it refuses cross-origin credentialed login. Set `apiUrl: '/api'` behind a same-origin reverse proxy for Identity UI environments. On `https://localhost:4200`, calling `https://localhost:7262/api` directly does **not** meet this requirement. This prevents CSRF-cookie read failures and avoids expanding credentialed CORS.
 - Corrected the pre-existing duplicate `TenantContextService.initialize()` startup call (the unconditional initializer ran on root marketing/system pages as well as tenant hosts).
 - Corrected a miscopied pre-existing `AdminFormComponent` test import discovered by CI. [Frontend BFF CI 42140302464](https://github.com/sholehamed/foundation-frontend/actions/runs/42140302464): **22/22 tests (12 test files)** and Development build successful.
-- `GET /bff/session`, BFF CSRF/logout/revocation, Signals auth store, removal of OAuth tokens from browser storage and full System/Tenant E2E are **not implemented**. Do not switch Angular guards/interceptors from the legacy flow until BFF-05/06 and browser E2E are ready.
+- The backend now implements `GET /bff/session`, but Angular Signals auth store, BFF CSRF/logout/revocation, browser token-storage removal and full System/Tenant E2E are **not implemented**. Do not switch Angular guards/interceptors from the legacy flow until BFF-05/06 and browser E2E are ready.
