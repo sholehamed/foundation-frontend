@@ -1,5 +1,14 @@
 # Foundation Frontend — project state and handoff
 
+## Backend session durability / atomic provider handoff — 2026-11-06
+
+- [Backend PR #28](https://github.com/sholehamed/foundation-backend/pull/28) merged at `ccbaddcad3d8e7c413a505ba7c8e2e0a04e59298`, [CI #42210307369](https://github.com/sholehamed/foundation-backend/actions/runs/42210307369): **88 BFF + 60 Identity**. The BFF ticket store now has an original 24-hour max lifetime and 48-hour revocation tombstone to guard against concurrent logout/renewal on a consistent shared cache.
+- [Backend PR #29](https://github.com/sholehamed/foundation-backend/pull/29) merged at `b9a6bb77cedcc55511f2d45edff28667b20f5734`, [CI #42211389822](https://github.com/sholehamed/foundation-backend/actions/runs/42211389822): **94 BFF + 60 Identity**. Staging/Production BFF startup now requires a registered singleton atomic session provider rather than treating bare `IDistributedCache` as sufficient.
+- **The atomic SQL Server provider does not exist yet.** [Backend issue #30](https://github.com/sholehamed/foundation-backend/issues/30) tracks its transactional implementation, multihost concurrency/eviction/failover tests, shared Data Protection keys and deployment evidence. A DI marker is not a production security certification.
+- Angular Password Grant, localStorage, bearer interceptors, route guards and in-memory Signals are unchanged. **Do not start BFF-06 client migration or remove legacy auth** until actual atomic provider, logout-all/upstream revocation, browser/SQL Server/proxy E2E and remaining session lifecycle gates are closed. `Identity:Bff:Enabled=false` remains default; both original F00 PRs stay open.
+- Resume from [backend BFF-05 issue #20](https://github.com/sholehamed/foundation-backend/issues/20) and [frontend BFF-06 issue #10](https://github.com/sholehamed/foundation-frontend/issues/10).
+
+
 ## Backend real callback + live Identity validator — verified 2026-11-06
 
 - Backend [PR #26](https://github.com/sholehamed/foundation-backend/pull/26) merged at `fa76eb952d99353d1f66e9249ec63cc6e9ef4e21` after [CI #42208199510](https://github.com/sholehamed/foundation-backend/actions/runs/42208199510): **82 BFF + 60 Identity** tests all passed. Actual Foundation OpenIddict callback and Web live Identity DB validator were exercised for System and Tenant in two TestServers.
