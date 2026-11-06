@@ -1,6 +1,15 @@
-# Angular full BFF integration — approved target / not implemented
+## Current merged status — 2026-11-06
 
-> Status: **Accepted design, not yet implemented.** Backend source of truth: [ADR-0001](https://github.com/sholehamed/foundation-backend/blob/main/docs/decisions/ADR-0001-browser-bff.md) and [HTTP contract](https://github.com/sholehamed/foundation-backend/blob/main/docs/reference/browser-auth-contract.md). Frontend tracking: [#3](https://github.com/sholehamed/foundation-frontend/issues/3).
+- **Merged:** [Frontend PR #8](https://github.com/sholehamed/foundation-frontend/pull/8) at `e94c144e4293faa297290aa608c5e7409aeaa1c2`. Latest PR-head [CI 42140641581](https://github.com/sholehamed/foundation-frontend/actions/runs/42140641581): **22 unit tests (12 files)** + Development build passed. Includes a new `Frontend BFF safety CI` workflow in this repository.
+- **Scope:** only the old Identity login UI gains a strictly allowlisted OIDC Authorization Code continuation using same-origin CSRF/interactive-login, then a full-page local authorization redirect. Normal sign-in still uses Password Grant and browser localStorage tokens, intentionally unchanged.
+- **Security fix:** `AuthService.interactiveLogin` rejects cross-origin `/api` access; use a same-origin `/api` proxy to read the XSRF request token. The global root/tenant initializer duplication has been fixed.
+- **Backend dependency:** [Backend PR #16](https://github.com/sholehamed/foundation-backend/pull/16) merged at `c4f6a81c302f3524bed3e58931221874be16928f` (46 BFF and 42 Identity tests green), but actual OIDC callback and BFF cookie E2E is not yet proven, and BFF is disabled by default.
+- **BFF-06 migration NOT started:** no `/bff/session` auth store, cookie-only guards, CSRF/logout UI, removal of bearer interceptor or OAuth tokens from localStorage. Do not start until BFF-04 callback and BFF-05 session/revocation + cross-repo E2E are verified.
+- **Implementation/operations:** [BFF-04 Identity UI handoff](development/BFF-04-IDENTITY-UI-HANDOFF.md).
+
+# Angular full BFF integration — approved target; narrow Identity UI continuation merged
+
+> Status: **Full-session Angular BFF migration NOT implemented; Identity UI OIDC continuation merged in PR #8.** Backend source of truth: [ADR-0001](https://github.com/sholehamed/foundation-backend/blob/main/docs/decisions/ADR-0001-browser-bff.md) and [HTTP contract](https://github.com/sholehamed/foundation-backend/blob/main/docs/reference/browser-auth-contract.md). Frontend tracking: [#3](https://github.com/sholehamed/foundation-frontend/issues/3).
 
 ## Frontend responsibilities
 
@@ -63,8 +72,8 @@ interface BrowserSession {
 ## Cross-repository checkpoint (2026-11-06)
 
 - Backend BFF-01, BFF-02 and **BFF-03** have been merged. [BFF-03 PR #11](https://github.com/sholehamed/foundation-backend/pull/11) passed isolated HTTP code/PKCE and scoped Identity tests: [CI 42130167589](https://github.com/sholehamed/foundation-backend/actions/runs/42130167589). The full browser BFF remains unimplemented; [BFF-04 Issue #12](https://github.com/sholehamed/foundation-backend/issues/12) and [merged PR #14](https://github.com/sholehamed/foundation-backend/pull/14) deliver only validated relative return URLs (35 BFF + 41 Identity tests green). The secure OIDC callback and server-side BFF session remain the next step.
-- The current Angular login form does **not** provide a safe return to `/api/connect/authorize`. This is a known integration blocker; a dedicated authenticated OIDC continuation must be designed, tested and reviewed.
-- Do not change Angular runtime yet. When backend BFF session endpoints and test deployment are ready, begin a separate frontend branch, add E2E tests and update [PROJECT-STATE](../PROJECT-STATE.md).
+- The Identity UI now has a narrowly allowlisted `/api/connect/authorize` continuation (merged PR #8). Full BFF callback / browser session still needs real E2E verification.
+- Do not migrate Angular browser token storage yet. When backend BFF session endpoints and test deployment are ready, begin the BFF-06 session migration with E2E tests and update [PROJECT-STATE](../PROJECT-STATE.md).
 
 
 ## Identity UI continuation

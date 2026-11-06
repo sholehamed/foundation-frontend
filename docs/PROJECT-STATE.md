@@ -6,6 +6,15 @@
 
 Read this before continuing in another chat. The canonical BFF architecture is maintained in [Backend ADR-0001](https://github.com/sholehamed/foundation-backend/blob/main/docs/decisions/ADR-0001-browser-bff.md). Backend task-level checkpoint: [PROJECT-STATE](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-STATE.md), [ROADMAP](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md).
 
+## Current merged status — 2026-11-06
+
+- **Merged:** [Frontend PR #8](https://github.com/sholehamed/foundation-frontend/pull/8) at `e94c144e4293faa297290aa608c5e7409aeaa1c2`. Latest PR-head [CI 42140641581](https://github.com/sholehamed/foundation-frontend/actions/runs/42140641581): **22 unit tests (12 files)** + Development build passed. Includes a new `Frontend BFF safety CI` workflow in this repository.
+- **Scope:** only the old Identity login UI gains a strictly allowlisted OIDC Authorization Code continuation using same-origin CSRF/interactive-login, then a full-page local authorization redirect. Normal sign-in still uses Password Grant and browser localStorage tokens, intentionally unchanged.
+- **Security fix:** `AuthService.interactiveLogin` rejects cross-origin `/api` access; use a same-origin `/api` proxy to read the XSRF request token. The global root/tenant initializer duplication has been fixed.
+- **Backend dependency:** [Backend PR #16](https://github.com/sholehamed/foundation-backend/pull/16) merged at `c4f6a81c302f3524bed3e58931221874be16928f` (46 BFF and 42 Identity tests green), but actual OIDC callback and BFF cookie E2E is not yet proven, and BFF is disabled by default.
+- **BFF-06 migration NOT started:** no `/bff/session` auth store, cookie-only guards, CSRF/logout UI, removal of bearer interceptor or OAuth tokens from localStorage. Do not start until BFF-04 callback and BFF-05 session/revocation + cross-repo E2E are verified.
+- **Implementation/operations:** [BFF-04 Identity UI handoff](development/BFF-04-IDENTITY-UI-HANDOFF.md).
+
 ## Accepted platform boundary
 
 - Do not package Angular features yet; deliver complete, tested pages and workflows first, then extract reusable Angular libraries as needed.
@@ -20,7 +29,7 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 | BFF-01 protected ticket store | Merged | [PR #6](https://github.com/sholehamed/foundation-backend/pull/6) |
 | BFF-02 interactive Identity cookie | Merged | [PR #8](https://github.com/sholehamed/foundation-backend/pull/8) |
 | BFF-03 code + PKCE and scoped Identity principal | **Merged / 47 tests passed** | [PR #11](https://github.com/sholehamed/foundation-backend/pull/11), merge `c201e4c67d18c9d7896887a688eb31d3340d7930`, [CI run 42130167589](https://github.com/sholehamed/foundation-backend/actions/runs/42130167589) |
-| BFF-04/05 callback, BFF session and revocation | **BFF-04 return-URL validator merged; no browser session yet** | [Issue #12](https://github.com/sholehamed/foundation-backend/issues/12), [merged return URL security PR #14](https://github.com/sholehamed/foundation-backend/pull/14), [Backend roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md) |
+| BFF-04/05 callback, BFF session and revocation | **BFF-04.2 OIDC client plumbing merged; callback E2E / BFF-05 session API pending** | [Issue #12](https://github.com/sholehamed/foundation-backend/issues/12), [merged return URL security PR #14](https://github.com/sholehamed/foundation-backend/pull/14), [Backend roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md) |
 | BFF-06 Angular migration | Blocked on backend and full-stack E2E | [Browser client contract](architecture/browser-bff-client.md) |
 
 ## Current Angular runtime (not yet migrated)
@@ -29,7 +38,7 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 - `src/app/shared/services/token-storage.service.ts` stores access and refresh tokens.
 - `src/app/shared/interceptors/api-auth.interceptor.ts` injects bearer tokens.
 - `src/app/shared/guards/system-session.guard.ts` and `tenant-session.guard.ts` use browser token state.
-- `src/app/shared/pages/auth/sign-in/sign-in.component.ts` currently validates `returnUrl` strictly and accepts app routes only. **It cannot continue a `/api/connect/authorize` returnUrl**; BFF-03's interactive login continuation therefore requires an explicit dedicated safe flow. Do not loosen the current open-redirect protection or pass OAuth tokens to JavaScript as a shortcut.
+- `src/app/shared/pages/auth/sign-in/sign-in.component.ts` now has a **separate** allowlisted OIDC authorization continuation from merged PR #8. Legacy app-route returnUrl validation remains strict; this is not a full browser-session migration.
 
 ## Planned full-session frontend work (only after backend readiness; narrow Identity continuation PR #8 is separate)
 
@@ -54,16 +63,16 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 - [BFF-03 merged PR #11](https://github.com/sholehamed/foundation-backend/pull/11) with OpenIddict authorization code / PKCE, scoped Identity cookie revalidation and TestServer protocol tests (41 Identity and 6 BFF tests passed). This proves **the Authorization Server side only**.
 - [Backend docs checkpoint PR #13](https://github.com/sholehamed/foundation-backend/pull/13) merged; see backend [PROJECT-STATE](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-STATE.md) for the canonical status.
 - [BFF-04 Issue #12](https://github.com/sholehamed/foundation-backend/issues/12) is next: BFF confidential OIDC challenge/callback, server-side BFF session cookie, safe Identity login continuation; [Merged PR #14](https://github.com/sholehamed/foundation-backend/pull/14), commit `53732242450bd90c206e29738007372bbe2dde1b`, contains only a conservative local returnUrl validator and tests ([CI 42131501508](https://github.com/sholehamed/foundation-backend/actions/runs/42131501508): 35 BFF + 41 Identity green).
-- No Angular login or package extraction change is authorized/needed yet. Preserve current Password Grant until backend session endpoints and E2E acceptance.
+- The Identity UI continuation was subsequently merged in PR #8 (see current checkpoint above). Preserve current Password Grant until backend session endpoints and E2E acceptance.
 
 
-## BFF-04 Identity login continuation (active branch, not merged)
+## BFF-04 Identity login continuation (historical branch snapshot; merged as PR #8)
 
 - Branch: `feat/bff-04-safe-identity-login-continuation`.
 - The existing Identity sign-in UI now recognizes only a tightly validated same-origin `/api/connect/authorize` continuation for the configured `foundation-browser-bff` client: Authorization Code, S256 PKCE, unique state/nonce/security parameters, HTTPS `/signin-oidc` callback, matching System/Tenant context and tenant slug.
 - For that continuation only, Angular calls `GET /api/system/Auth/csrf` and `POST /api/system/Auth/interactive-login` with credentials + antiforgery. It then performs a full-page navigation to the same-origin authorization endpoint. No OAuth token is stored in JavaScript.
 - Normal sign-in without a BFF authorization return path still uses the existing Password Grant and local token storage. No guards/interceptors/API token flow have been migrated.
-- Unit tests cover accepted/rejected continuation URL shapes. This branch is not merged or CI-verified yet.
+- Unit tests cover accepted/rejected continuation URL shapes. This branch was subsequently merged and CI-verified; see the current merged status above.
 
 ## BFF-04 Angular continuation review checkpoint — 2026-11-06
 
