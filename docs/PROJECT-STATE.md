@@ -1,5 +1,12 @@
 # Foundation Frontend — project state and handoff
 
+## Completed phase 1: Angular Identity UI + BFF contract v1 (2026-11-06)
+
+- [Identity UI/BFF contract](architecture/identity-ui-bff-login-contract.md) fixes **one Angular build** hosted on app origins and a dedicated Identity-only HTTPS origin: same-origin CSRF+CAPTCHA+interactive-login, continuation back to OpenIddict Code+S256 PKCE, then BFF host-only cookie and future `/bff/session`. Backend canonical [protocol specification](https://github.com/sholehamed/foundation-backend/blob/main/docs/architecture/identity-ui-bff-login-contract.md).
+- The new pure `tenant-workspace-host.ts` classifier (with Vitest coverage) prevents Identity/auth and reserved infrastructure hosts from initializing a Tenant context. A type-only `BffSessionResponse` contract captures the *actual* server JSON without changing legacy runtime authentication.
+- **Only phase 1 complete:** Angular Password Grant/TokenStorage/bearer guards still work; BFF flag stays OFF. Actual browser/proxy, IdP SSO/refresh revocation, SQL HA/DP rotation, and BFF-06/07 production cutover remain separate pending work.
+
+
 ## Verified backend BFF SQL cleanup and local logout-all — frontend handoff (2026-11-06)
 
 - Backend [PR #34](https://github.com/sholehamed/foundation-backend/pull/34) merged at `576b7941fada322fc32def221836ff211f469574`. SQL Server maintenance-only bounded cleanup now retains rows until 48h past absolute expiry; [CI #42218028623](https://github.com/sholehamed/foundation-backend/actions/runs/42218028623) green: **94 BFF + 60 Identity + 12 SQL Server**.
