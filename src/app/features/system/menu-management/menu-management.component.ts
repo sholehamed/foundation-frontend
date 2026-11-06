@@ -4,6 +4,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule } from '@angular/material/tree';
 import { MenuCategoryDto, MenuDto, MenuOrderItem, MenuCreateCommand } from './menu-management.model';
 import { MenuApiService } from './menu-management.service';
+import { buildMenuTree } from './menu-tree';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -117,7 +118,7 @@ export class MenuManagementPage implements OnInit {
 
   loadMenus(categoryId: string) {
     this.api.getMenusByCategory(categoryId).subscribe(menus => {
-      this.dataSource.data = this.sortTree(menus);
+      this.dataSource.data = buildMenuTree(menus);
       this.treeControl.expandAll();
     });
   }
@@ -264,14 +265,6 @@ private updateOrdersRecursive(nodes: MenuDto[]): void {
     }
   }
 
-  private sortTree(nodes: MenuDto[]): MenuDto[] {
-    return [...nodes]
-      .sort((a, b) => a.order - b.order)
-      .map(node => ({
-        ...node,
-        children: node.children ? this.sortTree(node.children) : [],
-      }));
-  }
 
   private recalculateOrders(nodes: MenuDto[], parentId: string | null = null): MenuOrderItem[] {
     return nodes.flatMap((node, index) => [

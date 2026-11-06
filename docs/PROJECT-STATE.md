@@ -1,5 +1,13 @@
 # Foundation Frontend — project state and handoff
 
+## Feature Registry FR-01A — menu tree adapter (2026-11-07)
+
+- Backend [FR-00 PR #38](https://github.com/sholehamed/foundation-backend/pull/38) merged: menu update targets the Menu entity and canonicalizes update request fields.
+- Backend [FR-01A PR #40](https://github.com/sholehamed/foundation-backend/pull/40) adds canonical Menu response fields, retains old read aliases and provides a read-only SQL catalog inventory. Pending CI/review, not a completed auto-registration system.
+- The admin menu editor consumes a **flat** `GET /system/MenuCategories/{categoryId}/menus` response while its Material tree previously assumed nested `children`. This frontend slice adds a pure, tested parentId-to-tree adapter that renders arbitrarily deep menu levels; orphan, cyclic, self-parent and cross-category links remain visible as roots for manual repair instead of crashing or disappearing. No server write/migration or authorization/menu-scope behavior changes.
+- **Still open:** actual persisted-data catalog inventory, permission.Code vs Name contract, menu-parent integrity on writes, effective user-scoped navigation (currently roleId-based), removal of hardcoded System Sidebar fallbacks, BFF cutover. Keep separate reviewed PRs; do not treat hiding links as enforcement.
+
+
 ## Sidebar startup null Tenant fix — 2026-11-06
 
 - System Dashboard intentionally has no TenantContext (`current === null`); the sidebar previously accessed `current!.logo!` unconditionally in `ngOnInit` and threw `Cannot read properties of null (reading 'logo')` before the first render.
