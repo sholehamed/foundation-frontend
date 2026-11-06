@@ -1,5 +1,14 @@
 # Foundation Frontend — project state and handoff
 
+## Verified backend BFF SQL cleanup and local logout-all — frontend handoff (2026-11-06)
+
+- Backend [PR #34](https://github.com/sholehamed/foundation-backend/pull/34) merged at `576b7941fada322fc32def221836ff211f469574`. SQL Server maintenance-only bounded cleanup now retains rows until 48h past absolute expiry; [CI #42218028623](https://github.com/sholehamed/foundation-backend/actions/runs/42218028623) green: **94 BFF + 60 Identity + 12 SQL Server**.
+- Backend [PR #35](https://github.com/sholehamed/foundation-backend/pull/35) merged at `18775eeb80ea6740d37943b516060172290e882e`. New **POST /bff/auth/logout-all** requires BFF cookie, host check, same-origin and antiforgery; derives target OIDC GUID `sub` solely from verified server-side principal and atomically revokes all **existing SQL BFF sessions** for that account. SQL migration adds subject binding and explicitly revokes older unbound sessions during rollout. [CI #42219967286](https://github.com/sholehamed/foundation-backend/actions/runs/42219967286) green: **96 BFF + 60 Identity + 17 real SQL Server**.
+- **Do not confuse local logout-all with complete Identity signout:** upstream access/refresh tokens, IdP SSO login cookie and new logins after revocation are **not** invalidated by this endpoint. [Security/migration handoff](https://github.com/sholehamed/foundation-backend/blob/main/docs/development/BFF-05-4A-LOGOUT-ALL.md).
+- Frontend runtime remains unchanged: legacy Password Grant/localStorage/bearer interceptors and route guards continue, BFF flag remains OFF by default. **BFF-06 Angular migration is still blocked** by IdP upstream revoke/refresh rotation, actual browser/proxy/SQL failover/keyring certification and OIDC callback race, plus BFF-07 legacy-flow cutover.
+- Continue from [backend master #20](https://github.com/sholehamed/foundation-backend/issues/20), [frontend BFF-06 #10](https://github.com/sholehamed/foundation-frontend/issues/10). Both initial F00 PR #2 remain untouched.
+
+
 ## Backend SQL Server atomic BFF store merged — frontend handoff (2026-11-06)
 
 - Backend [PR #32](https://github.com/sholehamed/foundation-backend/pull/32) merged as `c2ebf86053c17fb87309ec630f932ac32701a127`. [Final CI #42215944644](https://github.com/sholehamed/foundation-backend/actions/runs/42215944644) passed full solution build, **94 BFF + 60 Identity + 9 real disposable SQL Server tests** (163/163). This is actual code/SQL evidence, not just an atomic interface placeholder.
