@@ -1,5 +1,13 @@
 # Angular full BFF integration — approved target; narrow Identity UI continuation merged
 
+## Backend SQL Server atomic BFF store merged — frontend handoff (2026-11-06)
+
+- Backend [PR #32](https://github.com/sholehamed/foundation-backend/pull/32) merged as `c2ebf86053c17fb87309ec630f932ac32701a127`. [Final CI #42215944644](https://github.com/sholehamed/foundation-backend/actions/runs/42215944644) passed full solution build, **94 BFF + 60 Identity + 9 real disposable SQL Server tests** (163/163). This is actual code/SQL evidence, not just an atomic interface placeholder.
+- Web-owned `SqlServerBffAtomicTicketStore` has SQL row-serialized renewal/revoke, 24h fixed absolute deadline, protected server-side Ticket, predeployed schema with startup integrity check, and real two-TestServer shared persisted keyring/SQL Cookie logout/restart replay test. See [technical SQL rollout and guarantees](https://github.com/sholehamed/foundation-backend/blob/main/docs/development/BFF-05-5B-SQL-ATOMIC-SESSION.md).
+- **Still NOT frontend migration-ready:** SQL failover and production keyring encryption/rotation, logout-all/upstream refresh-token revocation, concurrency-safe refresh rotation, OIDC callback race, actual browser HTTPS/reverse-proxy/SQL Server system+tenant E2E and BFF-07 legacy-client sign-off remain open. Backend BFF opt-in default `false`.
+- All current Angular auth implementation remains intentionally **unchanged**: legacy Password Grant/localStorage/bearer interceptors/guards and session state. BFF-06 migration starts only after backend BFF-05 closure with verified browser tests and a rollout/rollback plan; no cross-origin wildcard credentials. Track [backend #20](https://github.com/sholehamed/foundation-backend/issues/20), [SQL cert #30](https://github.com/sholehamed/foundation-backend/issues/30), [frontend #10](https://github.com/sholehamed/foundation-frontend/issues/10). Original F00 PR #2 untouched.
+
+
 ## Backend session durability / atomic provider handoff — 2026-11-06
 
 - [Backend PR #28](https://github.com/sholehamed/foundation-backend/pull/28) merged at `ccbaddcad3d8e7c413a505ba7c8e2e0a04e59298`, [CI #42210307369](https://github.com/sholehamed/foundation-backend/actions/runs/42210307369): **88 BFF + 60 Identity**. The BFF ticket store now has an original 24-hour max lifetime and 48-hour revocation tombstone to guard against concurrent logout/renewal on a consistent shared cache.
