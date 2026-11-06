@@ -32,6 +32,64 @@ export class AuthService {
   _tenant = inject(TenantContextService);
   _tokenStorage = inject(TokenStorageService);
 
+  interactiveLogin(
+    username: string,
+    password: string,
+    captchaCode: string,
+    captchaId: string,
+    loginContext: LoginContext,
+    tenant: string | null,
+  ): Observable<void> {
+    return this._http.get<void>(
+      environment.apiUrl + '/system/Auth/csrf',
+      { withCredentials: true },
+    ).pipe(
+      switchMap(() => {
+        const requestToken = this.readCookie('XSRF-TOKEN');
+        if (!requestToken) {
+          return throwError(() => new Error('Anti-forgery token was not issued.'));
+        }
+
+        return this._http.post<void>(
+          environment.apiUrl + '/system/Auth/interactive-login',
+          {
+            username,
+            password,
+            captchaId,
+            captchaCode,
+            loginContext,
+            tenant: tenant ?? this._tenant.current?.slug ?? null,
+          },
+          {
+            withCredentials: true,
+            headers: new HttpHeaders({
+              'X-XSRF-TOKEN': requestToken,
+            }),
+          },
+        );
+      }),
+    );
+  }
+
+  private readCookie(name: string): string | null {
+    const prefix = name + '=';
+    const item = document.cookie
+      .split(';')
+      .map(value => value.trim())
+      .find(value => value.startsWith(prefix));
+    if (!item) return null;
+
+    try {
+      return decodeURIComponent(item.slice(prefix.length));
+    } catch {
+      return null;
+    }
+  }
+
+  getCurrentTenantSlug(): string | null {
+    return this._tenant.current?.slug ?? null;
+  }
+
   login(
     username: string,
     password: string,

@@ -4,6 +4,7 @@ export const environment = {
   AppName: 'سامانه مدیریت کاربران',
   scope: 'openid profile email api offline_access',
   client_id: 'postman',
+  bffClientId: 'foundation-browser-bff',
   grant_type: 'password',
   workspaceBaseDomain: 'shinera.localhost',
 }
