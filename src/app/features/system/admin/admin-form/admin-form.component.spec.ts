@@ -2,12 +2,12 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { UserFormComponent } from './user-form.component';
+import { AdminFormComponent } from './admin-form.component';
 
-describe('UserFormComponent', () => {
+describe('AdminFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserFormComponent],
+      imports: [AdminFormComponent],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -17,7 +17,7 @@ describe('UserFormComponent', () => {
   });
 
   it('should start with a required empty user profile form', async () => {
-    const fixture = TestBed.createComponent(UserFormComponent);
+    const fixture = TestBed.createComponent(AdminFormComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
