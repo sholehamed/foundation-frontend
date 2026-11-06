@@ -55,3 +55,12 @@ Read this before continuing in another chat. The canonical BFF architecture is m
 - [Backend docs checkpoint PR #13](https://github.com/sholehamed/foundation-backend/pull/13) merged; see backend [PROJECT-STATE](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-STATE.md) for the canonical status.
 - [BFF-04 Issue #12](https://github.com/sholehamed/foundation-backend/issues/12) is next: BFF confidential OIDC challenge/callback, server-side BFF session cookie, safe Identity login continuation; [Merged PR #14](https://github.com/sholehamed/foundation-backend/pull/14), commit `53732242450bd90c206e29738007372bbe2dde1b`, contains only a conservative local returnUrl validator and tests ([CI 42131501508](https://github.com/sholehamed/foundation-backend/actions/runs/42131501508): 35 BFF + 41 Identity green).
 - No Angular login or package extraction change is authorized/needed yet. Preserve current Password Grant until backend session endpoints and E2E acceptance.
+
+
+## BFF-04 Identity login continuation (active branch, not merged)
+
+- Branch: `feat/bff-04-safe-identity-login-continuation`.
+- The existing Identity sign-in UI now recognizes only a tightly validated same-origin `/api/connect/authorize` continuation for the configured `foundation-browser-bff` client: Authorization Code, S256 PKCE, unique state/nonce/security parameters, HTTPS `/signin-oidc` callback, matching System/Tenant context and tenant slug.
+- For that continuation only, Angular calls `GET /api/system/Auth/csrf` and `POST /api/system/Auth/interactive-login` with credentials + antiforgery. It then performs a full-page navigation to the same-origin authorization endpoint. No OAuth token is stored in JavaScript.
+- Normal sign-in without a BFF authorization return path still uses the existing Password Grant and local token storage. No guards/interceptors/API token flow have been migrated.
+- Unit tests cover accepted/rejected continuation URL shapes. This branch is not merged or CI-verified yet.

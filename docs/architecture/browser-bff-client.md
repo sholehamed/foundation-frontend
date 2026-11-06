@@ -65,3 +65,10 @@ interface BrowserSession {
 - Backend BFF-01, BFF-02 and **BFF-03** have been merged. [BFF-03 PR #11](https://github.com/sholehamed/foundation-backend/pull/11) passed isolated HTTP code/PKCE and scoped Identity tests: [CI 42130167589](https://github.com/sholehamed/foundation-backend/actions/runs/42130167589). The full browser BFF remains unimplemented; [BFF-04 Issue #12](https://github.com/sholehamed/foundation-backend/issues/12) and [merged PR #14](https://github.com/sholehamed/foundation-backend/pull/14) deliver only validated relative return URLs (35 BFF + 41 Identity tests green). The secure OIDC callback and server-side BFF session remain the next step.
 - The current Angular login form does **not** provide a safe return to `/api/connect/authorize`. This is a known integration blocker; a dedicated authenticated OIDC continuation must be designed, tested and reviewed.
 - Do not change Angular runtime yet. When backend BFF session endpoints and test deployment are ready, begin a separate frontend branch, add E2E tests and update [PROJECT-STATE](../PROJECT-STATE.md).
+
+
+## Identity UI continuation
+
+The legacy sign-in component may continue one narrowly allowed local return path: `/api/connect/authorize` for the configured BFF client with Authorization Code + S256 PKCE, non-empty state/nonce, HTTPS `/signin-oidc` callback, and matching `login_context` / tenant. The UI posts credentials to the cookie-based `interactive-login` endpoint after CSRF bootstrap, then performs a full document navigation to the local authorization endpoint. All client/redirect/PKCE/account validation remains authoritative in OpenIddict/Identity; the Angular check is only a navigation allowlist.
+
+All other login continues to use the current Password Grant until BFF-05 and cross-repo E2E are complete. Do not store BFF OAuth tokens in localStorage/sessionStorage.
