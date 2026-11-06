@@ -1,5 +1,6 @@
 import { CommonModule, NgClass } from '@angular/common'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -27,9 +28,10 @@ import { NgScrollbarModule } from 'ngx-scrollbar'
   styleUrl: './sidebar.component.scss',
   standalone: true,
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   protected readonly _tenantContext = inject(TenantContextService)
   private readonly _fileService = inject(FileService)
+  private readonly destroyRef = inject(DestroyRef)
   private readonly toggleService = inject(ToggleService)
   readonly themeService = inject(CustomizerSettingsService)
   private readonly menuService = inject(SidebarMenuService)
@@ -44,16 +46,37 @@ export class SidebarComponent implements OnInit {
   readonly selectedRole = signal<SidebarRole | null>(null)
   readonly menuSections = signal<MenuCategoryDto[]>([])
   readonly isMenuLoading = signal(false)
-  _logoSrc: null | string = 'shinera-dark-logo.png'
+  // System administration has no tenant context; a tenant may have no logo.
+  // Never block sidebar/menu initialization while optional branding loads.
+  _logoSrc = 'shinera-dark-logo.png'
+  private logoObjectUrl: string | null = null
+
   ngOnInit(): void {
     this.loadRoles()
-    this._fileService.preview(this._tenantContext.current!.logo!).subscribe((d) => {
-      this.setPreview(d)
-    })
+
+    const logoId = this._tenantContext.current?.logo?.trim()
+    if (!logoId) return
+
+    this._fileService.preview(logoId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob) => this.setPreview(blob),
+        // Missing/deleted media is optional branding; retain the default logo.
+        error: () => { this._logoSrc = 'shinera-dark-logo.png' },
+      })
   }
+
+  ngOnDestroy(): void {
+    if (this.logoObjectUrl) {
+      URL.revokeObjectURL(this.logoObjectUrl)
+      this.logoObjectUrl = null
+    }
+  }
+
   private setPreview(blob: Blob): void {
-    const objectUrl = URL.createObjectURL(blob)
-    this._logoSrc = objectUrl
+    if (this.logoObjectUrl) URL.revokeObjectURL(this.logoObjectUrl)
+    this.logoObjectUrl = URL.createObjectURL(blob)
+    this._logoSrc = this.logoObjectUrl
   }
   onRoleChange(role: SidebarRole): void {
     this.selectedRole.set(role)

@@ -1,5 +1,13 @@
 # Foundation Frontend — project state and handoff
 
+## Sidebar startup null Tenant fix — 2026-11-06
+
+- System Dashboard intentionally has no TenantContext (`current === null`); the sidebar previously accessed `current!.logo!` unconditionally in `ngOnInit` and threw `Cannot read properties of null (reading 'logo')` before the first render.
+- Sidebar now always initializes role/menu loading independently of branding. A tenant logo is optional: when no context/logo exists or media preview fails, it keeps `shinera-dark-logo.png`; a valid tenant logo still renders.
+- The media request unsubscribes on component destruction, and object URLs are revoked when replaced or on teardown. Added isolated Angular TestBed regression tests covering System-host null, missing logo, preview error, success/cleanup.
+- This does **not** touch Password Grant, BFF/Identity, TenantContext resolution or hamburger toggle behavior. Original F00 PR #2 remains untouched.
+
+
 ## Completed phase 1: Angular Identity UI + BFF contract v1 (2026-11-06)
 
 - [Identity UI/BFF contract](architecture/identity-ui-bff-login-contract.md) fixes **one Angular build** hosted on app origins and a dedicated Identity-only HTTPS origin: same-origin CSRF+CAPTCHA+interactive-login, continuation back to OpenIddict Code+S256 PKCE, then BFF host-only cookie and future `/bff/session`. Backend canonical [protocol specification](https://github.com/sholehamed/foundation-backend/blob/main/docs/architecture/identity-ui-bff-login-contract.md).
