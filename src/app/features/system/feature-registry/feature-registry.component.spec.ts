@@ -40,7 +40,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   });
 
   it('loads manifest v2, preview and actual child route modules before enabling Apply', async () => {
-    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
     expect(apply).not.toHaveBeenCalled();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     expect(preview).toHaveBeenCalledOnce();
@@ -50,7 +50,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   });
 
   it('requires explicit user confirmation even with matching nested routes', async () => {
-    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
     fixture.componentInstance.applyChanges();
@@ -66,7 +66,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   it('blocks Apply when one declared nested page is absent from Backend', async () => {
     manifest.mockReturnValue(of({ ...contract,
       uiElements: contract.uiElements.filter(x => x.route !== '/system/roles/create') }));
-    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     expect(fixture.componentInstance.manifestProblems().join(' '))
       .toContain('/system/roles/create');
@@ -79,7 +79,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   it('blocks Apply on preview conflict and clears stale state on 403', async () => {
     preview.mockReturnValueOnce(of({ canApply: false, hasPending: true,
       changes: [{ type: 'UiResource', key: 'system.roles.edit', state: 'Conflict', detail: null }] }));
-    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     fixture.componentInstance.applyChanges();
@@ -93,7 +93,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   });
 
   it('blocks stale successful preview after 409 apply failure', async () => {
-    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     apply.mockReturnValue(throwError(() => ({ status: 409 })));
     vi.spyOn(window, 'confirm').mockReturnValue(true);
@@ -104,7 +104,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
 
   it('fails closed if an executable lazy child route cannot be loaded', async () => {
     manifest.mockReturnValue(throwError(() => ({ status: 404 })));
-    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
     await vi.waitFor(() =>
       expect(fixture.componentInstance.error()).not.toBeNull());
     expect(fixture.componentInstance.manifestVerified()).toBe(false);
