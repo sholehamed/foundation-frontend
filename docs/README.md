@@ -20,3 +20,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-03B-1 — Validate System routes from backend manifest](development/FR-03B1-BACKEND-MANIFEST-VALIDATION.md)
 
 - [FR-03B-2 — All System routes bound to Registry route-only index](development/FR-03B2-SYSTEM-ROUTES.md)
+
+- [FR-05B — Angular actual nested-route discovery and Registry v2 validation](development/FR-05B-NESTED-UI-ROUTES.md)

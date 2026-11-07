@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { forkJoin } from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FeatureRegistryApiService, FeatureRegistryPreview } from './feature-registry-api.service';
 import { validateBackendFeatureManifest } from './feature-registry-contract';
+import { discoverExecutableSystemChildRoutes } from './system-ui-route-discovery';
 
 @Component({
   selector: 'app-feature-registry',
@@ -41,11 +42,16 @@ export class FeatureRegistryPageComponent implements OnInit {
 
     // Compare authoritative backend definitions with the executable Angular
     // route index. Neither response grants authorization to a user.
-    forkJoin({ preview: this.api.preview(), manifest: this.api.manifest() })
+    forkJoin({
+      preview: this.api.preview(),
+      manifest: this.api.manifest(),
+      childRoutes: from(discoverExecutableSystemChildRoutes()),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ preview, manifest }) => {
-          this.manifestProblems.set(validateBackendFeatureManifest(manifest));
+        next: ({ preview, manifest, childRoutes }) => {
+          this.manifestProblems.set(
+            validateBackendFeatureManifest(manifest, undefined, childRoutes));
           this.manifestVerified.set(true);
           this.preview.set(preview);
           this.loading.set(false);
