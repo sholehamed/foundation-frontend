@@ -1,115 +1,57 @@
 <div
-    [ngClass]="{'active': isSidebarToggled()}"
-    class="sidebar-area bg-white transition active"
-    [class.dark-sidebar]="themeService.isSidebarDarkTheme()"
-    [class.hide-sidebar]="themeService.isHideSidebarTheme()"
-    [class.card-borderd]="themeService.isCardBorderedTheme()"
-    [class.component-dark-theme]="themeService.isDarkTheme()"
-    [class.right-sidebar]="themeService.isRightSidebarTheme()"
-    [class.component-body-bg-color]="themeService.isBodyBGTheme()"
-    [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
-    [class.card-with-box-shadow]="themeService.isCardWithBoxShadowTheme()"
+  [ngClass]="{'active': isSidebarToggled()}"
+  class="sidebar-area bg-white transition active"
+  [class.dark-sidebar]="themeService.isSidebarDarkTheme()"
+  [class.hide-sidebar]="themeService.isHideSidebarTheme()"
+  [class.card-borderd]="themeService.isCardBorderedTheme()"
+  [class.component-dark-theme]="themeService.isDarkTheme()"
+  [class.right-sidebar]="themeService.isRightSidebarTheme()"
+  [class.component-body-bg-color]="themeService.isBodyBGTheme()"
+  [class.component-rtl-enabled]="themeService.isRTLEnabledTheme()"
+  [class.card-with-box-shadow]="themeService.isCardWithBoxShadowTheme()"
 >
-    <div class="logo bg-white">
-        <a routerLink="/dashboard" class="d-flex align-items-center position-relative">
-            <img width="60px" height="60px" [src]="_logoSrc" class="position-relative" alt="logo-icon">
-            <span class="fw-bold text-black lh-1 transition position-relative">
-                <!-- {{_tenantContext.current!.name!}} -->
-                Shinera
-            </span>
-        </a>
-    </div>
-    <div
-        (click)="toggle()"
-        class="burger-menu transition"
-        [ngClass]="{'active': isSidebarToggled()}"
-    >
-        <span class="top-bar transition d-block bg-black"></span>
-        <span class="middle-bar transition d-block bg-black"></span>
-        <span class="bottom-bar transition d-block bg-black"></span>
-    </div>
-    <ng-scrollbar visibility="hover">
-        <div class="sidebar-inner">
-            <!-- Role Selector -->
-            <div class="role-selector"   *ngIf="!isSidebarToggled()&&roles().length > 0">
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        [(value)]="selectedRole"
-                        (selectionChange)="onRoleChange($event.value)"
-                    >
-                        <mat-option *ngFor="let role of roles()" [value]="role">
-                            {{role.title}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            <!-- Loading State -->
-            <div *ngIf="isMenuLoading()" class="loading-state">
-                <span>در حال بارگذاری...</span>
-            </div>
-
-            <!-- Menu -->
-           <div class="sidebar-menu" *ngIf="!isMenuLoading()" style="margin-top: 20px;">
-    <mat-accordion>
-        <ng-container *ngFor="let section of menuSections()">
-            <span class="sub-title d-block fw-medium text-uppercase">
-                {{section.title}}
-            </span>
-
-            <!-- Menu Items -->
-            <ng-container *ngFor="let item of section.items">
-                <!-- Menu with Children -->
-                <mat-expansion-panel *ngIf="item.childs && item.childs.length > 0">
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>
-                            <i class="material-symbols-outlined">
-                                {{item.icon}}
-                            </i>
-                            <span class="title">
-                                {{item.title}}
-                            </span>
-                        </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <ul class="sidebar-sub-menu">
-                        <li *ngFor="let child of item.childs">
-                            <a
-                                [routerLink]="child.route"
-                                class="sidebar-menu-link"
-                                routerLinkActive="active"
-                                [routerLinkActiveOptions]="{exact: true}"
-                            >
-                                <i class="material-symbols-outlined">
-                                    {{child.icon}}
-                                </i>
-                                <span class="title">
-                                    {{child.title}}
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                </mat-expansion-panel>
-
-                <!-- Simple Menu Item (No Children) -->
-                <a
-                    *ngIf="!item.childs || item.childs.length === 0"
-                    [routerLink]="item.route"
-                    class="sidebar-menu-link"
-                    routerLinkActive="active"
-                    [routerLinkActiveOptions]="{exact: true}"
-                >
-                    <i class="material-symbols-outlined">
-                        {{item.icon}}
-                    </i>
-                    <span class="title">
-                        {{item.title}}
-                    </span>
-                </a>
-            </ng-container>
-        </ng-container>
-    </mat-accordion>
-</div>
-
+  <div class="logo bg-white">
+    <a [routerLink]="homeRoute" class="d-flex align-items-center position-relative">
+      <img width="60px" height="60px" [src]="_logoSrc" class="position-relative" alt="logo-icon">
+      <span class="fw-bold text-black lh-1 transition position-relative">
+        Shinera
+      </span>
+    </a>
+  </div>
+  <div
+    (click)="toggle()"
+    class="burger-menu transition"
+    [ngClass]="{'active': isSidebarToggled()}"
+  >
+    <span class="top-bar transition d-block bg-black"></span>
+    <span class="middle-bar transition d-block bg-black"></span>
+    <span class="bottom-bar transition d-block bg-black"></span>
+  </div>
+  <ng-scrollbar visibility="hover">
+    <div class="sidebar-inner">
+      @if (isMenuLoading()) {
+        <div class="loading-state" role="status">در حال بارگذاری منو...</div>
+      } @else if (menuError()) {
+        <div class="loading-state" role="alert">
+          دریافت منو امکان‌پذیر نبود.
+          <button type="button" (click)="retryMenu()">تلاش مجدد</button>
         </div>
-    </ng-scrollbar>
+      } @else if (menuSections().length === 0) {
+        <div class="loading-state" role="status">
+          منویی برای حساب شما تعریف نشده است.
+        </div>
+      } @else {
+        <div class="sidebar-menu" style="margin-top: 20px;">
+          <mat-accordion>
+            @for (section of menuSections(); track section.title) {
+              <span class="sub-title d-block fw-medium text-uppercase">{{ section.title }}</span>
+              @for (item of section.items; track $index) {
+                <app-sidebar-menu-item [menuItem]="item" />
+              }
+            }
+          </mat-accordion>
+        </div>
+      }
+    </div>
+  </ng-scrollbar>
 </div>

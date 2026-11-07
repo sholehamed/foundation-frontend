@@ -12,3 +12,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - Documentation change goes in the same PR as code change, except initial architecture ADR.
 - Source paths, test paths, behavior and implementation status must be kept current.
 - Avoid duplicating generated OpenAPI details in Markdown. Prefer Mermaid source diagrams when useful.
+
+- [FR-04B — Dynamic current-user Sidebar](development/FR-04B-CURRENT-USER-SIDEBAR.md)

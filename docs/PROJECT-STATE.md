@@ -1,5 +1,12 @@
 # Foundation Frontend — project state and handoff
 
+## FR-04B — authenticated dynamic Sidebar (2026-11-07)
+
+- **PR / CI gate:** [FR-04B frontend handoff](development/FR-04B-CURRENT-USER-SIDEBAR.md), backend [FR-04A PR #42](https://github.com/sholehamed/foundation-backend/pull/42). Sidebar loads `GET /system/Menus/me` once, no client role selector, recursively renders all levels, handles empty/error without hardcoded privileged links and retains optional tenant logo handling. Unit tests cover HTTP contract, empty/error/retry, nested links and HTTPS external URLs.
+- **Deployment dependency:** backend FR-04A must ship first/atomically; production Menu data is **not seeded** by default. Without configured MenuCategory/Menu rows and explicit grants, UI correctly shows 'no configured menu'. No new route components or permissions are dynamically instantiated from DB.
+- **Not complete:** official feature manifest and route guards, live DB catalog inventory, TenantPermissionRestriction scope rules and BFF browser migration.
+
+
 ## Feature Registry FR-01A — menu tree adapter (2026-11-07)
 
 - Backend [FR-00 PR #38](https://github.com/sholehamed/foundation-backend/pull/38) merged: menu update targets the Menu entity and canonicalizes update request fields.
