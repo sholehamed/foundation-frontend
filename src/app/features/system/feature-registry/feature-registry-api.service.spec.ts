@@ -16,7 +16,7 @@ describe('FeatureRegistryApiService admin-only contract', () => {
     const manifest = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/manifest');
     expect(manifest.request.method).toBe('GET');
     expect(manifest.request.params.keys()).toEqual([]);
-    manifest.flush({ schemaVersion: 1, features: [] });
+    manifest.flush({ schemaVersion: 2, features: [], uiElements: [] });
 
     api.preview().subscribe();
     const preview = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/preview');

@@ -1,5 +1,12 @@
 # Foundation Frontend — project state and handoff
 
+## FR-05B — runtime nested PAGE compatibility and Registry manifest v2 (2026-11-07)
+
+- **Frontend implementation / CI gate:** [FR-05B handoff](development/FR-05B-NESTED-UI-ROUTES.md), Backend [PR #47](https://github.com/sholehamed/foundation-backend/pull/47). The Registry review page now loads the **actual lazy Angular route configurations** (default-export aware), enumerates 32 executable child PAGE templates and compares them to Backend schemaVersion=2 `uiElements` (32 PAGE + 9 ACTION descriptors) alongside the 13 root features.
+- No second production list of nested routes or backend Permission.Code is maintained. Missing/extra routes, malformed UI ownership/permission/Type, duplicate entries, unsafe action URL, old manifest or lazy import errors block the UI Apply action.
+- Does not enforce protected APIs or route components and does not change BFF, grant assignments or Sidebar. Backend Apply still requires SystemAdministrator and default-OFF deployment flag. Admin/User forms are deliberately inactive in the Backend catalog pending safety review.
+
+
 ## FR-03B-2 — complete System executable-route coverage (2026-11-07)
 
 - **Frontend implementation / CI gate:** [FR-03B-2 runbook](development/FR-03B2-SYSTEM-ROUTES.md) and [Backend PR #46](https://github.com/sholehamed/foundation-backend/pull/46). All 13 actual root System routes now share a route-only index; no duplicated backend-owned keys or read permission codes. Vitest checks the entire `system.routes.ts` root page set exactly matches the index, preventing a forgotten page.
