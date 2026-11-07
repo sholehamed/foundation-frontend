@@ -1,5 +1,12 @@
 # Foundation Frontend — project state and handoff
 
+## FR-03B-1 — backend-owned manifest and Angular route compatibility (2026-11-07)
+
+- **PR / CI gate:** [FR-03B-1 handoff](development/FR-03B1-BACKEND-MANIFEST-VALIDATION.md); paired backend [PR #45](https://github.com/sholehamed/foundation-backend/pull/45). Angular no longer duplicates the stable Feature.Key or Permission.Code in its production route definitions; the code-owned System route index contains only executable route segments for Users, Roles and Permissions.
+- `/system/feature-registry` now loads authoritative `GET /system/FeatureRegistry/manifest` alongside read-only Preview. Runtime schema/route/metadata validation must pass for the button to call POST Apply. Unknown routes/schema versions, missing backend manifest, preview conflicts or failed calls fail closed. **This is an admin UI compatibility gate**, not an API authorization decision or a cross-repo build contract.
+- No auth token/BFF change, no automatic role grants, no new Angular executable routes from DB. The backend default-off Apply flag remains authoritative; SQL production inventory and cross-repo CI version contract remain open.
+
+
 ## FR-03A — code-owned System feature manifest and admin Registry UI (2026-11-07)
 
 - **PR / CI gate:** [FR-03A guide](development/FR-03A-FEATURE-REGISTRY-UI.md), companion [Backend FR-02A PR #43](https://github.com/sholehamed/foundation-backend/pull/43). A typed manifest supplies stable feature keys and actual System Roles/Permissions route metadata, checked by Vitest against the Router configuration.

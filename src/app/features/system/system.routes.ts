@@ -2,7 +2,7 @@ import { Routes } from '@angular/router'
 import { PanelLayoutComponent } from '../../shared/layouts/dashboard-layout/panel-layout.component'
 import { SignInComponent } from '../../shared/pages/auth/sign-in/sign-in.component'
 import { systemSessionGuard } from '../../shared/guards/system-session.guard'
-import { systemFeatureManifest } from './feature-registry/system-feature.manifest'
+import { systemFeatureRouteSegments } from './feature-registry/system-feature.manifest'
 
 export default [
   {
@@ -21,18 +21,14 @@ export default [
         data: { breadcrumb: 'مدیریت مدیران' },
       },
       {
-        path: 'users',
+        path: systemFeatureRouteSegments.users,
         loadChildren: () => import('./user/users.routes'),
         data: { breadcrumb: 'مدیریت کاربران' },
       },
       {
-        path: systemFeatureManifest.roles.segment,
+        path: systemFeatureRouteSegments.roles,
         loadChildren: () => import('./role/roles.routes'),
-        data: {
-          breadcrumb: 'مدیریت نقش‌ها',
-          featureKey: systemFeatureManifest.roles.key,
-          permissionCode: systemFeatureManifest.roles.permissionCode,
-        },
+        data: { breadcrumb: 'مدیریت نقش‌ها' },
       },
       {
         path: 'groups',
@@ -57,13 +53,9 @@ export default [
         data: { breadcrumb: 'مدیریت ماژول ها' },
       },
       {
-        path: systemFeatureManifest.permissions.segment,
+        path: systemFeatureRouteSegments.permissions,
         loadChildren: () => import('./resources/permissions/permissions.routes'),
-        data: {
-          breadcrumb: 'مدیریت مجوز ها',
-          featureKey: systemFeatureManifest.permissions.key,
-          permissionCode: systemFeatureManifest.permissions.permissionCode,
-        },
+        data: { breadcrumb: 'مدیریت مجوز ها' },
       },
       {
         path: 'api-resources',

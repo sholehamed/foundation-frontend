@@ -1,19 +1,16 @@
 /**
- * Code-owned Angular entry points. Stable keys must match the reviewed
- * Foundation Backend FeatureRegistryDefinitions catalog.
- * This is a build-time route index; it never loads components from DB values.
+ * Executable Angular route segments only.
+ *
+ * Backend /system/FeatureRegistry/manifest owns ALL stable feature keys,
+ * Permission.Code and resource metadata. Keeping only the Angular segments
+ * here prevents duplicated business permission declarations across repos.
+ * A runtime compatibility check refuses admin Apply on route drift.
  */
-export const systemFeatureManifest = {
-  roles: {
-    key: 'system.roles',
-    segment: 'roles',
-    route: '/system/roles',
-    permissionCode: 'ROLES.READ',
-  },
-  permissions: {
-    key: 'system.permissions',
-    segment: 'permissions',
-    route: '/system/permissions',
-    permissionCode: 'PERMISSIONS.READ',
-  },
+export const systemFeatureRouteSegments = {
+  users: 'users',
+  roles: 'roles',
+  permissions: 'permissions',
 } as const;
+
+export const systemFeatureRoutes = Object.values(systemFeatureRouteSegments)
+  .map(segment => '/system/' + segment);

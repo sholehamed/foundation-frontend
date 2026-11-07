@@ -12,6 +12,12 @@ describe('FeatureRegistryApiService admin-only contract', () => {
     const api = TestBed.inject(FeatureRegistryApiService);
     const http = TestBed.inject(HttpTestingController);
 
+    api.manifest().subscribe();
+    const manifest = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/manifest');
+    expect(manifest.request.method).toBe('GET');
+    expect(manifest.request.params.keys()).toEqual([]);
+    manifest.flush({ schemaVersion: 1, features: [] });
+
     api.preview().subscribe();
     const preview = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/preview');
     expect(preview.request.method).toBe('GET');

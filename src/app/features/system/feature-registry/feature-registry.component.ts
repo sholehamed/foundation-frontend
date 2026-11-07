@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FeatureRegistryApiService, FeatureRegistryPreview } from './feature-registry-api.service';
+import { validateBackendFeatureManifest } from './feature-registry-contract';
 
 @Component({
   selector: 'app-feature-registry',
@@ -18,6 +20,8 @@ export class FeatureRegistryPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly preview = signal<FeatureRegistryPreview | null>(null);
+  readonly manifestVerified = signal(false);
+  readonly manifestProblems = signal<string[]>([]);
   readonly loading = signal(false);
   readonly applying = signal(false);
   readonly error = signal<string | null>(null);
@@ -31,13 +35,19 @@ export class FeatureRegistryPageComponent implements OnInit {
     if (this.loading() || this.applying()) return;
     this.loading.set(true);
     this.preview.set(null);
+    this.manifestVerified.set(false);
+    this.manifestProblems.set([]);
     this.error.set(null);
 
-    this.api.preview()
+    // Compare authoritative backend definitions with the executable Angular
+    // route index. Neither response grants authorization to a user.
+    forkJoin({ preview: this.api.preview(), manifest: this.api.manifest() })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: result => {
-          this.preview.set(result);
+        next: ({ preview, manifest }) => {
+          this.manifestProblems.set(validateBackendFeatureManifest(manifest));
+          this.manifestVerified.set(true);
+          this.preview.set(preview);
           this.loading.set(false);
         },
         error: error => {
@@ -51,7 +61,8 @@ export class FeatureRegistryPageComponent implements OnInit {
 
   applyChanges(): void {
     const current = this.preview();
-    if (this.applying() || this.loading() || !current?.canApply || !current.hasPending)
+    if (this.applying() || this.loading() || !this.manifestVerified() ||
+        this.manifestProblems().length > 0 || !current?.canApply || !current.hasPending)
       return;
 
     // Explicit human approval. Do not automatically apply on navigation,
