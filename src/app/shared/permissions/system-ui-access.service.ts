@@ -22,7 +22,6 @@ export class SystemUiAccessService {
     if (!/^[a-z0-9.-]+$/.test(key)) return of(false);
     return this.http.get<CurrentUiAccessDecision>(
       this.root + encodeURIComponent(key),
-      { headers: { 'Cache-Control': 'no-store' } },
     ).pipe(
       map(result => result?.key === key && result?.allowed === true),
       catchError(() => of(false)),

@@ -26,7 +26,9 @@ describe('SystemUiAccessService current-user permission checks', () => {
     expect(req.request.method).toBe('GET');
     expect(req.request.params.keys()).toEqual([]);
     expect(req.request.headers.has('Authorization')).toBe(false);
-    expect(req.request.headers.get('Cache-Control')).toBe('no-store');
+    // Server supplies Cache-Control: no-store. No custom request header
+    // is needed, avoiding unnecessary CORS preflights.
+    expect(req.request.headers.has('Cache-Control')).toBe(false);
     req.flush({ key: 'system.roles.permissions', allowed: true });
     expect(await p).toBe(true);
   });

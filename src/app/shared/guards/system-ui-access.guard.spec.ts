@@ -4,6 +4,8 @@ import { firstValueFrom, isObservable, of } from 'rxjs';
 import { systemUiAccessGuard } from './system-ui-access.guard';
 import { SystemUiAccessService } from '../permissions/system-ui-access.service';
 import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../permissions/system-ui-access-pilot.token';
+import roleRoutes from '../../features/system/role/roles.routes';
+import { rolePermissionUiKeys } from '../permissions/role-permission-ui.keys';
 
 describe('systemUiAccessGuard first explicit Roles permissions pilot', () => {
   const canAccess = vi.fn(() => of(false));
@@ -26,6 +28,12 @@ describe('systemUiAccessGuard first explicit Roles permissions pilot', () => {
       ],
     });
   }
+
+  it('is actually wired to the Role Permissions lazy route with a stable UI key', () => {
+    const rolePermissions = roleRoutes.find(x => x.path === ':roleId/permissions');
+    expect(rolePermissions?.canActivate).toContain(systemUiAccessGuard);
+    expect(rolePermissions?.data?.['uiAccessKey']).toBe(rolePermissionUiKeys.page);
+  });
 
   beforeEach(() => {
     canAccess.mockReset();
