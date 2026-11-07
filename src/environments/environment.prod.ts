@@ -7,5 +7,7 @@ export const environment = {
   client_id: 'postman',
   bffClientId: 'foundation-browser-bff',
   grant_type: 'password',
+  // Reviewed granular UI pilot. Defaults OFF until Registry Apply and grants are ready.
+  systemUiAccessPilotEnabled: false,
   workspaceBaseDomain: 'shinera.ir',
 };

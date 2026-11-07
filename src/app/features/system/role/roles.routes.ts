@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { unsavedChangesGuard } from '../../../shared/guards/can-deactivate.guard';
+import { systemUiAccessGuard } from '../../../shared/guards/system-ui-access.guard';
+import { rolePermissionUiKeys } from '../../../shared/permissions/role-permission-ui.keys';
 
 export default [
   {
@@ -22,9 +24,13 @@ export default [
   },
   {
     path: ':roleId/permissions',
+    canActivate: [systemUiAccessGuard],
+    data: {
+      breadcrumb: 'مجوزهای نقش',
+      uiAccessKey: rolePermissionUiKeys.page,
+    },
     loadComponent: () =>
       import('./role-permissions-page/role-permissions-page.component').then(x => x.RolePermissionsPageComponent),
-    data: { breadcrumb: 'مجوزهای  نقش' }
   },
  
 ] as Routes;

@@ -8,7 +8,7 @@
       mat-flat-button
       color="primary"
       type="button"
-      [disabled]="loading || saving"
+      [disabled]="loading || saving || !canSavePermissions()"
       (click)="save()"
     >
       <mat-icon>save</mat-icon>
@@ -24,7 +24,7 @@
  <app-role-permission-tree
   [nodes]="nodes()"
   [selectedPermissionIds]="selectedPermissionIds()"
-  [disabled]="isSaving"
+  [disabled]="saving || !canSavePermissions()"
   (selectionChanged)="onPermissionSelectionChanged($event)"
 ></app-role-permission-tree>
 </div>

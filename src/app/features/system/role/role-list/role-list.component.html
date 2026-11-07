@@ -36,7 +36,9 @@
         </button>
 
         <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
-            <button mat-menu-item [routerLink]="row.id+'/permissions'" type="button">مدیریت مجوز ها </button>
+            @if (canManageRolePermissions()) {
+              <button mat-menu-item [routerLink]="row.id+'/permissions'" type="button">مدیریت مجوزها</button>
+            }
             <button mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
             <button mat-menu-item type="button">حذف</button>
         </mat-menu>
