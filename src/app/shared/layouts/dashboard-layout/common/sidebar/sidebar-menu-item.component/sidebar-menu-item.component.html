@@ -1,42 +1,45 @@
-@if (menuItem.childs!.length>0) {
-<mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <i class="material-symbols-outlined">
-                                    {{menuItem.icon}}
-                                </i>
-                                <span class="title">
-                                    {{menuItem.title}}
-                                </span>
-                                @if(menuItem.badge){
-                                    <span class="trezo-badge rounded-circle fw-medium d-inline-block text-center">
-                                       {{menuItem.badge}}
-                                   </span>
-                                }
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <ul class="sidebar-sub-menu">
-                            @for (item of menuItem.childs; track $index) {
-                                <a [routerLink]="item.route" class="sidebar-menu-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-                           <i class="material-symbols-outlined">
-                               {{item.icon}}
-                           </i>
-                           <span class="title">
-                               {{item.title}}
-                           </span>
-                       </a>
-                            }
-                        </ul>
-                        
-                    </mat-expansion-panel>
-}
-@else {
-     <a [routerLink]="menuItem.route" class="sidebar-menu-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-                        <i class="material-symbols-outlined">
-                            {{menuItem.icon}}
-                        </i>
-                        <span class="title">
-                            {{menuItem.title}}
-                        </span>
-                    </a>
-}
+<ng-template #node let-item>
+  @if (item.childs?.length) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <i class="material-symbols-outlined">{{ item.icon }}</i>
+          <span class="title">{{ item.title }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="sidebar-sub-menu">
+        @if (item.route) {
+          <a [routerLink]="item.route" class="sidebar-menu-link"
+             routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <i class="material-symbols-outlined">{{ item.icon }}</i>
+            <span class="title">{{ item.title }}</span>
+          </a>
+        } @else if (item.externalUrl) {
+          <a [href]="item.externalUrl" class="sidebar-menu-link" target="_blank"
+             rel="noopener noreferrer">
+            <i class="material-symbols-outlined">{{ item.icon }}</i>
+            <span class="title">{{ item.title }}</span>
+          </a>
+        }
+        @for (child of item.childs; track $index) {
+          <ng-container [ngTemplateOutlet]="node"
+                        [ngTemplateOutletContext]="{ $implicit: child }" />
+        }
+      </div>
+    </mat-expansion-panel>
+  } @else if (item.route) {
+    <a [routerLink]="item.route" class="sidebar-menu-link"
+       routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <i class="material-symbols-outlined">{{ item.icon }}</i>
+      <span class="title">{{ item.title }}</span>
+    </a>
+  } @else if (item.externalUrl) {
+    <a [href]="item.externalUrl" class="sidebar-menu-link" target="_blank"
+       rel="noopener noreferrer">
+      <i class="material-symbols-outlined">{{ item.icon }}</i>
+      <span class="title">{{ item.title }}</span>
+    </a>
+  }
+</ng-template>
+<ng-container [ngTemplateOutlet]="node"
+              [ngTemplateOutletContext]="{ $implicit: menuItem }" />
