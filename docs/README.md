@@ -18,3 +18,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-03A — Angular feature manifest and reviewed registry UI](development/FR-03A-FEATURE-REGISTRY-UI.md)
 
 - [FR-03B-1 — Validate System routes from backend manifest](development/FR-03B1-BACKEND-MANIFEST-VALIDATION.md)
+
+- [FR-03B-2 — All System routes bound to Registry route-only index](development/FR-03B2-SYSTEM-ROUTES.md)

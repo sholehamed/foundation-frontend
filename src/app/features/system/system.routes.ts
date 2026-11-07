@@ -16,7 +16,7 @@ export default [
         redirectTo: 'dashboard',
       },
       {
-        path: 'admins',
+        path: systemFeatureRouteSegments.admins,
         loadChildren: () => import('./admin/admins.routes'),
         data: { breadcrumb: 'مدیریت مدیران' },
       },
@@ -31,24 +31,24 @@ export default [
         data: { breadcrumb: 'مدیریت نقش‌ها' },
       },
       {
-        path: 'groups',
+        path: systemFeatureRouteSegments.groups,
         loadChildren: () => import('./group/groups.routes'),
         data: { breadcrumb: 'گروه‌های کاربری' },
       },
       {
-        path: 'dashboard',
+        path: systemFeatureRouteSegments.dashboard,
         loadComponent: () =>
           import('./system-dashboard/system-dashboard.component').then(
             (x) => x.SystemDashboardComponent
           ),
       },
       {
-        path: 'tenants',
+        path: systemFeatureRouteSegments.tenants,
         loadChildren: () => import('./tenants/tenants.routes'),
         data: { breadcrumb: 'مدیریت مستاجرها' },
       },
       {
-        path: 'modules',
+        path: systemFeatureRouteSegments.modules,
         loadChildren: () => import('./modules/modules.routes'),
         data: { breadcrumb: 'مدیریت ماژول ها' },
       },
@@ -58,22 +58,22 @@ export default [
         data: { breadcrumb: 'مدیریت مجوز ها' },
       },
       {
-        path: 'api-resources',
+        path: systemFeatureRouteSegments.apiResources,
         loadChildren: () => import('./resources/api-resources/api-resources.routes'),
         data: { breadcrumb: 'مدیریت منابع سرویس ها' },
       },
       {
-        path: 'ui-resources',
+        path: systemFeatureRouteSegments.uiResources,
         loadChildren: () => import('./resources/ui-resources/ui-resources.routes'),
         data: { breadcrumb: 'مدیریت منابع صفحات ها' },
       },
       {
-        path: 'resources',
+        path: systemFeatureRouteSegments.resources,
         loadChildren: () => import('./resources/resources.routes'),
         data: { breadcrumb: 'مدیریت منابع' },
       },
       {
-        path: 'feature-registry',
+        path: systemFeatureRouteSegments.featureRegistry,
         loadComponent: () =>
           import('./feature-registry/feature-registry.component').then(
             x => x.FeatureRegistryPageComponent
@@ -81,7 +81,7 @@ export default [
         data: { breadcrumb: 'رجیستری قابلیت‌ها' },
       },
       {
-        path: 'menu-management',
+        path: systemFeatureRouteSegments.menuManagement,
         loadComponent: () =>
           import('./menu-management/menu-management.component').then(
             (x) => x.MenuManagementPage

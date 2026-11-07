@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { FeatureRegistryApiService, FeatureRegistryPreview } from './feature-registry-api.service';
 import { FeatureRegistryPageComponent } from './feature-registry.component';
 import { BackendFeatureManifest } from './feature-registry-contract';
+import { systemFeatureRoutes } from './system-feature.manifest';
 
 describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   const pending: FeatureRegistryPreview = {
@@ -11,14 +12,17 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   };
   const contract: BackendFeatureManifest = {
     schemaVersion: 1,
-    features: [
-      { key: 'system.users', pageKey: 'system.users', moduleCode: 'system',
-        resourceCode: 'users', route: '/system/users', readPermission: 'USERS.READ' },
-      { key: 'system.roles', pageKey: 'system.roles', moduleCode: 'system',
-        resourceCode: 'roles', route: '/system/roles', readPermission: 'ROLES.READ' },
-      { key: 'system.permissions', pageKey: 'system.permissions', moduleCode: 'system',
-        resourceCode: 'permissions', route: '/system/permissions', readPermission: 'PERMISSIONS.READ' },
-    ],
+    features: systemFeatureRoutes.map(route => {
+      const resourceCode = route.slice('/system/'.length);
+      return {
+        key: 'system.' + resourceCode,
+        pageKey: 'system.' + resourceCode,
+        moduleCode: 'system',
+        resourceCode,
+        route,
+        readPermission: resourceCode.toUpperCase() + '.READ',
+      };
+    }),
   };
   let fixture: ComponentFixture<FeatureRegistryPageComponent>;
   let preview: ReturnType<typeof vi.fn>;
