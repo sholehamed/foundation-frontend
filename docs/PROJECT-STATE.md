@@ -1,5 +1,12 @@
 # Foundation Frontend — project state and handoff
 
+## FR-06B — live System UI access Guard and Save pilot (2026-11-07)
+
+- **PR/CI gate:** [FR-06B runbook](development/FR-06B-LIVE-UI-ACCESS-PILOT.md), Backend [PR #48](https://github.com/sholehamed/foundation-backend/pull/48). Angular `SystemUiAccessService` checks one code-owned key via live `UiAccess/me/{key}` and fails closed on error/mismatched response.
+- First System UI pilot: `/system/roles/:roleId/permissions` route Guard, Roles list menu visibility and Role Permissions Save with a **fresh click-time** ACTION check. `systemUiAccessPilotEnabled` is **false in every environment by default** to preserve existing administrator workflows until catalog/role grants are reviewed and deployed.
+- This is UI behavior, **not** API authorization: existing SystemAdministrator and separately opt-in granular API role permission checks stay unchanged. No BFF, production database or grants touched. Endpoint catalog and role write-backend safety remain authoritative.
+
+
 ## FR-05B — runtime nested PAGE compatibility and Registry manifest v2 (2026-11-07)
 
 - **Frontend implementation / CI gate:** [FR-05B handoff](development/FR-05B-NESTED-UI-ROUTES.md), Backend [PR #47](https://github.com/sholehamed/foundation-backend/pull/47). The Registry review page now loads the **actual lazy Angular route configurations** (default-export aware), enumerates 32 executable child PAGE templates and compares them to Backend schemaVersion=2 `uiElements` (32 PAGE + 9 ACTION descriptors) alongside the 13 root features.

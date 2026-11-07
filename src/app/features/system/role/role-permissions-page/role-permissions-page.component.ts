@@ -1,5 +1,6 @@
-import { Component, Input, input, OnInit, signal, ViewChild } from '@angular/core';
-import { finalize } from 'rxjs';
+import { Component, DestroyRef, inject, input, OnInit, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EMPTY, finalize, of, switchMap } from 'rxjs';
 import { RolePermissionTreeComponent } from '../role-permission-tree/role-permission-tree.component';
 import { RolePermissionTreeNode, RolesService } from '../roles.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +8,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { PageHeaderComponent } from '../../../../shared/components/form-components';
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
+import { rolePermissionUiKeys } from '../../../../shared/permissions/role-permission-ui.keys';
 
 @Component({
   selector: 'app-role-permissions-page',
@@ -24,7 +28,10 @@ import { PageHeaderComponent } from '../../../../shared/components/form-componen
 export class RolePermissionsPageComponent implements OnInit {
   @ViewChild(RolePermissionTreeComponent)
   permissionTree!: RolePermissionTreeComponent;
-  isSaving = false;
+  private readonly uiAccess = inject(SystemUiAccessService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly pilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  readonly canSavePermissions = signal(!this.pilotEnabled);
 
   roleId = input.required<string>();
 
@@ -38,6 +45,11 @@ export class RolePermissionsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPermissions();
+    if (this.pilotEnabled) {
+      this.uiAccess.canAccess(rolePermissionUiKeys.saveAction)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(allowed => this.canSavePermissions.set(allowed));
+    }
   }
 
   loadPermissions(): void {
@@ -58,22 +70,35 @@ export class RolePermissionsPageComponent implements OnInit {
   }
 
   save(): void {
+    if (this.saving || this.loading || !this.canSavePermissions()) return;
     const permissionIds = this.permissionTree.getSelectedPermissionIds();
 
     this.saving = true;
-
-    this.rolePermissionService
-      .updateRolePermissions(this.roleId(), permissionIds)
-      .pipe(finalize(() => (this.saving = false)))
+    // Re-read live access at click time, never trust an earlier UI hint.
+    // The API itself must still enforce write permissions independently.
+    (this.pilotEnabled
+      ? this.uiAccess.canAccess(rolePermissionUiKeys.saveAction)
+      : of(true))
+      .pipe(
+        switchMap(allowed => {
+          this.canSavePermissions.set(allowed);
+          return allowed
+            ? this.rolePermissionService.updateRolePermissions(this.roleId(), permissionIds)
+            : EMPTY;
+        }),
+        finalize(() => (this.saving = false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: () => {
-          // اینجا پیام موفقیت نمایش بدهید
+          // Show success notification using the host app's snackbar later.
         },
         error: () => {
-          // اینجا پیام خطا نمایش بدهید
+          // Backend authorization remains authoritative; never retry writes.
         },
       });
   }
+
   onPermissionSelectionChanged(permissionIds: string[]): void {
     this.selectedPermissionIds.set(permissionIds);
 
