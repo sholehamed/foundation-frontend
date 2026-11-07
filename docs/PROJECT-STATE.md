@@ -1,5 +1,12 @@
 # Foundation Frontend — project state and handoff
 
+## FR-03A — code-owned System feature manifest and admin Registry UI (2026-11-07)
+
+- **PR / CI gate:** [FR-03A guide](development/FR-03A-FEATURE-REGISTRY-UI.md), companion [Backend FR-02A PR #43](https://github.com/sholehamed/foundation-backend/pull/43). A typed manifest supplies stable feature keys and actual System Roles/Permissions route metadata, checked by Vitest against the Router configuration.
+- New `/system/feature-registry` review page displays Backend read-only Preview differences and supports explicit confirmed Apply (Backend must have `Identity:FeatureRegistry:EnableApply=true`); 403/409 and empty/error states never trigger writes or fabricate privileges. Menu Administration links to the Registry page.
+- **Limitations:** only Roles/Permissions first vertical, no automatic cross-repo build artifact exchange, permission-based Angular route guard or arbitrary DB-driven route components, no automatically assigned grants or auto-enabled backend apply. No BFF, Password Grant, token-storage or current-user Sidebar change.
+
+
 ## FR-04B — authenticated dynamic Sidebar (2026-11-07)
 
 - **PR / CI gate:** [FR-04B frontend handoff](development/FR-04B-CURRENT-USER-SIDEBAR.md), backend [FR-04A PR #42](https://github.com/sholehamed/foundation-backend/pull/42). Sidebar loads `GET /system/Menus/me` once, no client role selector, recursively renders all levels, handles empty/error without hardcoded privileged links and retains optional tenant logo handling. Unit tests cover HTTP contract, empty/error/retry, nested links and HTTPS external URLs.
