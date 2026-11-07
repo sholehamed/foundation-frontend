@@ -14,3 +14,15 @@ import type { MenuDto } from '../sidebar-menu.service';
 export class SidebarMenuItemComponent {
   @Input({ required: true }) menuItem!: MenuDto;
 }
+
+/**
+ * @deprecated Legacy template model kept for compatibility with sidebar/model.ts.
+ * New dynamic navigation uses MenuDto from sidebar-menu.service.ts instead.
+ */
+export interface menuItem {
+  title: string;
+  route?: string;
+  icon?: string;
+  badge?: string;
+  childs?: menuItem[];
+}
