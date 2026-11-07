@@ -52,6 +52,6 @@ describe('SystemUiAccessService current-user permission checks', () => {
 
   it('rejects malformed keys before HTTP calls', async () => {
     expect(await firstValueFrom(service.canAccess('../admin?roleId=123'))).toBe(false);
-    http.expectNone(/UiAccess/);
+    http.expectNone(req => req.url.includes('/UiAccess/'));
   });
 });
