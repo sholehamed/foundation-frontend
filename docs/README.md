@@ -14,3 +14,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - Avoid duplicating generated OpenAPI details in Markdown. Prefer Mermaid source diagrams when useful.
 
 - [FR-04B — Dynamic current-user Sidebar](development/FR-04B-CURRENT-USER-SIDEBAR.md)
+
+- [FR-03A — Angular feature manifest and reviewed registry UI](development/FR-03A-FEATURE-REGISTRY-UI.md)

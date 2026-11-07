@@ -1,6 +1,7 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule } from '@angular/material/tree';
 import { MenuCategoryDto, MenuDto, MenuOrderItem, MenuCreateCommand } from './menu-management.model';
 import { MenuApiService } from './menu-management.service';
@@ -38,6 +39,7 @@ interface MenuFlatNode {
   styleUrls: ['./menu-management.component.scss'],
   imports: [
     CommonModule,
+    RouterLink,
     MenuEditorDrawerComponent,
     MatSidenavModule,
     MatButtonModule,

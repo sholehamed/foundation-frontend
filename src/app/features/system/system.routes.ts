@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 import { PanelLayoutComponent } from '../../shared/layouts/dashboard-layout/panel-layout.component'
 import { SignInComponent } from '../../shared/pages/auth/sign-in/sign-in.component'
 import { systemSessionGuard } from '../../shared/guards/system-session.guard'
+import { systemFeatureManifest } from './feature-registry/system-feature.manifest'
 
 export default [
   {
@@ -25,9 +26,13 @@ export default [
         data: { breadcrumb: 'مدیریت کاربران' },
       },
       {
-        path: 'roles',
+        path: systemFeatureManifest.roles.segment,
         loadChildren: () => import('./role/roles.routes'),
-        data: { breadcrumb: 'مدیریت نقش‌ها' },
+        data: {
+          breadcrumb: 'مدیریت نقش‌ها',
+          featureKey: systemFeatureManifest.roles.key,
+          permissionCode: systemFeatureManifest.roles.permissionCode,
+        },
       },
       {
         path: 'groups',
@@ -52,9 +57,13 @@ export default [
         data: { breadcrumb: 'مدیریت ماژول ها' },
       },
       {
-        path: 'permissions',
+        path: systemFeatureManifest.permissions.segment,
         loadChildren: () => import('./resources/permissions/permissions.routes'),
-        data: { breadcrumb: 'مدیریت مجوز ها' },
+        data: {
+          breadcrumb: 'مدیریت مجوز ها',
+          featureKey: systemFeatureManifest.permissions.key,
+          permissionCode: systemFeatureManifest.permissions.permissionCode,
+        },
       },
       {
         path: 'api-resources',
@@ -70,6 +79,14 @@ export default [
         path: 'resources',
         loadChildren: () => import('./resources/resources.routes'),
         data: { breadcrumb: 'مدیریت منابع' },
+      },
+      {
+        path: 'feature-registry',
+        loadComponent: () =>
+          import('./feature-registry/feature-registry.component').then(
+            x => x.FeatureRegistryPageComponent
+          ),
+        data: { breadcrumb: 'رجیستری قابلیت‌ها' },
       },
       {
         path: 'menu-management',

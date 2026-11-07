@@ -1,0 +1,86 @@
+<section class="feature-registry-page" dir="rtl">
+  <header class="page-header">
+    <div>
+      <h1>رجیستری قابلیت‌ها</h1>
+      <p>مقایسه تعاریف کد با دیتابیس؛ بدون اعطای خودکار دسترسی به کاربران یا نقش‌ها.</p>
+    </div>
+    <a mat-stroked-button routerLink="/system/menu-management">
+      <mat-icon>arrow_back</mat-icon>
+      مدیریت منو
+    </a>
+  </header>
+
+  <div class="actions">
+    <button mat-stroked-button type="button" (click)="loadPreview()"
+      [disabled]="loading() || applying()">
+      <mat-icon>refresh</mat-icon>
+      بررسی مجدد
+    </button>
+    <button mat-flat-button color="primary" type="button" (click)="applyChanges()"
+      [disabled]="loading() || applying() || !preview()?.canApply || !preview()?.hasPending">
+      <mat-icon>sync</mat-icon>
+      ثبت تغییرات تأییدشده
+    </button>
+  </div>
+
+  <p class="notice">
+    عملیات Apply فقط برای مدیر سیستم و با فعال بودن تنظیم
+    <code>Identity:FeatureRegistry:EnableApply</code> قابل اجراست.
+    موارد غیرفعال یا دسترسی‌های موجود بازنویسی نمی‌شوند.
+  </p>
+
+  @if (loading()) {
+    <p role="status">در حال بررسی تعاریف...</p>
+  }
+  @if (message()) {
+    <p role="status" class="success-message">{{ message() }}</p>
+  }
+  @if (error()) {
+    <p role="alert" class="error-message">{{ error() }}</p>
+  }
+
+  @if (preview(); as result) {
+    <div class="stats">
+      <span>جدید: {{ count('Create') }}</span>
+      <span>موجود: {{ count('Present') }}</span>
+      <span>به‌روزرسانی مسیر: {{ count('UpdateRoute') }}</span>
+      <span>تداخل: {{ count('Conflict') }}</span>
+    </div>
+
+    @if (!result.canApply) {
+      <p role="alert" class="error-message">
+        Apply به‌دلیل تداخل متوقف است. رکوردهای ناسازگار را بررسی کنید.
+      </p>
+    } @else if (!result.hasPending) {
+      <p role="status" class="success-message">تعاریف موجود با کد فعلی هماهنگ‌اند.</p>
+    }
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">نوع</th>
+            <th scope="col">کلید پایدار</th>
+            <th scope="col">وضعیت</th>
+            <th scope="col">جزئیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (change of result.changes; track $index) {
+            <tr>
+              <td>{{ change.type }}</td>
+              <td><code>{{ change.key }}</code></td>
+              <td>
+                <span class="status" [class.conflict]="change.state === 'Conflict'"
+                  [class.pending]="change.state === 'Create' || change.state === 'UpdateRoute'">
+                  {{ change.state }}
+                </span>
+              </td>
+              <td>{{ change.detail || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
