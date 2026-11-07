@@ -7,9 +7,19 @@
  * A runtime compatibility check refuses admin Apply on route drift.
  */
 export const systemFeatureRouteSegments = {
+  admins: 'admins',
   users: 'users',
   roles: 'roles',
+  groups: 'groups',
+  dashboard: 'dashboard',
+  tenants: 'tenants',
+  modules: 'modules',
   permissions: 'permissions',
+  apiResources: 'api-resources',
+  uiResources: 'ui-resources',
+  resources: 'resources',
+  featureRegistry: 'feature-registry',
+  menuManagement: 'menu-management',
 } as const;
 
 export const systemFeatureRoutes = Object.values(systemFeatureRouteSegments)

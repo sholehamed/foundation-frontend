@@ -1,15 +1,21 @@
 import { BackendFeatureManifest, validateBackendFeatureManifest } from './feature-registry-contract';
+import { systemFeatureRoutes } from './system-feature.manifest';
 
 export const validFeatureContract: BackendFeatureManifest = {
   schemaVersion: 1,
-  features: [
-    { key: 'system.users', pageKey: 'system.users', moduleCode: 'system',
-      resourceCode: 'users', route: '/system/users', readPermission: 'USERS.READ' },
-    { key: 'system.roles', pageKey: 'system.roles', moduleCode: 'system',
-      resourceCode: 'roles', route: '/system/roles', readPermission: 'ROLES.READ' },
-    { key: 'system.permissions', pageKey: 'system.permissions', moduleCode: 'system',
-      resourceCode: 'permissions', route: '/system/permissions', readPermission: 'PERMISSIONS.READ' },
-  ],
+  // Mock the server contract. Production source code stores only executable
+  // Angular segments; stable keys and permissions come from the Backend.
+  features: systemFeatureRoutes.map(route => {
+    const resourceCode = route.slice('/system/'.length);
+    return {
+      key: 'system.' + resourceCode,
+      pageKey: 'system.' + resourceCode,
+      moduleCode: 'system',
+      resourceCode,
+      route,
+      readPermission: resourceCode.toUpperCase() + '.READ',
+    };
+  }),
 };
 
 describe('Feature Registry backend-owned manifest compatibility', () => {
@@ -25,9 +31,9 @@ describe('Feature Registry backend-owned manifest compatibility', () => {
     expect(validateBackendFeatureManifest(future).length).toBeGreaterThan(0);
 
     const extra = { ...validFeatureContract, features: [...validFeatureContract.features,
-      { ...validFeatureContract.features[0], key: 'system.groups',
-        pageKey: 'system.groups', route: '/system/groups', readPermission: 'GROUPS.READ' }] };
-    expect(validateBackendFeatureManifest(extra).join(' ')).toContain('/system/groups');
+      { ...validFeatureContract.features[0], key: 'system.audit',
+        pageKey: 'system.audit', route: '/system/audit', readPermission: 'AUDIT.READ' }] };
+    expect(validateBackendFeatureManifest(extra).join(' ')).toContain('/system/audit');
   });
 
   it('blocks duplicate stable keys and malformed read permission codes', () => {

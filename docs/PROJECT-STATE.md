@@ -1,5 +1,11 @@
 # Foundation Frontend — project state and handoff
 
+## FR-03B-2 — complete System executable-route coverage (2026-11-07)
+
+- **Frontend implementation / CI gate:** [FR-03B-2 runbook](development/FR-03B2-SYSTEM-ROUTES.md) and [Backend PR #46](https://github.com/sholehamed/foundation-backend/pull/46). All 13 actual root System routes now share a route-only index; no duplicated backend-owned keys or read permission codes. Vitest checks the entire `system.routes.ts` root page set exactly matches the index, preventing a forgotten page.
+- The privileged Registry admin page continues to validate the full backend schemaVersion=1 feature manifest against these Angular paths before offering Apply. No login/BFF/permission-enforcement/role grant changes. Existing legacy menu entries and database state remain untouched until explicitly reviewed Apply; CI unit tests are not production SQL cert.
+
+
 ## FR-03B-1 — backend-owned manifest and Angular route compatibility (2026-11-07)
 
 - **PR / CI gate:** [FR-03B-1 handoff](development/FR-03B1-BACKEND-MANIFEST-VALIDATION.md); paired backend [PR #45](https://github.com/sholehamed/foundation-backend/pull/45). Angular no longer duplicates the stable Feature.Key or Permission.Code in its production route definitions; the code-owned System route index contains only executable route segments for Users, Roles and Permissions.
