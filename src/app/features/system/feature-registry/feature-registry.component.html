@@ -17,7 +17,7 @@
       بررسی مجدد
     </button>
     <button mat-flat-button color="primary" type="button" (click)="applyChanges()"
-      [disabled]="loading() || applying() || !preview()?.canApply || !preview()?.hasPending">
+      [disabled]="loading() || applying() || !manifestVerified() || manifestProblems().length > 0 || !preview()?.canApply || !preview()?.hasPending">
       <mat-icon>sync</mat-icon>
       ثبت تغییرات تأییدشده
     </button>
@@ -37,6 +37,17 @@
   }
   @if (error()) {
     <p role="alert" class="error-message">{{ error() }}</p>
+  }
+
+  @if (manifestProblems().length > 0) {
+    <div role="alert" class="error-message">
+      <p>نسخه Backend و Routeهای این نسخه Angular مطابقت ندارند. Apply برای جلوگیری از ثبت ناسازگار غیرفعال شده است.</p>
+      <ul>
+        @for (problem of manifestProblems(); track $index) {
+          <li>{{ problem }}</li>
+        }
+      </ul>
+    </div>
   }
 
   @if (preview(); as result) {

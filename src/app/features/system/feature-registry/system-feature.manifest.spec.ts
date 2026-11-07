@@ -1,24 +1,23 @@
 import routes from '../system.routes';
-import { systemFeatureManifest } from './system-feature.manifest';
+import { systemFeatureRouteSegments, systemFeatureRoutes } from './system-feature.manifest';
 
-describe('System feature manifest and Angular route alignment', () => {
-  it('binds every code-owned UI feature to a real Angular System route', () => {
+describe('System Angular route index', () => {
+  it('binds route-only entries to actual lazy components without duplicating Backend permission keys', () => {
     const root = routes.find(x => x.path === '');
     const children = root?.children ?? [];
-    const features = Object.values(systemFeatureManifest);
+    const segments = Object.values(systemFeatureRouteSegments);
+    expect(segments).toHaveLength(3);
+    expect(new Set(segments).size).toBe(segments.length);
+    expect(systemFeatureRoutes).toEqual(segments.map(x => '/system/' + x));
 
-    expect(new Set(features.map(x => x.key)).size).toBe(features.length);
-    expect(new Set(features.map(x => x.route)).size).toBe(features.length);
-
-    for (const feature of features) {
-      expect(feature.route).toBe('/system/' + feature.segment);
-      const route = children.find(x => x.path === feature.segment);
+    for (const segment of segments) {
+      const route = children.find(x => x.path === segment);
       expect(route).toBeDefined();
-      expect(route?.data?.['featureKey']).toBe(feature.key);
-      expect(route?.data?.['permissionCode']).toBe(feature.permissionCode);
       expect(route?.loadChildren || route?.loadComponent).toBeTruthy();
+      // Stable Feature.Key and read Permission.Code are owned by the backend.
+      expect(route?.data?.['featureKey']).toBeUndefined();
+      expect(route?.data?.['permissionCode']).toBeUndefined();
     }
-
     expect(children.some(x => x.path === 'feature-registry')).toBe(true);
   });
 });

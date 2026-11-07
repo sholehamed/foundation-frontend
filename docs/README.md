@@ -16,3 +16,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-04B — Dynamic current-user Sidebar](development/FR-04B-CURRENT-USER-SIDEBAR.md)
 
 - [FR-03A — Angular feature manifest and reviewed registry UI](development/FR-03A-FEATURE-REGISTRY-UI.md)
+
+- [FR-03B-1 — Validate System routes from backend manifest](development/FR-03B1-BACKEND-MANIFEST-VALIDATION.md)
