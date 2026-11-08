@@ -32,3 +32,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-08B — Tenant Admin read-only workspace starter](development/FR-08B-TENANT-WORKSPACE.md)
 
 - [FR-13B-1 — inactive Tenant member creation form](development/FR-13B1-TENANT-INACTIVE-MEMBER-UI.md)
+
+- [FR-13B-2 — Tenant invitation + activation UI](development/FR-13B2-TENANT-INVITATION-ACTIVATION-UI.md)

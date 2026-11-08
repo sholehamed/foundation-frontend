@@ -117,6 +117,16 @@ describe('TenantWorkspaceService current-tenant API', () => {
     roleState.flush({ id: 'owned-role', name: 'Reception 2', description: null,
       isActive: false, isOwner: false, version: 'AwIDBAUGBwg=' });
 
+    api.invitePendingMember('member-1').subscribe();
+    const sendInvitation = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/members/member-1/invitations');
+    expect(sendInvitation.request.method).toBe('POST');
+    expect(sendInvitation.request.body).toEqual({});
+    expect(sendInvitation.request.body).not.toHaveProperty('tenantId');
+    expect(sendInvitation.request.body).not.toHaveProperty('token');
+    expect(sendInvitation.request.body).not.toHaveProperty('password');
+    sendInvitation.flush({ status: 'submitted', expiresAtUtc: '2026-11-09T12:30:00Z' });
+
     api.getMemberRoles('member-1').subscribe();
     const memberRoles = http.expectOne(environment.apiUrl +
       '/tenant/workspace/members/member-1/roles');

@@ -10,6 +10,7 @@ describe('Tenant owner directory pages', () => {
   const getGroups = vi.fn();
   const getAdminCapabilities = vi.fn();
   const createPendingMember = vi.fn();
+  const invitePendingMember = vi.fn();
 
   beforeEach(async () => {
     getMembers.mockReset().mockReturnValue(of({ items: [{
@@ -20,12 +21,13 @@ describe('Tenant owner directory pages', () => {
     getGroups.mockReset().mockReturnValue(of({ items: [], page: 1, hasNext: false }));
     getAdminCapabilities.mockReset().mockReturnValue(of({ canViewMembers: true, canCreateMembers: true }));
     createPendingMember.mockReset();
+    invitePendingMember.mockReset();
     await TestBed.configureTestingModule({
       imports: [TenantAdminDirectoryComponent],
       providers: [
         { provide: ActivatedRoute, useValue: { data: of({ directoryKind: 'members' }) } },
         { provide: TenantWorkspaceService, useValue: {
-          getMembers, getRoles, getGroups, getAdminCapabilities, createPendingMember,
+          getMembers, getRoles, getGroups, getAdminCapabilities, createPendingMember, invitePendingMember,
         } },
       ],
     }).compileComponents();
@@ -107,6 +109,49 @@ describe('Tenant owner directory pages', () => {
     expect(f.componentInstance.canCreateMembers()).toBe(false);
     expect(f.componentInstance.result()).toBeNull();
     expect(f.componentInstance.error()).toContain('لغو شده');
+    f.destroy();
+  });
+
+  it('submits an invitation only for inactive staff with freshly allowed Owner capability', () => {
+    getMembers.mockReturnValue(of({ items: [
+      { id: 'pending', userName: 'new.staff', email: 'new@local.test',
+        firstName: 'New', lastName: 'Staff', isActive: false },
+    ], page: 1, hasNext: false }));
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: true, canInviteMembers: true,
+    }));
+    invitePendingMember.mockReturnValue(of({
+      status: 'submitted', expiresAtUtc: '2026-11-09T12:30:00Z',
+    }));
+    const f = TestBed.createComponent(TenantAdminDirectoryComponent);
+    f.detectChanges();
+    expect(f.componentInstance.canInviteMembers()).toBe(true);
+    f.componentInstance.inviteMember('pending');
+    expect(getAdminCapabilities).toHaveBeenCalledTimes(2);
+    expect(invitePendingMember).toHaveBeenCalledOnce();
+    expect(invitePendingMember).toHaveBeenCalledWith('pending');
+    expect(f.componentInstance.notice()).toContain('سرویس ایمیل');
+    expect(f.componentInstance.notice()).toContain('تأیید نشده');
+    f.destroy();
+  });
+
+  it('blocks invitation if capability was revoked before sending', () => {
+    getMembers.mockReturnValue(of({ items: [
+      { id: 'pending', userName: 'new.staff', email: 'new@local.test',
+        firstName: 'New', lastName: 'Staff', isActive: false },
+    ], page: 1, hasNext: false }));
+    getAdminCapabilities.mockReturnValueOnce(of({
+      canViewMembers: true, canCreateMembers: false, canInviteMembers: true,
+    })).mockReturnValueOnce(of({
+      canViewMembers: true, canCreateMembers: false, canInviteMembers: false,
+    }));
+    const f = TestBed.createComponent(TenantAdminDirectoryComponent);
+    f.detectChanges();
+    f.componentInstance.inviteMember('pending');
+    expect(invitePendingMember).not.toHaveBeenCalled();
+    expect(f.componentInstance.canInviteMembers()).toBe(false);
+    expect(f.componentInstance.result()).toBeNull();
+    expect(f.componentInstance.inviteError()).toContain('لغو شده');
     f.destroy();
   });
 

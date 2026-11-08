@@ -1,3 +1,10 @@
+## FR-13B-2 — one-time invitation and activation UI (2026-11-09)
+
+- Backend companion [PR #75](https://github.com/sholehamed/foundation-backend/pull/75), Issue [#74](https://github.com/sholehamed/foundation-backend/issues/74). Tenant members directory now has live `canInviteMembers` capability and sends invitation requests for inactive members only. No Owner-visible token; SMTP response `submitted` is not proof of inbox delivery.
+- Public `/auth/activate` page consumes link token from a URL fragment captured/erased **before Angular bootstrap**, only transient memory; validates exact Tenant host, insists on same-origin API, uses credential-omitting, no-redirect, same-origin fetch activation with strong new password and clears secrets. Backend owns hash, TTL, one-time SQL consumption and audit.
+- Full deployment requires approved SQL migrations, manual Tenant Registry Preview/Apply and Owner grant, properly configured SMTP, same-origin HTTPS Tenant proxy; none are enabled by a code merge. A functioning Staging SMTP delivery and complete two-user Chromium acceptance remain future work.
+- [Design and test contract](development/FR-13B2-TENANT-INVITATION-ACTIVATION-UI.md).
+
 ## FR-13B-1 — Tenant inactive member creation UI (2026-11-09)
 
 - Added a server-capability-gated form on the existing /dashboard/members page. POST only {userName,email,firstName,lastName}; never client TenantId/role/password/active status. Rechecks canViewMembers+canCreateMembers immediately before write; 401/403/404 clears local rows and create permission.

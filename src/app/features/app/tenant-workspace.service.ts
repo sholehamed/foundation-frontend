@@ -52,6 +52,7 @@ export const TenantPermissionKeys = {
   rolesChangeState: 'TENANT.ROLES.CHANGE-STATE',
   membersAssignRoles: 'TENANT.MEMBERS.ASSIGN-ROLES',
   membersCreate: 'TENANT.MEMBERS.CREATE',
+  membersInvite: 'TENANT.MEMBERS.INVITE',
 } as const;
 
 export interface TenantUiAccessItem {
@@ -73,6 +74,7 @@ export interface TenantAdminCapabilities {
   canChangeRoleState: boolean;
   canAssignMemberRoles: boolean;
   canCreateMembers: boolean;
+  canInviteMembers: boolean;
 }
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
@@ -166,6 +168,13 @@ export class TenantWorkspaceService {
   createPendingMember(request: TenantPendingMemberCreateRequest): Observable<TenantPendingMemberCreated> {
     return this.http.post<TenantPendingMemberCreated>(this.root + '/members', request);
   }
+  /** Token is sent ONLY to registered member email, never returned to this API. */
+  invitePendingMember(memberId: string): Observable<{ status: 'submitted'; expiresAtUtc: string }> {
+    return this.http.post<{ status: 'submitted'; expiresAtUtc: string }>(
+      this.root + '/members/' + encodeURIComponent(memberId) + '/invitations', {},
+    );
+  }
+
   getRoles(page = 1): Observable<TenantDirectoryPage<TenantAdminRole>> {
     return this.http.get<TenantDirectoryPage<TenantAdminRole>>(this.root + '/roles', { params: { page } });
   }
