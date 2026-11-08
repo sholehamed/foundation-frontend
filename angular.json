@@ -99,10 +99,7 @@
               "ayda.shinera.app",
               "shinera.ir",
               "ayda.shinera.ir",
-              "www.shinera.ir",
-              "tenant-a.shinera.localhost",
-              "127.0.0.1",
-              "localhost"
+              "www.shinera.ir"
             ]
           },
           "builder": "@angular/build:dev-server",
@@ -117,7 +114,12 @@
               "buildTarget": "ShineraApp:build:e2e"
             },
             "bff-pilot-e2e": {
-              "buildTarget": "ShineraApp:build:bff-pilot-e2e"
+              "buildTarget": "ShineraApp:build:bff-pilot-e2e",
+              "allowedHosts": [
+                "tenant-a.shinera.localhost",
+                "127.0.0.1",
+                "localhost"
+              ]
             }
           },
           "defaultConfiguration": "development"
