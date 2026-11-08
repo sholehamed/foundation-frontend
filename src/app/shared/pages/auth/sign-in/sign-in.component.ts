@@ -46,6 +46,17 @@ router:Router=inject(Router)
     window.location.protocol + '//' + environment.workspaceBaseDomain +
     (window.location.port ? ':' + window.location.port : '') + '/start';
 
+  get canUseFirstLogin(): boolean {
+    return environment.tenantFirstLoginEnabled &&
+      this.login_context === 'tenant' &&
+      isTenantWorkspaceHost(window.location.hostname, environment.workspaceBaseDomain);
+  }
+
+  get hasJustChangedPassword(): boolean {
+    return this.login_context === 'tenant' &&
+      this.router.parseUrl(this.router.url).queryParams['passwordChanged'] === '1';
+  }
+
   get hasJustRegistered(): boolean {
     return this.router.parseUrl(this.router.url).queryParams['registered'] === '1' &&
       this.login_context === 'tenant';

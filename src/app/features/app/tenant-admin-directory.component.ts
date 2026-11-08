@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -37,6 +38,22 @@ import {
       }
       @if (inviteError()) {
         <div class="tenant-feedback error" role="alert">{{ inviteError() }}</div>
+      }
+      @if (temporaryError()) {
+        <div class="tenant-feedback error" role="alert">{{ temporaryError() }}</div>
+      }
+      @if (temporarySecret(); as issued) {
+        <section class="tenant-panel" role="dialog" aria-label="رمز اولیه یک‌بارنمایش" style="border:2px solid #a65d6d">
+          <h2>رمز اولیه کارمند — فقط همین یک‌بار</h2>
+          <p>این رمز برای ورود اولیه {{ issued.userName }} است و حداکثر ۶۰ دقیقه اعتبار دارد.
+            آن را فقط پس از تأیید هویت، به کارمند تحویل دهید. پس از بستن، بازیابی آن ممکن نیست؛
+            در صورت گم‌شدن باید رمز جدید صادر کنید.</p>
+          <code dir="ltr" style="display:block;overflow-wrap:anywhere;font-size:17px;
+            padding:14px;margin:12px 0;border-radius:9px;background:#f5eef2">{{ issued.password }}</code>
+          <button mat-flat-button type="button" (click)="closeTemporarySecret()">
+            تحویل دادم؛ بستن و پاک‌کردن رمز
+          </button>
+        </section>
       }
       @if (kind() === 'members' && createOpen() && canCreateMembers()) {
         <section class="tenant-panel" aria-label="ثبت عضو غیرفعال">
@@ -102,6 +119,12 @@ import {
                   <a mat-stroked-button [routerLink]="['/dashboard/members', item.id, 'roles']">
                     نقش‌های عضو
                   </a>
+                  @if (!item.isActive && canIssueTemporaryPassword()) {
+                    <button mat-stroked-button type="button" (click)="issueTemporaryPassword(item.id, itemTitle(item))"
+                      [disabled]="loading() || saving() || !!invitingMemberId() || !!issuingMemberId() || !!temporarySecret()">
+                      {{ issuingMemberId() === item.id ? 'در حال صدور...' : 'صدور رمز اولیه' }}
+                    </button>
+                  }
                   @if (!item.isActive && canInviteMembers()) {
                     <button mat-flat-button type="button" (click)="inviteMember(item.id)"
                       [disabled]="loading() || saving() || !!invitingMemberId()">
@@ -143,6 +166,10 @@ export class TenantAdminDirectoryComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly canCreateMembers = signal(false);
   readonly canInviteMembers = signal(false);
+  readonly canIssueTemporaryPassword = signal(false);
+  readonly issuingMemberId = signal<string | null>(null);
+  readonly temporaryError = signal<string | null>(null);
+  readonly temporarySecret = signal<{ userName: string; password: string } | null>(null);
   readonly invitingMemberId = signal<string | null>(null);
   readonly inviteError = signal<string | null>(null);
   readonly createOpen = signal(false);
@@ -164,6 +191,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
       this.kind.set(kind);
       this.canCreateMembers.set(false);
       this.canInviteMembers.set(false);
+      this.canIssueTemporaryPassword.set(false);
+      this.temporarySecret.set(null);
       this.createOpen.set(false);
       this.page.set(1);
       this.load();
@@ -172,6 +201,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
   private refreshCreateAccess(): void {
     this.canCreateMembers.set(false);
     this.canInviteMembers.set(false);
+    this.canIssueTemporaryPassword.set(false);
     this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: value => {
         const allowed = value?.canViewMembers === true &&
@@ -179,14 +209,70 @@ export class TenantAdminDirectoryComponent implements OnInit {
         this.canCreateMembers.set(allowed);
         this.canInviteMembers.set(value?.canViewMembers === true &&
           value?.canInviteMembers === true);
+        this.canIssueTemporaryPassword.set(environment.tenantFirstLoginEnabled &&
+          value?.canViewMembers === true && value?.canIssueTemporaryPassword === true);
         if (!allowed) this.createOpen.set(false);
       },
       error: () => {
         this.canCreateMembers.set(false);
         this.canInviteMembers.set(false);
+        this.canIssueTemporaryPassword.set(false);
         this.createOpen.set(false);
       },
     });
+  }
+
+  closeTemporarySecret(): void {
+    this.temporarySecret.set(null);
+  }
+
+  issueTemporaryPassword(memberId: string, userName: string): void {
+    if (!environment.tenantFirstLoginEnabled || this.kind() !== 'members' ||
+        !this.canIssueTemporaryPassword() || this.saving() || this.loading() ||
+        this.issuingMemberId() || this.invitingMemberId() || this.temporarySecret() ||
+        !this.result()?.items.some(row => row.id === memberId && !row.isActive)) return;
+
+    this.temporaryError.set(null);
+    this.issuingMemberId.set(memberId);
+    this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: cap => {
+        if (cap?.canViewMembers !== true || cap?.canIssueTemporaryPassword !== true) {
+          this.temporaryDenied();
+          return;
+        }
+        this.api.issueTemporaryPassword(memberId)
+          .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: response => {
+              this.issuingMemberId.set(null);
+              if (!response?.temporaryPassword || response.temporaryPassword.length < 24) {
+                this.temporaryError.set('صدور رمز اولیه قابل تأیید نیست. در صورت لزوم رمز جدید صادر کنید.');
+                return;
+              }
+              this.temporarySecret.set({ userName, password: response.temporaryPassword });
+              this.notice.set(null);
+            },
+            error: (error: { status?: number }) => {
+              this.issuingMemberId.set(null);
+              if ([401, 403, 404].includes(error.status ?? 0)) {
+                this.temporaryDenied();
+                return;
+              }
+              this.temporaryError.set(error.status === 429
+                ? 'درخواست‌های زیادی صادر شده؛ بعداً تلاش کنید.'
+                : 'صدور رمز اولیه تأیید نشد. دوباره تلاش کنید.');
+            },
+          });
+      },
+      error: () => this.temporaryDenied(),
+    });
+  }
+
+  private temporaryDenied(): void {
+    this.issuingMemberId.set(null);
+    this.canIssueTemporaryPassword.set(false);
+    this.temporarySecret.set(null);
+    this.result.set(null);
+    this.temporaryError.set('مجوز صدور رمز اولیه معتبر نیست یا لغو شده است.');
   }
 
   inviteMember(memberId: string): void {
@@ -350,7 +436,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
     }
   }
   load(): void {
-    if (this.loading() || this.saving() || this.invitingMemberId()) return;
+    if (this.loading() || this.saving() || this.invitingMemberId() ||
+        this.issuingMemberId() || this.temporarySecret()) return;
     if (this.kind() === 'members') this.refreshCreateAccess();
     this.loading.set(true);
     this.error.set(null);

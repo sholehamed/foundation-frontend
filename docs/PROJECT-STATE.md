@@ -1,3 +1,9 @@
+## FR-13B-3 — first-login / compulsory password change (2026-11-09)
+
+- Backend companion [PR #77](https://github.com/sholehamed/foundation-backend/pull/77), [Issue #76](https://github.com/sholehamed/foundation-backend/issues/76). Default-OFF Angular `tenantFirstLoginEnabled` gates a one-time Owner temporary-password issuance/reveal in Tenant directory and a new public `/auth/first-login` restricted proof/change form, separate from native OAuth/BFF and SMTP invitation flows.
+- Employee exchanges initial password only for a 10-minute, single-purpose password-change challenge **without** a normal session. `fetch` credentials omit, same-origin HTTPS, no redirects; secret remains transient in component memory and gets cleared after use. On success explicitly returns to ordinary login and must reauthenticate with new password.
+- All Backend rollout and account activation are fail-closed on missing approved SQL migration/catalog/grants/toggle. No live Staging, SMTP setup or Production change in this UI PR. [Full UI contract](development/FR-13B3-FIRST-LOGIN-UI.md).
+
 ## FR-13B-2 — one-time invitation and activation UI (2026-11-09)
 
 - Backend companion [PR #75](https://github.com/sholehamed/foundation-backend/pull/75), Issue [#74](https://github.com/sholehamed/foundation-backend/issues/74). Tenant members directory now has live `canInviteMembers` capability and sends invitation requests for inactive members only. No Owner-visible token; SMTP response `submitted` is not proof of inbox delivery.

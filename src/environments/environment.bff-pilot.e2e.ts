@@ -9,5 +9,7 @@ export const environment = {
   grant_type: 'password',
   systemUiAccessPilotEnabled: false,
   bffTenantPilotEnabled: true,
+  // FR-13B-3: restricted initial-login pilot remains OFF in this build.
+  tenantFirstLoginEnabled: false,
   workspaceBaseDomain: 'shinera.localhost',
 };

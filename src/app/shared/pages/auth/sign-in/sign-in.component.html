@@ -55,6 +55,19 @@
                     </div>
 
 
+                    @if (hasJustChangedPassword) {
+                        <p role="status" style="padding:12px 16px;border:1px solid #2e8b57;border-radius:10px;color:#2e8b57">
+                            رمز دائمی ثبت شد. برای ورود به سامانه با رمز جدید دوباره وارد شوید.
+                        </p>
+                    }
+
+                    @if (canUseFirstLogin) {
+                        <p style="margin:8px 0 18px">
+                            برای اولین ورود با رمز اولیه‌ای که مدیر به شما داده است،
+                            <a routerLink="/auth/first-login">از اینجا رمز شخصی خود را تعیین کنید</a>.
+                        </p>
+                    }
+
                     @if (hasJustRegistered) {
                         <p role="status" style="padding: 12px 16px; border: 1px solid #2e8b57; border-radius: 10px; color: #2e8b57">
                             فضای کاری ساخته شد. با شماره موبایل و رمز عبوری که ثبت کردی وارد شو.

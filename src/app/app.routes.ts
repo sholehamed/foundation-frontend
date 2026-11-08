@@ -65,6 +65,11 @@ export const routes: Routes = [
     children: [
       { path: 'login', component: SignInComponent, data: { login_context: 'tenant' } },
       {
+        path: 'first-login',
+        loadComponent: () => import('./features/public/tenant-first-login.component')
+          .then(x => x.TenantFirstLoginComponent),
+      },
+      {
         path: 'activate',
         loadComponent: () => import('./features/public/tenant-invitation-activation.component')
           .then(x => x.TenantInvitationActivationComponent),

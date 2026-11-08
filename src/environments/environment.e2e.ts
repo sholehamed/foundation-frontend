@@ -12,5 +12,7 @@ export const environment = {
   systemUiAccessPilotEnabled: false,
   // FR-12G: experimental Tenant browser BFF API mode. OFF for every shipped build.
   bffTenantPilotEnabled: false,
+  // FR-13B-3: restricted initial-login pilot remains OFF in this build.
+  tenantFirstLoginEnabled: false,
   workspaceBaseDomain: 'shinera.localhost',
 };

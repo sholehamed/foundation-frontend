@@ -117,6 +117,17 @@ describe('TenantWorkspaceService current-tenant API', () => {
     roleState.flush({ id: 'owned-role', name: 'Reception 2', description: null,
       isActive: false, isOwner: false, version: 'AwIDBAUGBwg=' });
 
+    api.issueTemporaryPassword('member-1').subscribe();
+    const initial = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/members/member-1/temporary-password');
+    expect(initial.request.method).toBe('POST');
+    expect(initial.request.body).toEqual({});
+    expect(initial.request.body).not.toHaveProperty('tenantId');
+    expect(initial.request.body).not.toHaveProperty('password');
+    expect(initial.request.body).not.toHaveProperty('roleIds');
+    initial.flush({ temporaryPassword: 'ABCDEF-ghijkl-MNOPQR-stuvwx',
+      expiresAtUtc: '2026-11-09T12:30:00Z' });
+
     api.invitePendingMember('member-1').subscribe();
     const sendInvitation = http.expectOne(environment.apiUrl +
       '/tenant/workspace/members/member-1/invitations');

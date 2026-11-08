@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { TenantWorkspaceService } from './tenant-workspace.service';
 import { TenantAdminDirectoryComponent } from './tenant-admin-directory.component';
 
@@ -11,6 +12,7 @@ describe('Tenant owner directory pages', () => {
   const getAdminCapabilities = vi.fn();
   const createPendingMember = vi.fn();
   const invitePendingMember = vi.fn();
+  const issueTemporaryPassword = vi.fn();
 
   beforeEach(async () => {
     getMembers.mockReset().mockReturnValue(of({ items: [{
@@ -22,15 +24,22 @@ describe('Tenant owner directory pages', () => {
     getAdminCapabilities.mockReset().mockReturnValue(of({ canViewMembers: true, canCreateMembers: true }));
     createPendingMember.mockReset();
     invitePendingMember.mockReset();
+    issueTemporaryPassword.mockReset();
+    environment.tenantFirstLoginEnabled = true;
     await TestBed.configureTestingModule({
       imports: [TenantAdminDirectoryComponent],
       providers: [
         { provide: ActivatedRoute, useValue: { data: of({ directoryKind: 'members' }) } },
         { provide: TenantWorkspaceService, useValue: {
           getMembers, getRoles, getGroups, getAdminCapabilities, createPendingMember, invitePendingMember,
+          issueTemporaryPassword,
         } },
       ],
     }).compileComponents();
+  });
+
+  afterEach(() => {
+    environment.tenantFirstLoginEnabled = false;
   });
 
   it('renders only the current tenant API fields and supports paging', () => {
@@ -153,6 +162,63 @@ describe('Tenant owner directory pages', () => {
     expect(f.componentInstance.result()).toBeNull();
     expect(f.componentInstance.inviteError()).toContain('لغو شده');
     f.destroy();
+  });
+
+  it('shows a one-time initial credential only after live Owner capability', () => {
+    getMembers.mockReturnValue(of({ items: [
+      { id: 'pending', userName: 'new.staff', email: 'new@test.local',
+        firstName: 'New', lastName: 'Staff', isActive: false },
+    ], page: 1, hasNext: false }));
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: false,
+      canInviteMembers: false, canIssueTemporaryPassword: true,
+    }));
+    issueTemporaryPassword.mockReturnValue(of({
+      temporaryPassword: 'ABCDEF-ghijkl-MNOPQR-stuvwx',
+      expiresAtUtc: '2026-11-09T12:30:00Z',
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.canIssueTemporaryPassword()).toBe(true);
+    fixture.componentInstance.issueTemporaryPassword('pending', 'new.staff');
+    expect(getAdminCapabilities).toHaveBeenCalledTimes(2);
+    expect(issueTemporaryPassword).toHaveBeenCalledWith('pending');
+    expect(fixture.componentInstance.temporarySecret()?.password)
+      .toBe('ABCDEF-ghijkl-MNOPQR-stuvwx');
+    fixture.componentInstance.closeTemporarySecret();
+    expect(fixture.componentInstance.temporarySecret()).toBeNull();
+    fixture.destroy();
+  });
+
+  it('does not issue an initial credential if Owner permission is revoked', () => {
+    getMembers.mockReturnValue(of({ items: [
+      { id: 'pending', userName: 'new.staff', email: 'new@test.local',
+        firstName: 'New', lastName: 'Staff', isActive: false },
+    ], page: 1, hasNext: false }));
+    getAdminCapabilities.mockReturnValueOnce(of({
+      canViewMembers: true, canIssueTemporaryPassword: true,
+    })).mockReturnValueOnce(of({
+      canViewMembers: true, canIssueTemporaryPassword: false,
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.issueTemporaryPassword('pending', 'new.staff');
+    expect(issueTemporaryPassword).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.canIssueTemporaryPassword()).toBe(false);
+    expect(fixture.componentInstance.result()).toBeNull();
+    expect(fixture.componentInstance.temporarySecret()).toBeNull();
+    fixture.destroy();
+  });
+
+  it('never allows Owner to reveal an initial secret on an active row', () => {
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canIssueTemporaryPassword: true,
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.issueTemporaryPassword('owned', 'owner');
+    expect(issueTemporaryPassword).not.toHaveBeenCalled();
+    fixture.destroy();
   });
 
 });
