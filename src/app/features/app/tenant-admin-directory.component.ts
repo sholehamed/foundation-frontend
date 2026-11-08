@@ -120,7 +120,7 @@ import {
                     نقش‌های عضو
                   </a>
                   @if (!item.isActive && canIssueTemporaryPassword()) {
-                    <button mat-stroked-button type="button" (click)="issueTemporaryPassword(item.id, item.userName)"
+                    <button mat-stroked-button type="button" (click)="issueTemporaryPassword(item.id, itemTitle(item))"
                       [disabled]="loading() || saving() || !!invitingMemberId() || !!issuingMemberId() || !!temporarySecret()">
                       {{ issuingMemberId() === item.id ? 'در حال صدور...' : 'صدور رمز اولیه' }}
                     </button>
