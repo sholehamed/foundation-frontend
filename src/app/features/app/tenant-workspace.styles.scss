@@ -95,3 +95,11 @@
 .tenant-member-role-status.inactive{background:#f8efe6;color:#91592e;}
 .tenant-member-role-actions{margin-top:20px;justify-content:flex-end;}
 @media(max-width:650px){.tenant-member-role-item{align-items:flex-start;flex-direction:column;}}
+
+/* FR-13B-1: explicit non-login account creation (never a sent invitation). */
+.tenant-heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.tenant-member-create-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;margin-top:17px;}
+.tenant-member-create-form>mat-form-field{min-width:0;}
+.tenant-member-create-form>p,.tenant-member-create-form>.tenant-heading-actions{grid-column:1 / -1;}
+.tenant-member-create-form>p[role="alert"]{color:#b42318;}
+@media(max-width:610px){.tenant-member-create-form{grid-template-columns:1fr;}.tenant-member-create-form>p,.tenant-member-create-form>.tenant-heading-actions{grid-column:auto;}}

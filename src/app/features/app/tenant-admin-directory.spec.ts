@@ -8,6 +8,8 @@ describe('Tenant owner directory pages', () => {
   const getMembers = vi.fn();
   const getRoles = vi.fn();
   const getGroups = vi.fn();
+  const getAdminCapabilities = vi.fn();
+  const createPendingMember = vi.fn();
 
   beforeEach(async () => {
     getMembers.mockReset().mockReturnValue(of({ items: [{
@@ -16,11 +18,15 @@ describe('Tenant owner directory pages', () => {
     }], page: 1, hasNext: true }));
     getRoles.mockReset().mockReturnValue(of({ items: [], page: 1, hasNext: false }));
     getGroups.mockReset().mockReturnValue(of({ items: [], page: 1, hasNext: false }));
+    getAdminCapabilities.mockReset().mockReturnValue(of({ canViewMembers: true, canCreateMembers: true }));
+    createPendingMember.mockReset();
     await TestBed.configureTestingModule({
       imports: [TenantAdminDirectoryComponent],
       providers: [
         { provide: ActivatedRoute, useValue: { data: of({ directoryKind: 'members' }) } },
-        { provide: TenantWorkspaceService, useValue: { getMembers, getRoles, getGroups } },
+        { provide: TenantWorkspaceService, useValue: {
+          getMembers, getRoles, getGroups, getAdminCapabilities, createPendingMember,
+        } },
       ],
     }).compileComponents();
   });
@@ -47,4 +53,61 @@ describe('Tenant owner directory pages', () => {
     expect(f.nativeElement.textContent).toContain('مجوز معتبر');
     f.destroy();
   });
+  it('hides inactive creation when the server denies it', () => {
+    getAdminCapabilities.mockReturnValue(of({ canViewMembers: true, canCreateMembers: false }));
+    const f = TestBed.createComponent(TenantAdminDirectoryComponent);
+    f.detectChanges();
+    expect(f.componentInstance.canCreateMembers()).toBe(false);
+    expect(f.nativeElement.textContent).not.toContain('ثبت عضو غیرفعال');
+    f.componentInstance.openCreate();
+    expect(f.componentInstance.createOpen()).toBe(false);
+    expect(createPendingMember).not.toHaveBeenCalled();
+    f.destroy();
+  });
+
+  it('creates only an inactive member after a fresh capability check', () => {
+    createPendingMember.mockReturnValue(of({
+      id: 'new-staff', userName: 'new.staff', email: 'new@local.test',
+      firstName: 'New', lastName: 'Staff', isActive: false,
+    }));
+    const f = TestBed.createComponent(TenantAdminDirectoryComponent);
+    f.detectChanges();
+    expect(f.componentInstance.canCreateMembers()).toBe(true);
+    f.componentInstance.openCreate();
+    f.componentInstance.userName.set('new.staff');
+    f.componentInstance.email.set('new@local.test');
+    f.componentInstance.firstName.set('New');
+    f.componentInstance.lastName.set('Staff');
+    f.componentInstance.create();
+    expect(getAdminCapabilities).toHaveBeenCalledTimes(3);
+    expect(createPendingMember).toHaveBeenCalledWith({
+      userName: 'new.staff', email: 'new@local.test', firstName: 'New', lastName: 'Staff',
+    });
+    expect(f.componentInstance.createOpen()).toBe(false);
+    expect(f.componentInstance.notice()).toContain('هنوز دعوت‌نامه');
+    expect(getMembers).toHaveBeenCalledTimes(2);
+    f.destroy();
+  });
+
+  it('fails closed on permission revocation before sending POST', () => {
+    getAdminCapabilities.mockReturnValueOnce(of({
+      canViewMembers: true, canCreateMembers: true,
+    })).mockReturnValueOnce(of({
+      canViewMembers: true, canCreateMembers: false,
+    }));
+    const f = TestBed.createComponent(TenantAdminDirectoryComponent);
+    f.detectChanges();
+    f.componentInstance.openCreate();
+    f.componentInstance.userName.set('new.staff');
+    f.componentInstance.email.set('new@local.test');
+    f.componentInstance.firstName.set('New');
+    f.componentInstance.lastName.set('Staff');
+    f.componentInstance.create();
+    expect(createPendingMember).not.toHaveBeenCalled();
+    expect(f.componentInstance.canCreateMembers()).toBe(false);
+    expect(f.componentInstance.result()).toBeNull();
+    expect(f.componentInstance.error()).toContain('لغو شده');
+    f.destroy();
+  });
+
 });

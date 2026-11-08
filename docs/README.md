@@ -30,3 +30,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-08A — System Administrator dashboard with real server metrics](development/FR-08A-SYSTEM-DASHBOARD.md)
 
 - [FR-08B — Tenant Admin read-only workspace starter](development/FR-08B-TENANT-WORKSPACE.md)
+
+- [FR-13B-1 — inactive Tenant member creation form](development/FR-13B1-TENANT-INACTIVE-MEMBER-UI.md)
