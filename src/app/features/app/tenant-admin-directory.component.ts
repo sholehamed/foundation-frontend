@@ -18,7 +18,7 @@ import {
         <div>
           <p class="eyebrow">TENANT ADMIN</p>
           <h1>{{ title() }}</h1>
-          <p>این فهرست فقط متعلق به فضای کاری فعلی است و فعلاً امکان ویرایش ندارد.</p>
+          <p>این فهرست فقط متعلق به فضای کاری فعلی است؛ مدیریت نقش هر عضو در صفحه اختصاصی انجام می‌شود.</p>
         </div>
         <button mat-stroked-button type="button" (click)="load()" [disabled]="loading()">به‌روزرسانی</button>
       </div>
@@ -43,6 +43,11 @@ import {
                   <h2>{{ itemTitle(item) }}</h2>
                   <p>{{ itemDescription(item) }}</p>
                 </div>
+                @if (kind() === 'members') {
+                  <a mat-stroked-button [routerLink]="['/dashboard/members', item.id, 'roles']">
+                    نقش‌های عضو
+                  </a>
+                }
                 @if (kind() === 'roles') {
                   <a mat-stroked-button [routerLink]="['/dashboard/roles', item.id, 'permissions']">
                     مشاهده مجوزها

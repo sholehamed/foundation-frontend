@@ -83,3 +83,15 @@
 .tenant-role-inline-actions button,.tenant-role-inline-actions a{white-space:nowrap;}
 .tenant-role-warning{font-size:12px;max-width:680px;}
 @media(max-width:650px){.tenant-role-inline-actions{width:100%;}.tenant-role-inline-actions>*{flex:1}.tenant-role-toolbar{width:100%;}}
+
+.tenant-member-role-list{display:grid;gap:0;}
+.tenant-member-role-item{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:17px 0;border-bottom:1px solid var(--borderColor,#e6e5ed);}
+.tenant-member-role-item:last-child{border-bottom:0;}
+.tenant-member-role-item h2{font-size:15px;margin:0 0 5px;}
+.tenant-member-role-item small{display:block;color:var(--bodyColor,#767781);font-size:12px;}
+.tenant-member-role-toggle{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;cursor:pointer;}
+.tenant-member-role-toggle input{width:18px;height:18px;accent-color:#a65d6d;}
+.tenant-member-role-status{font-size:12px;white-space:nowrap;padding:7px 11px;border-radius:14px;background:#edf4ed;color:#326b46;}
+.tenant-member-role-status.inactive{background:#f8efe6;color:#91592e;}
+.tenant-member-role-actions{margin-top:20px;justify-content:flex-end;}
+@media(max-width:650px){.tenant-member-role-item{align-items:flex-start;flex-direction:column;}}

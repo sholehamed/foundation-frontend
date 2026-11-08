@@ -1,0 +1,76 @@
+<section class="tenant-page">
+  <div class="tenant-page-heading">
+    <div>
+      <p class="eyebrow">TENANT · MEMBER ROLES</p>
+      <h1>نقش‌های عضو {{ matrix()?.userName || '' }}</h1>
+      <p>این صفحه تخصیص مستقیم نقش‌ها را نشان می‌دهد؛ نه دسترسی‌های مؤثر گروه‌ها یا مجوزهای مستقیم کاربر.</p>
+      <p>نقش مالک و نقش‌های خارج از این مستأجر قابل تخصیص نیستند.</p>
+    </div>
+    <div class="tenant-actions">
+      <a routerLink="/dashboard/members" mat-stroked-button>بازگشت به اعضا</a>
+      <button mat-stroked-button type="button" (click)="load()"
+        [disabled]="loading() || saving()">به‌روزرسانی</button>
+    </div>
+  </div>
+  @if (notice()) {
+    <div class="tenant-feedback" role="status">{{ notice() }}</div>
+  }
+  @if (loading()) {
+    <div class="tenant-feedback" role="status">در حال دریافت نقش‌های عضو...</div>
+  } @else if (error()) {
+    <div class="tenant-feedback error" role="alert">
+      {{ error() }}
+      <button mat-flat-button type="button" (click)="load()">تلاش مجدد</button>
+    </div>
+  } @else if (matrix(); as info) {
+    <div class="tenant-panel tenant-member-role-list">
+      @if (info.canEdit && !editMode()) {
+        <div class="tenant-permission-toolbar">
+          <p>تغییر عضویت نقش‌ها با ثبت Audit و کنترل نسخه انجام می‌شود.</p>
+          <button mat-flat-button type="button" (click)="beginEdit()">ویرایش نقش‌های عضو</button>
+        </div>
+      } @else if (!info.canEdit) {
+        <p class="notice">برای این عضو مجوز تغییر نقش وجود ندارد؛ اطلاعات فقط قابل مشاهده‌اند.</p>
+      }
+      @for (role of info.roles; track role.id) {
+        <article class="tenant-member-role-item">
+          <div>
+            <h2>{{ role.name }}</h2>
+            <small>
+              {{ role.isActive ? 'نقش فعال' :
+                 'نقش غیرفعال؛ تخصیص جدید ممنوع و حذف تخصیص موجود مجاز است' }}
+            </small>
+          </div>
+          @if (editMode() && info.canEdit) {
+            <label class="tenant-member-role-toggle">
+              <input type="checkbox" [checked]="isSelected(role.id)"
+                [disabled]="saving() || (!role.isActive && !isSelected(role.id))"
+                (change)="toggle(role, $any($event.target).checked)" />
+              تخصیص به عضو
+            </label>
+          } @else {
+            <span class="tenant-member-role-status"
+              [class.inactive]="!role.isActive || !role.assigned">
+              {{ role.assigned ? 'تخصیص داده‌شده' : 'تخصیص ندارد' }}
+            </span>
+          }
+        </article>
+      } @empty {
+        <p class="notice">نقش عادی قابل تخصیصی برای این مستأجر وجود ندارد.</p>
+      }
+      @if (editMode() && info.canEdit) {
+        @if (saveError()) {
+          <div class="tenant-feedback error" role="alert">{{ saveError() }}</div>
+        }
+        <div class="tenant-actions tenant-member-role-actions">
+          <button mat-flat-button type="button" (click)="save()"
+            [disabled]="saving() || !hasChanges()">
+            {{ saving() ? 'در حال ذخیره...' : 'ذخیره نقش‌های عضو' }}
+          </button>
+          <button mat-stroked-button type="button" (click)="cancelEdit()"
+            [disabled]="saving()">انصراف</button>
+        </div>
+      }
+    </div>
+  }
+</section>

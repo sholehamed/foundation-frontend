@@ -50,6 +50,7 @@ export const TenantPermissionKeys = {
   rolesCreate: 'TENANT.ROLES.CREATE',
   rolesUpdate: 'TENANT.ROLES.UPDATE',
   rolesChangeState: 'TENANT.ROLES.CHANGE-STATE',
+  membersAssignRoles: 'TENANT.MEMBERS.ASSIGN-ROLES',
 } as const;
 
 export interface TenantUiAccessItem {
@@ -69,6 +70,7 @@ export interface TenantAdminCapabilities {
   canCreateRoles: boolean;
   canUpdateRoles: boolean;
   canChangeRoleState: boolean;
+  canAssignMemberRoles: boolean;
 }
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
@@ -108,6 +110,19 @@ export interface TenantRolePermissionMatrix {
   version: string;
   canEdit: boolean;
 }
+export interface TenantMemberRoleItem {
+  id: string;
+  name: string;
+  isActive: boolean;
+  assigned: boolean;
+}
+export interface TenantMemberRolesMatrix {
+  userId: string;
+  userName: string;
+  version: string;
+  canEdit: boolean;
+  roles: TenantMemberRoleItem[];
+}
 export type TenantDirectoryKind = 'members' | 'roles' | 'groups';
 export type TenantDirectoryItem = TenantAdminMember | TenantAdminCatalogItem;
 
@@ -136,6 +151,22 @@ export class TenantWorkspaceService {
   }
   getRoles(page = 1): Observable<TenantDirectoryPage<TenantAdminRole>> {
     return this.http.get<TenantDirectoryPage<TenantAdminRole>>(this.root + '/roles', { params: { page } });
+  }
+
+  /** Direct UserRole matrix; never represents inherited/effective rights. */
+  getMemberRoles(memberId: string): Observable<TenantMemberRolesMatrix> {
+    return this.http.get<TenantMemberRolesMatrix>(
+      this.root + '/members/' + encodeURIComponent(memberId) + '/roles',
+    );
+  }
+
+  replaceMemberRoles(
+    memberId: string, expectedVersion: string, roleIds: string[],
+  ): Observable<{ version: string }> {
+    return this.http.put<{ version: string }>(
+      this.root + '/members/' + encodeURIComponent(memberId) + '/roles',
+      { expectedVersion, roleIds },
+    );
   }
 
   createRole(request: TenantRoleWriteRequest): Observable<TenantAdminRole> {
