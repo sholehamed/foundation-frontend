@@ -1,0 +1,200 @@
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { forkJoin } from 'rxjs';
+import {
+  TenantAdminCapabilities, TenantAdminRole, TenantDirectoryPage, TenantWorkspaceService,
+} from './tenant-workspace.service';
+
+@Component({
+  selector: 'app-tenant-roles',
+  standalone: true,
+  imports: [ReactiveFormsModule, RouterLink, MatButtonModule],
+  templateUrl: './tenant-roles.component.html',
+  styleUrl: './tenant-workspace.styles.scss',
+})
+export class TenantRolesComponent implements OnInit {
+  private readonly api = inject(TenantWorkspaceService);
+  private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  readonly form = this.fb.nonNullable.group({
+    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    description: ['', Validators.maxLength(500)],
+  });
+
+  readonly page = signal(1);
+  readonly roles = signal<TenantDirectoryPage<TenantAdminRole> | null>(null);
+  readonly permissions = signal<TenantAdminCapabilities | null>(null);
+  readonly loading = signal(false);
+  readonly saving = signal(false);
+  readonly editorOpen = signal(false);
+  readonly editTarget = signal<TenantAdminRole | null>(null);
+  readonly pendingState = signal<TenantAdminRole | null>(null);
+  readonly error = signal<string | null>(null);
+  readonly saveError = signal<string | null>(null);
+  readonly notice = signal<string | null>(null);
+
+  ngOnInit(): void { this.load(); }
+
+  load(): void {
+    if (this.loading() || this.saving()) return;
+    this.loading.set(true);
+    this.roles.set(null);
+    this.permissions.set(null);
+    this.error.set(null);
+    this.cancelEditor();
+    this.pendingState.set(null);
+    const currentPage = this.page();
+    forkJoin({
+      roles: this.api.getRoles(currentPage),
+      permissions: this.api.getAdminCapabilities(),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ roles, permissions }) => {
+        if (!roles || !Array.isArray(roles.items) || roles.page !== currentPage ||
+            typeof roles.hasNext !== 'boolean' ||
+            !permissions || typeof permissions.canCreateRoles !== 'boolean' ||
+            typeof permissions.canUpdateRoles !== 'boolean' ||
+            typeof permissions.canChangeRoleState !== 'boolean') {
+          this.error.set('پاسخ سرویس مدیریت نقش‌ها معتبر نیست.');
+        } else {
+          this.roles.set(roles);
+          this.permissions.set(permissions);
+        }
+        this.loading.set(false);
+      },
+      error: (err: { status?: number }) => {
+        this.error.set(err.status === 403
+          ? 'مجوز مشاهده نقش‌های این فضای کاری را ندارید.'
+          : 'دریافت نقش‌های فضای کاری ناموفق بود.');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  previous(): void {
+    if (!this.loading() && !this.saving() && this.page() > 1) {
+      this.page.update(x => x - 1);
+      this.load();
+    }
+  }
+
+  next(): void {
+    if (!this.loading() && !this.saving() && this.roles()?.hasNext) {
+      this.page.update(x => x + 1);
+      this.load();
+    }
+  }
+
+  openCreate(): void {
+    if (this.loading() || this.saving() || !this.permissions()?.canCreateRoles) return;
+    this.editTarget.set(null);
+    this.form.reset({ name: '', description: '' });
+    this.saveError.set(null);
+    this.notice.set(null);
+    this.pendingState.set(null);
+    this.editorOpen.set(true);
+  }
+
+  openEdit(role: TenantAdminRole): void {
+    if (this.loading() || this.saving() || !this.permissions()?.canUpdateRoles ||
+        role.isOwner || !role.version || !this.roles()?.items.some(x => x.id === role.id)) return;
+    this.editTarget.set(role);
+    this.form.reset({ name: role.name, description: role.description ?? '' });
+    this.saveError.set(null);
+    this.notice.set(null);
+    this.pendingState.set(null);
+    this.editorOpen.set(true);
+  }
+
+  cancelEditor(): void {
+    if (this.saving()) return;
+    this.editorOpen.set(false);
+    this.editTarget.set(null);
+    this.saveError.set(null);
+    this.form.reset({ name: '', description: '' });
+  }
+
+  save(): void {
+    if (!this.editorOpen() || this.saving() || this.loading()) return;
+    const target = this.editTarget();
+    if (target && !this.permissions()?.canUpdateRoles) return;
+    if (!target && !this.permissions()?.canCreateRoles) return;
+    const raw = this.form.getRawValue();
+    const name = raw.name.trim();
+    const description = raw.description.trim() || null;
+    this.form.patchValue({ name, description: description ?? '' });
+    if (this.form.invalid || ['OWNER', 'SUPERADMIN', 'SYSTEMADMIN'].includes(name.toUpperCase())) {
+      this.saveError.set('نام نقش باید ۲ تا ۱۰۰ کاراکتر و غیررزرو شده باشد.');
+      return;
+    }
+    if (target && !target.version) return;
+    this.saving.set(true);
+    this.saveError.set(null);
+    const request = { name, description };
+    const mutation = target
+      ? this.api.updateRole(target.id, { ...request, expectedVersion: target.version })
+      : this.api.createRole(request);
+    mutation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.cancelEditor();
+        if (!target) this.page.set(1);
+        this.notice.set(target ? 'مشخصات نقش به‌روزرسانی شد.' : 'نقش جدید بدون هیچ مجوزی ایجاد شد.');
+        this.load();
+      },
+      error: (err: { status?: number }) => this.handleWriteError(err),
+    });
+  }
+
+  requestStateChange(role: TenantAdminRole): void {
+    if (this.loading() || this.saving() || this.editorOpen() ||
+        !this.permissions()?.canChangeRoleState || role.isOwner || !role.version ||
+        !this.roles()?.items.some(x => x.id === role.id)) return;
+    this.pendingState.set(role);
+    this.saveError.set(null);
+    this.notice.set(null);
+  }
+
+  cancelState(): void { if (!this.saving()) this.pendingState.set(null); }
+
+  confirmState(): void {
+    const target = this.pendingState();
+    if (!target || this.saving() || !this.permissions()?.canChangeRoleState) return;
+    this.saving.set(true);
+    this.api.changeRoleState(target.id, {
+      isActive: !target.isActive, expectedVersion: target.version,
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.pendingState.set(null);
+        this.notice.set(target.isActive
+          ? 'نقش غیرفعال شد؛ مجوزهای منتسب به آن دیگر مؤثر نیستند.'
+          : 'نقش دوباره فعال شد.');
+        this.load();
+      },
+      error: (err: { status?: number }) => this.handleWriteError(err),
+    });
+  }
+
+  private handleWriteError(err: { status?: number }): void {
+    this.saving.set(false);
+    if (err.status === 403 || err.status === 404) {
+      this.editorOpen.set(false);
+      this.pendingState.set(null);
+      this.roles.set(null);
+      this.permissions.set(null);
+      this.error.set('دسترسی مدیریت نقش لغو شده یا نقش متعلق به این فضای کاری نیست.');
+    } else if (err.status === 409) {
+      this.cancelEditor();
+      this.pendingState.set(null);
+      this.notice.set('نقش تغییر کرده یا نام تکراری است. اطلاعات تازه دریافت شد؛ مجدداً بررسی کنید.');
+      this.load();
+    } else {
+      this.saveError.set(err.status === 400
+        ? 'اطلاعات نقش معتبر نیست؛ مقادیر را بررسی کنید.'
+        : 'ذخیره تغییرات نقش ناموفق بود؛ دوباره تلاش کنید.');
+    }
+  }
+}
