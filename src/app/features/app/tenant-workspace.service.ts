@@ -51,6 +51,7 @@ export const TenantPermissionKeys = {
   rolesUpdate: 'TENANT.ROLES.UPDATE',
   rolesChangeState: 'TENANT.ROLES.CHANGE-STATE',
   membersAssignRoles: 'TENANT.MEMBERS.ASSIGN-ROLES',
+  membersCreate: 'TENANT.MEMBERS.CREATE',
 } as const;
 
 export interface TenantUiAccessItem {
@@ -71,12 +72,24 @@ export interface TenantAdminCapabilities {
   canUpdateRoles: boolean;
   canChangeRoleState: boolean;
   canAssignMemberRoles: boolean;
+  canCreateMembers: boolean;
 }
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
   id: string; userName: string; email: string;
   firstName: string | null; lastName: string | null; isActive: boolean;
 }
+/** Owner can create only an inactive local account. No invitation is sent. */
+export interface TenantPendingMemberCreateRequest {
+  userName: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+export interface TenantPendingMemberCreated extends TenantAdminMember {
+  isActive: false;
+}
+
 export interface TenantAdminCatalogItem {
   id: string; name: string; description: string | null; isActive: boolean;
 }
@@ -148,6 +161,10 @@ export class TenantWorkspaceService {
   }
   getMembers(page = 1): Observable<TenantDirectoryPage<TenantAdminMember>> {
     return this.http.get<TenantDirectoryPage<TenantAdminMember>>(this.root + '/members', { params: { page } });
+  }
+  /** No TenantId, IsActive, password, Owner flag or roles accepted by this API. */
+  createPendingMember(request: TenantPendingMemberCreateRequest): Observable<TenantPendingMemberCreated> {
+    return this.http.post<TenantPendingMemberCreated>(this.root + '/members', request);
   }
   getRoles(page = 1): Observable<TenantDirectoryPage<TenantAdminRole>> {
     return this.http.get<TenantDirectoryPage<TenantAdminRole>>(this.root + '/roles', { params: { page } });
