@@ -46,6 +46,7 @@ export const TenantPermissionKeys = {
   roles: 'TENANT.ROLES.READ',
   groups: 'TENANT.GROUPS.READ',
   branchesManage: 'TENANT.BRANCHES.MANAGE',
+  rolePermissionAssign: 'TENANT.ROLES.ASSIGN-PERMISSIONS',
 } as const;
 
 export interface TenantUiAccessItem {
@@ -83,6 +84,8 @@ export interface TenantRolePermissionMatrix {
   roleId: string;
   roleName: string;
   permissions: TenantRolePermissionEntry[];
+  version: string;
+  canEdit: boolean;
 }
 export type TenantDirectoryKind = 'members' | 'roles' | 'groups';
 export type TenantDirectoryItem = TenantAdminMember | TenantAdminCatalogItem;
@@ -118,6 +121,15 @@ export class TenantWorkspaceService {
   getRolePermissions(roleId: string): Observable<TenantRolePermissionMatrix> {
     return this.http.get<TenantRolePermissionMatrix>(
       this.root + '/roles/' + encodeURIComponent(roleId) + '/permissions',
+    );
+  }
+
+  replaceRolePermissions(
+    roleId: string, expectedVersion: string, codes: string[],
+  ): Observable<{ version: string }> {
+    return this.http.put<{ version: string }>(
+      this.root + '/roles/' + encodeURIComponent(roleId) + '/permissions',
+      { expectedVersion, codes },
     );
   }
 
