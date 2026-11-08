@@ -10,6 +10,8 @@ on:
       - 'package-lock.json'
       - 'angular.json'
       - 'tsconfig*.json'
+      - 'e2e/**'
+      - 'playwright*.ts'
   push:
     branches: [main]
     paths:
@@ -40,3 +42,30 @@ jobs:
         run: npm run test:unit
       - name: Development build
         run: npm run build -- --configuration development
+
+  tenant-bff-chromium-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install Angular and browser dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Install Playwright Chromium for isolated browser wiring tests
+        run: npx playwright install --with-deps chromium
+      - name: Resolve disposable Tenant browser hostname to loopback
+        run: echo '127.0.0.1 tenant-a.shinera.localhost' | sudo tee -a /etc/hosts
+      - name: Run Angular BFF pilot Chromium UX regression suite (controlled HTTP responses)
+        run: npm run test:e2e:bff-pilot
+      - name: Upload failure screenshots and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fr-12g-angular-bff-pilot-browser
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
