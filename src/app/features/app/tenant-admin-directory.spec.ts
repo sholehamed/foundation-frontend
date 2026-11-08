@@ -44,7 +44,7 @@ describe('Tenant owner directory pages', () => {
     f.componentInstance.load();
     f.detectChanges();
     expect(f.componentInstance.result()).toBeNull();
-    expect(f.nativeElement.textContent).toContain('دسترسی مالک');
+    expect(f.nativeElement.textContent).toContain('مجوز معتبر');
     f.destroy();
   });
 });

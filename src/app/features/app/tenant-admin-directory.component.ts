@@ -135,7 +135,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
       },
       error: (e: { status?: number }) => {
         this.error.set(e?.status === 403
-          ? 'برای مشاهده این بخش دسترسی مالک فضای کاری لازم است.'
+          ? 'برای مشاهده این بخش مجوز معتبر فضای کاری لازم است.'
           : 'دریافت اطلاعات ناموفق بود. دوباره تلاش کنید.');
         this.loading.set(false);
       },
