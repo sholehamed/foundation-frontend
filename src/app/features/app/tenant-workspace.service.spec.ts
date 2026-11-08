@@ -47,6 +47,21 @@ describe('TenantWorkspaceService current-tenant API', () => {
       expect(request.request.params.get('page')).toBe('2');
       request.flush({ items: [], page: 2, hasNext: false });
     }
+
+    const payload = { name: 'Branch', city: 'Tehran', address: 'Street', phone: null };
+    api.createBranch(payload).subscribe();
+    const create = http.expectOne(environment.apiUrl + '/tenant/workspace/branches');
+    expect(create.request.method).toBe('POST');
+    expect(create.request.body).toEqual(payload);
+    expect(create.request.body).not.toHaveProperty('tenantId');
+    expect(create.request.body).not.toHaveProperty('isMain');
+    create.flush({ id: 'new-branch', ...payload, isMain: false });
+
+    api.updateBranch('owned-id', payload).subscribe();
+    const update = http.expectOne(environment.apiUrl + '/tenant/workspace/branches/owned-id');
+    expect(update.request.method).toBe('PUT');
+    expect(update.request.body).toEqual(payload);
+    update.flush({ id: 'owned-id', ...payload, isMain: false });
     http.verify();
   });
 });
