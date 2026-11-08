@@ -1,4 +1,5 @@
-import { SystemCanDirective } from '../../../../../shared/permissions/system-can.directive';
+import { SystemUiAccessService } from '../../../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../../shared/permissions/system-ui-access-pilot.token';
 import { AfterViewInit, Component, inject, Input, signal } from '@angular/core';
 import { ResourcesService } from '../../resources.service';
 import { CommonModule } from '@angular/common';
@@ -32,11 +33,20 @@ PagedList
 import { CustomizerSettingsService } from '../../../../../shared/services/customizer-settings.service';
 @Component({
   selector: 'app-ui-resource-list.component',
-    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent],
+    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent],
   templateUrl: './ui-resource-list.component.html',
   styleUrl: './ui-resource-list.component.scss',
 })
 export class UiResourceListComponent implements AfterViewInit {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
 @Input() resourceId?:string;
 
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService);
@@ -81,21 +91,25 @@ this.resourceService.getLookup().subscribe({
     })
   }
 changeState(id:string){
+    this.runUiAction('system.ui-resources.action.change-state', () => {
 this.service.changeState(id).subscribe({
   next:v=>{
     
   }
 })
+    });
 }
   private lastQuery: GridQuery = { pageNumber: 1, pageSize: 10, filters: [] };
 
   remove(id: string): void {
+    this.runUiAction('system.ui-resources.action.delete', () => {
     if (!confirm('آیا از حذف این مورد مطمئن هستید؟')) return;
     this.service.delete(id).subscribe({
       next: () => this.loadList(this.lastQuery),
       error: () => alert('حذف انجام نشد؛ ممکن است این مورد وابستگی یا محدودیت دسترسی داشته باشد.'),
     });
-  }
+      });
+}
 
   loadList(query: GridQuery): void {
     this.lastQuery = query;

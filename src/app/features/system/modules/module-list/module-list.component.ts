@@ -1,4 +1,5 @@
-import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,11 +25,20 @@ import { CellToggleComponent, PageHeaderComponent } from '../../../../shared/com
 
 @Component({
   selector: 'app-module-list',
-    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent],
+    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent],
   templateUrl: './module-list.component.html',
   styleUrl: './module-list.component.scss',
 })
 export class ModuleListComponent {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
 
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService);
   service: ModulesService = inject(ModulesService);
@@ -62,11 +72,13 @@ list = signal<PagedList | null>(null);
     },
   ];
 changeState(id:string){
+    this.runUiAction('system.modules.action.change-state', () => {
 this.service.changeState(id).subscribe({
   next:v=>{
     
   }
 })
+    });
 }
   loadList(query: GridQuery): void {
 

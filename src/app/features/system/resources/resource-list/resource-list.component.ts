@@ -1,4 +1,5 @@
-import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,11 +32,20 @@ PagedList } from '../../../../shared/components/grid-components';
 import { CustomizerSettingsService } from '../../../../shared/services/customizer-settings.service';
 @Component({
   selector: 'app-resource-list.component',
-    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent],
+    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent],
   templateUrl: './resource-list.component.html',
   styleUrl: './resource-list.component.scss',
 })
 export class ResourceListComponent implements AfterViewInit {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
 
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService);
   moduleService:ModulesService=inject(ModulesService)
@@ -91,11 +101,13 @@ this.moduleService.getLookup().subscribe({
     })
   }
 changeState(id:string){
+    this.runUiAction('system.resources.action.change-state', () => {
 this.service.changeState(id).subscribe({
   next:v=>{
     
   }
 })
+    });
 }
   loadList(query: GridQuery): void {
 

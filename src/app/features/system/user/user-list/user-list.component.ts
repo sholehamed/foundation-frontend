@@ -1,4 +1,5 @@
-import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +33,7 @@ import { CustomizerSettingsService } from '../../../../shared/services/customize
 
 @Component({
   selector: 'app-user-list.component',
-  imports: [SystemCanDirective, 
+  imports: [
     GridHeaderFilterTemplateDirective,
     GridCellTemplateDirective,
     MatButtonModule,
@@ -59,6 +60,15 @@ import { CustomizerSettingsService } from '../../../../shared/services/customize
   styleUrl: './user-list.component.scss',
 })
 export class UserListComponent {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService);
   service: UsersService = inject(UsersService);
   _selectedIds: string[] = [];
@@ -112,15 +122,19 @@ export class UserListComponent {
     },
   ];
   changeState(id: string) {
+    this.runUiAction('system.users.action.change-state', () => {
     this.service.changeState(id).subscribe({
       next: (v) => {},
     });
-  }
+      });
+}
   changeLockState(id: string) {
+    this.runUiAction('system.users.action.change-lock', () => {
     this.service.changeLockState(id).subscribe({
       next: (v) => {},
     });
-  }
+      });
+}
   loadUsers(query: GridQuery): void {
     this.service.pagedList(query).subscribe({
       next: (res) => {

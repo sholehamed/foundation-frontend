@@ -1,4 +1,5 @@
-import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,11 +22,20 @@ import { CustomizerSettingsService } from '../../../../shared/services/customize
 
 @Component({
   selector: 'app-tenant-list.component',
-    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, RouterLink, AvatarUploadComponent, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent, GridComponent],
+    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, RouterLink, AvatarUploadComponent, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent, GridComponent],
   templateUrl: './tenant-list.component.html',
   styleUrl: './tenant-list.component.scss',
 })
 export class TenantListComponent {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
 
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService);
   service: TenantsService = inject(TenantsService);
@@ -57,11 +67,13 @@ list = signal<PagedList | null>(null);
     },
   ];
 changeState(id:string){
+    this.runUiAction('system.tenants.action.change-state', () => {
 this.service.changeState(id).subscribe({
   next:v=>{
     
   }
 })
+    });
 }
   loadUsers(query: GridQuery): void {
 
