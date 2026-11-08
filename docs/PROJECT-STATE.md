@@ -1,5 +1,11 @@
 # Foundation Frontend — project state and handoff
 
+## FR-08B — Tenant Admin read-only workspace starter (2026-11-08)
+
+- PR/CI pending: [FR-08B tenant workspace pages](development/FR-08B-TENANT-WORKSPACE.md), Backend PR #51. /dashboard still follows tenant login but now has a scoped shell and read-only business/branches child pages, each guarded by tenantSessionGuard. Only current tenant-owned data is requested; no tenant IDs sent from Angular.
+- Shared TenantWorkspaceService and present loading/empty/error/retry support. No TenantAdministrator role policy or mutating pages yet. No billing claim or BFF rollout. Follow-up will define Tenant Admin/employee/branch read/write scopes before changes.
+
+
 ## FR-08A — System landing dashboard, real metrics (2026-11-08)
 
 - PR/CI pending: [System dashboard implementation](development/FR-08A-SYSTEM-DASHBOARD.md), companion Backend PR #50. /system/dashboard now renders actual business tenant activity, account/roles/permissions/modules/groups counters, six recent businesses and permission-aware navigation, with loading/error/retry and empty states. Historical Roles counter bug fixed. System login path remains /system/dashboard.
