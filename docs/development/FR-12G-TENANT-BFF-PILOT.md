@@ -18,6 +18,7 @@ All `environment.ts`, `.prod.ts`, `.e2e.ts` set `bffTenantPilotEnabled: false`. 
 - Interceptor specs verify cookie-only Tenant reads, CSRF before writes, remote-origin denial and unrelated System bearer preservation.
 - Host guard specs verify Tenant host match and reject another Tenant, Identity host or System session.
 - Angular unit/build CI must be green before merge. Backend BFF cookie API bridge tests are separately gated.
+- The independent `tenant-bff-chromium-pilot` job builds Angular with a **test-only** `bffTenantPilotEnabled: true` replacement environment and runs real Chromium against loopback `tenant-a.shinera.localhost`, with **controlled HTTP responses** for BFF session, Tenant branding and APIs. It tests browser navigation to `/bff/auth/login`, 401 redirect, cross-context failure, purge of old JS tokens, absence of Angular bearer headers on workspace reads, and CSRF-protected logout UI. This is NOT a real backend/IdP or real HttpOnly cookie/proxy E2E.
 
 **This slice does not claim a full Chromium + actual OIDC / Identity / Angular HTTPS browser E2E**, SQL provider HA acceptance or Production rollout. Remaining FR-12G-C: dedicated same-origin HTTPS reverse proxy for System/Tenant/Identity origins, Chromium interactive credential + callback + BFF Cookie + real Tenant API/CSRF, cross-host replay/logout tests, staging provider/keyring and legacy browser cutover review.
 
