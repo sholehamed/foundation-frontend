@@ -77,6 +77,33 @@ describe('TenantWorkspaceService current-tenant API', () => {
     expect(replace.request.body).not.toHaveProperty('actorUserId');
     replace.flush({ version: 'AAAAAAAABAE=' });
 
+    api.createRole({ name: 'Reception', description: 'Front desk' }).subscribe();
+    const roleCreate = http.expectOne(environment.apiUrl + '/tenant/workspace/roles');
+    expect(roleCreate.request.method).toBe('POST');
+    expect(roleCreate.request.body).toEqual({ name: 'Reception', description: 'Front desk' });
+    expect(roleCreate.request.body).not.toHaveProperty('tenantId');
+    expect(roleCreate.request.body).not.toHaveProperty('scope');
+    roleCreate.flush({ id: 'owned-role', name: 'Reception', description: 'Front desk',
+      isActive: true, isOwner: false, version: 'AQIDBAUGBwg=' });
+
+    api.updateRole('owned-role', { name: 'Reception 2', description: null,
+      expectedVersion: 'AQIDBAUGBwg=' }).subscribe();
+    const roleUpdate = http.expectOne(environment.apiUrl + '/tenant/workspace/roles/owned-role');
+    expect(roleUpdate.request.method).toBe('PUT');
+    expect(roleUpdate.request.body).toEqual({ name: 'Reception 2', description: null,
+      expectedVersion: 'AQIDBAUGBwg=' });
+    roleUpdate.flush({ id: 'owned-role', name: 'Reception 2', description: null,
+      isActive: true, isOwner: false, version: 'AgIDBAUGBwg=' });
+
+    api.changeRoleState('owned-role', { isActive: false,
+      expectedVersion: 'AgIDBAUGBwg=' }).subscribe();
+    const roleState = http.expectOne(environment.apiUrl + '/tenant/workspace/roles/owned-role/state');
+    expect(roleState.request.method).toBe('PATCH');
+    expect(roleState.request.body).toEqual({ isActive: false,
+      expectedVersion: 'AgIDBAUGBwg=' });
+    roleState.flush({ id: 'owned-role', name: 'Reception 2', description: null,
+      isActive: false, isOwner: false, version: 'AwIDBAUGBwg=' });
+
     const payload = { name: 'Branch', city: 'Tehran', address: 'Street', phone: null };
     api.createBranch(payload).subscribe();
     const create = http.expectOne(environment.apiUrl + '/tenant/workspace/branches');

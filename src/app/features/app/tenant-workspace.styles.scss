@@ -75,3 +75,11 @@
 .tenant-permission-toggle{display:flex;gap:9px;align-items:center;cursor:pointer;font-size:13px;font-weight:600;}
 .tenant-permission-toggle input{width:17px;height:17px;accent-color:#98586d;cursor:pointer;}
 .tenant-permission-actions{margin-top:18px;justify-content:flex-end;}
+
+.tenant-role-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.tenant-role-editor{margin:0 0 20px;}
+.tenant-role-editor .tenant-form-fields{margin-top:12px;}
+.tenant-role-inline-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.tenant-role-inline-actions button,.tenant-role-inline-actions a{white-space:nowrap;}
+.tenant-role-warning{font-size:12px;max-width:680px;}
+@media(max-width:650px){.tenant-role-inline-actions{width:100%;}.tenant-role-inline-actions>*{flex:1}.tenant-role-toolbar{width:100%;}}

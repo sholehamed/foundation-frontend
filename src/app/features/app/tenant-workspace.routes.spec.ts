@@ -14,6 +14,7 @@ describe('Tenant Admin read-only child navigation', () => {
     expect(pages.filter(x => ['members', 'roles', 'groups', 'roles/:id/permissions'].includes(x.path ?? ''))
       .every(x => x.canActivate?.includes(tenantOwnerDirectoryGuard))).toBe(true);
     expect(pages.every(x => !!x.loadComponent)).toBe(true);
+    expect(pages.find(x => x.path === 'roles')?.data?.['directoryKind']).toBe('roles');
     expect(routes.find(x => x.path === 'system')).toBeDefined();
     expect(routes.some(x => x.path === 'auth')).toBe(true);
   });
