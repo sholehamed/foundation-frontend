@@ -71,6 +71,19 @@ export interface TenantAdminMember {
 export interface TenantAdminCatalogItem {
   id: string; name: string; description: string | null; isActive: boolean;
 }
+export interface TenantRolePermissionEntry {
+  code: string;
+  name: string;
+  kind: 'PAGE' | 'ACTION';
+  route: string;
+  registered: boolean;
+  granted: boolean;
+}
+export interface TenantRolePermissionMatrix {
+  roleId: string;
+  roleName: string;
+  permissions: TenantRolePermissionEntry[];
+}
 export type TenantDirectoryKind = 'members' | 'roles' | 'groups';
 export type TenantDirectoryItem = TenantAdminMember | TenantAdminCatalogItem;
 
@@ -100,6 +113,14 @@ export class TenantWorkspaceService {
   getRoles(page = 1): Observable<TenantDirectoryPage<TenantAdminCatalogItem>> {
     return this.http.get<TenantDirectoryPage<TenantAdminCatalogItem>>(this.root + '/roles', { params: { page } });
   }
+
+  /** Read-only direct grants on an owned Tenant role, NOT the actor's effective permissions. */
+  getRolePermissions(roleId: string): Observable<TenantRolePermissionMatrix> {
+    return this.http.get<TenantRolePermissionMatrix>(
+      this.root + '/roles/' + encodeURIComponent(roleId) + '/permissions',
+    );
+  }
+
   getGroups(page = 1): Observable<TenantDirectoryPage<TenantAdminCatalogItem>> {
     return this.http.get<TenantDirectoryPage<TenantAdminCatalogItem>>(this.root + '/groups', { params: { page } });
   }

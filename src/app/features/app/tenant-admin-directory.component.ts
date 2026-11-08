@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs';
 import {
@@ -10,7 +10,7 @@ import {
 @Component({
   selector: 'app-tenant-admin-directory',
   standalone: true,
-  imports: [MatButtonModule],
+  imports: [MatButtonModule, RouterLink],
   styleUrl: './tenant-workspace.styles.scss',
   template: `
     <section class="tenant-page">
@@ -43,6 +43,11 @@ import {
                   <h2>{{ itemTitle(item) }}</h2>
                   <p>{{ itemDescription(item) }}</p>
                 </div>
+                @if (kind() === 'roles') {
+                  <a mat-stroked-button [routerLink]="['/dashboard/roles', item.id, 'permissions']">
+                    مشاهده مجوزها
+                  </a>
+                }
                 <span class="tenant-tag" [class.tenant-tag-inactive]="!item.isActive">
                   {{ item.isActive ? 'فعال' : 'غیرفعال' }}
                 </span>

@@ -35,6 +35,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/app/tenant-branches.component')
           .then(x => x.TenantBranchesComponent),
       },
+      {
+        path: 'roles/:id/permissions',
+        data: { directoryKind: 'roles' },
+        canActivate: [tenantOwnerDirectoryGuard],
+        loadComponent: () => import('./features/app/tenant-role-permissions.component')
+          .then(x => x.TenantRolePermissionsComponent),
+      },
       ...(['members', 'roles', 'groups'] as const).map(kind => ({
         path: kind,
         data: { directoryKind: kind },
