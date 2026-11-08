@@ -3,6 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../shared/services/auth.service';
+import { BffTenantSessionService } from '../../shared/services/bff-tenant-session.service';
+import { environment } from '../../../environments/environment';
 import { TenantPermissionKeys, TenantWorkspaceService } from './tenant-workspace.service';
 
 @Component({
@@ -36,6 +38,9 @@ import { TenantPermissionKeys, TenantWorkspaceService } from './tenant-workspace
           خروج
         </button>
       </header>
+      @if (logoutError()) {
+        <p role="alert" dir="rtl">{{ logoutError() }}</p>
+      }
       <main class="tenant-content"><router-outlet /></main>
     </div>
   `,
@@ -45,6 +50,8 @@ export class TenantWorkspaceLayoutComponent implements OnInit {
   private readonly workspace = inject(TenantWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
   readonly allowedPages = signal<ReadonlySet<string>>(new Set());
+  readonly logoutError = signal('');
+  private readonly bff = inject(BffTenantSessionService);
 
   allows(key: string): boolean { return this.allowedPages().has(key); }
 
@@ -72,6 +79,19 @@ export class TenantWorkspaceLayoutComponent implements OnInit {
   private readonly router = inject(Router);
 
   logout(): void {
+    this.logoutError.set('');
+    if (environment.bffTenantPilotEnabled) {
+      // Never merely clear local state and claim logout worked: the server
+      // must revoke its opaque ticket. Surface a network error for retry.
+      this.bff.logout().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: () => void this.router.navigateByUrl(
+          '/auth/login', { replaceUrl: true }),
+        error: () => this.logoutError.set(
+          'خروج از نشست سرور تأیید نشد. دوباره تلاش کنید.'),
+      });
+      return;
+    }
+
     this.auth.logout();
     void this.router.navigateByUrl('/auth/login', { replaceUrl: true });
   }
