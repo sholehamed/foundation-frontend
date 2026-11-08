@@ -100,7 +100,9 @@
               "shinera.ir",
               "ayda.shinera.ir",
               "www.shinera.ir",
-              "tenant-a.shinera.localhost"
+              "tenant-a.shinera.localhost",
+              "127.0.0.1",
+              "localhost"
             ]
           },
           "builder": "@angular/build:dev-server",

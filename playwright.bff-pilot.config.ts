@@ -24,7 +24,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'npm run start -- --configuration bff-pilot-e2e --host 127.0.0.1 --port 4200',
+    command: 'npm run start -- --configuration bff-pilot-e2e --host 127.0.0.1 --port 4200 --ssl=false',
     url: 'http://127.0.0.1:4200',
     timeout: 180_000,
     reuseExistingServer: !process.env.CI,
