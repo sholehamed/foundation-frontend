@@ -30,7 +30,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss", "node_modules/remixicon/fonts/remixicon.css"]
+            "styles": [
+              "src/styles.scss",
+              "node_modules/remixicon/fonts/remixicon.css"
+            ]
           },
           "configurations": {
             "production": {
@@ -69,6 +72,17 @@
                   "with": "src/environments/environment.e2e.ts"
                 }
               ]
+            },
+            "bff-pilot-e2e": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.bff-pilot.e2e.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -98,6 +112,14 @@
             },
             "e2e": {
               "buildTarget": "ShineraApp:build:e2e"
+            },
+            "bff-pilot-e2e": {
+              "buildTarget": "ShineraApp:build:bff-pilot-e2e",
+              "allowedHosts": [
+                "tenant-a.shinera.localhost",
+                "127.0.0.1",
+                "localhost"
+              ]
             }
           },
           "defaultConfiguration": "development"

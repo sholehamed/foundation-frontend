@@ -17,7 +17,8 @@
     "lint:ts": "tslint --config tslint.json --project . -e \"**/{test,polyfills}.ts\"",
     "lint:ts:fix": "tslint --config tslint.json --fix --project . -e \"**/{test,polyfills}.ts\"",
     "lint:tsc": "tsc --noEmit --skipLibCheck",
-    "init:env": "init-dev-env generate-dot-env example.env -f"
+    "init:env": "init-dev-env generate-dot-env example.env -f",
+    "test:e2e:bff-pilot": "playwright test --config playwright.bff-pilot.config.ts"
   },
   "private": true,
   "packageManager": "npm@12.2.1",

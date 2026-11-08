@@ -9,5 +9,7 @@ export const environment = {
   grant_type: 'password',
   // Reviewed granular UI pilot. Defaults OFF until Registry Apply and grants are ready.
   systemUiAccessPilotEnabled: false,
+  // FR-12G: experimental Tenant browser BFF API mode. OFF for every shipped build.
+  bffTenantPilotEnabled: false,
   workspaceBaseDomain: 'shinera.ir',
 };
