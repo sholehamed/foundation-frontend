@@ -35,6 +35,9 @@ import {
       @if (notice()) {
         <div class="tenant-feedback" role="status">{{ notice() }}</div>
       }
+      @if (inviteError()) {
+        <div class="tenant-feedback error" role="alert">{{ inviteError() }}</div>
+      }
       @if (kind() === 'members' && createOpen() && canCreateMembers()) {
         <section class="tenant-panel" aria-label="ثبت عضو غیرفعال">
           <h2>افزودن عضو بدون دسترسی ورود</h2>
@@ -99,6 +102,12 @@ import {
                   <a mat-stroked-button [routerLink]="['/dashboard/members', item.id, 'roles']">
                     نقش‌های عضو
                   </a>
+                  @if (!item.isActive && canInviteMembers()) {
+                    <button mat-flat-button type="button" (click)="inviteMember(item.id)"
+                      [disabled]="loading() || saving() || !!invitingMemberId()">
+                      {{ invitingMemberId() === item.id ? 'در حال ثبت ارسال...' : 'ارسال دعوت‌نامه' }}
+                    </button>
+                  }
                 }
                 @if (kind() === 'roles') {
                   <a mat-stroked-button [routerLink]="['/dashboard/roles', item.id, 'permissions']">
@@ -133,6 +142,9 @@ export class TenantAdminDirectoryComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly canCreateMembers = signal(false);
+  readonly canInviteMembers = signal(false);
+  readonly invitingMemberId = signal<string | null>(null);
+  readonly inviteError = signal<string | null>(null);
   readonly createOpen = signal(false);
   readonly saving = signal(false);
   readonly saveError = signal<string | null>(null);
@@ -151,6 +163,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
       }
       this.kind.set(kind);
       this.canCreateMembers.set(false);
+      this.canInviteMembers.set(false);
       this.createOpen.set(false);
       this.page.set(1);
       this.load();
@@ -158,18 +171,71 @@ export class TenantAdminDirectoryComponent implements OnInit {
   }
   private refreshCreateAccess(): void {
     this.canCreateMembers.set(false);
+    this.canInviteMembers.set(false);
     this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: value => {
         const allowed = value?.canViewMembers === true &&
           value?.canCreateMembers === true;
         this.canCreateMembers.set(allowed);
+        this.canInviteMembers.set(value?.canViewMembers === true &&
+          value?.canInviteMembers === true);
         if (!allowed) this.createOpen.set(false);
       },
       error: () => {
         this.canCreateMembers.set(false);
+        this.canInviteMembers.set(false);
         this.createOpen.set(false);
       },
     });
+  }
+
+  inviteMember(memberId: string): void {
+    if (this.kind() !== 'members' || !this.canInviteMembers() ||
+        this.loading() || this.saving() || this.invitingMemberId() ||
+        !this.result()?.items.some(row => row.id === memberId && !row.isActive)) return;
+
+    this.inviteError.set(null);
+    this.notice.set(null);
+    this.invitingMemberId.set(memberId);
+    // UI is advisory: server repeats every live Owner, Tenant and ACTION
+    // check inside the SQL transaction; never accept an arbitrary target.
+    this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: cap => {
+        if (cap?.canViewMembers !== true || cap?.canInviteMembers !== true) {
+          this.inviteDenied();
+          return;
+        }
+        this.api.invitePendingMember(memberId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+          next: receipt => {
+            this.invitingMemberId.set(null);
+            if (receipt?.status !== 'submitted') {
+              this.inviteError.set('پاسخ سرویس ارسال معتبر نیست. وضعیت را بررسی کنید.');
+              return;
+            }
+            this.notice.set('دعوت‌نامه به سرویس ایمیل تحویل شد؛ دریافت آن در صندوق ایمیل تأیید نشده است.');
+          },
+          error: (err: { status?: number }) => {
+            this.invitingMemberId.set(null);
+            if (err.status === 401 || err.status === 403 || err.status === 404) {
+              this.inviteDenied();
+              return;
+            }
+            this.inviteError.set(err.status === 429
+              ? 'تعداد درخواست‌های ارسال دعوت بیش از حد مجاز است.'
+              : err.status === 503 ? 'سرویس ایمیل دعوت‌نامه آماده نیست. ارسال تأیید نشد.'
+                : 'دعوت‌نامه ارسال نشد. وضعیت حساب و سرویس را بررسی کنید.');
+          },
+        });
+      },
+      error: () => this.inviteDenied(),
+    });
+  }
+
+  private inviteDenied(): void {
+    this.invitingMemberId.set(null);
+    this.canInviteMembers.set(false);
+    this.result.set(null);
+    this.inviteError.set('دسترسی دعوت این کارمند نامعتبر است یا لغو شده است.');
   }
 
   openCreate(): void {
@@ -284,7 +350,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
     }
   }
   load(): void {
-    if (this.loading() || this.saving()) return;
+    if (this.loading() || this.saving() || this.invitingMemberId()) return;
     if (this.kind() === 'members') this.refreshCreateAccess();
     this.loading.set(true);
     this.error.set(null);
