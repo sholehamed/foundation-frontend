@@ -24,6 +24,13 @@ export interface TenantWorkspaceSummary {
   subscriptionStatus: 'pending_activation';
 }
 
+export interface TenantBranchWriteRequest {
+  name: string;
+  city: string;
+  address: string;
+  phone: string | null;
+}
+
 export interface TenantWorkspaceBranch {
   id: string;
   name: string;
@@ -33,7 +40,7 @@ export interface TenantWorkspaceBranch {
   isMain: boolean;
 }
 
-export interface TenantAdminCapabilities { canViewAdministration: boolean; }
+export interface TenantAdminCapabilities { canViewAdministration: boolean; canManageBranches: boolean; }
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
   id: string; userName: string; email: string;
@@ -68,6 +75,15 @@ export class TenantWorkspaceService {
   getGroups(page = 1): Observable<TenantDirectoryPage<TenantAdminCatalogItem>> {
     return this.http.get<TenantDirectoryPage<TenantAdminCatalogItem>>(this.root + '/groups', { params: { page } });
   }
+
+  createBranch(request: TenantBranchWriteRequest): Observable<TenantWorkspaceBranch> {
+    return this.http.post<TenantWorkspaceBranch>(this.root + '/branches', request);
+  }
+
+  updateBranch(id: string, request: TenantBranchWriteRequest): Observable<TenantWorkspaceBranch> {
+    return this.http.put<TenantWorkspaceBranch>(this.root + '/branches/' + encodeURIComponent(id), request);
+  }
+
   getBranches(): Observable<TenantWorkspaceBranch[]> {
     return this.http.get<TenantWorkspaceBranch[]>(this.root + '/branches');
   }
