@@ -11,6 +11,22 @@ export const apiAuthInterceptor: HttpInterceptorFn = (request, next) => {
   const storage = inject(TokenStorageService);
   const router = inject(Router);
   const apiBase = environment.apiUrl.replace(/\/$/, '');
+  // Invitation redemption uses only its short-lived one-time token and a
+  // NEW password; never append OAuth Bearer or browser cookies, and never
+  // send it to a different origin. This must precede BFF branch handling.
+  if (/\\/public\\/tenant-invitations\\/activate(?:[/?]|$)/i.test(request.url)) {
+    const api = new URL(apiBase, window.location.origin);
+    const target = new URL(request.url, window.location.origin);
+    if (api.origin !== window.location.origin ||
+        target.origin !== window.location.origin)
+      return throwError(() => new Error(
+        'Tenant invitation activation requires a same-origin HTTPS API proxy.',
+      ));
+    return next(request.clone({
+      withCredentials: false,
+      headers: request.headers.delete('Authorization'),
+    }));
+  }
   // The opt-in BFF client must NEVER attach an OAuth bearer or send the
   // browser's BFF cookie to a different origin. Backend keeps its native
   // bearer scheme for other endpoints and for the disabled pilot.
