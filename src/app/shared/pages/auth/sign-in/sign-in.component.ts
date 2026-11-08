@@ -171,6 +171,15 @@ private getRedirectUrl(): string {
       return;
     }
 
+    if (environment.bffTenantPilotEnabled) {
+      const host = window.location.hostname.toLowerCase();
+      const base = environment.workspaceBaseDomain.toLowerCase();
+      if (host === 'identity.' + base || host === 'auth.' + base) {
+        this.loginError = 'درخواست ورود معتبر نیست. ورود را از صفحه برنامه آغاز کنید.';
+        return;
+      }
+    }
+
     this.authService.login(
       username,
       password,
