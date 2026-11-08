@@ -18,6 +18,10 @@ Date: 2026-11-09. Companion to Backend [PR #77](https://github.com/sholehamed/fo
 - 400/401 expired/used challenge clears secret and returns to first step; 429 and server errors are explicit. Refreshing/closing the tab also discards the challenge; employee must redo initial login while credential remains valid.
 - Normal login remains unchanged and refuses inactive members, preserving the separation from restricted proof. Email invitations still work independently.
 
+## Current email field limitation
+
+No email/SMTP delivery is needed to **issue or use** the temporary password, but the existing Tenant member creation form still requires an actual email. Email-less staff onboarding therefore requires the separately tracked [FR-13B-3A #78](https://github.com/sholehamed/foundation-backend/issues/78) nullable-email schema, backend validation and Angular form change. Do not fabricate placeholder addresses or claim email is already optional.
+
 ## Configuration / release gate
 
 - Angular `environment.tenantFirstLoginEnabled=false` by default. Backend `Identity:TenantFirstLogin:Enabled=false` by default. Both must be enabled in a **reviewed isolated staging** deployment, along with matching Backend/Frontend builds, trusted TLS Tenant host, same-origin `/api`, reviewed SQL migration `20261109030000_tenantmemberfirstlogin`, Tenant Registry Preview/Apply (12 code-owned keys) and explicit Owner role grant.
