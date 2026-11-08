@@ -65,6 +65,11 @@ export const routes: Routes = [
     children: [
       { path: 'login', component: SignInComponent, data: { login_context: 'tenant' } },
       {
+        path: 'activate',
+        loadComponent: () => import('./features/public/tenant-invitation-activation.component')
+          .then(x => x.TenantInvitationActivationComponent),
+      },
+      {
         path: 'access-denied',
         loadComponent: () => import('./shared/pages/tenant-access-denied.component')
           .then(x => x.TenantAccessDeniedComponent),
