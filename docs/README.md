@@ -34,3 +34,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-13B-1 — inactive Tenant member creation form](development/FR-13B1-TENANT-INACTIVE-MEMBER-UI.md)
 
 - [FR-13B-2 — Tenant invitation + activation UI](development/FR-13B2-TENANT-INVITATION-ACTIVATION-UI.md)
+
+- [FR-13B-3 — Tenant first login with temporary password](development/FR-13B3-FIRST-LOGIN-UI.md)
