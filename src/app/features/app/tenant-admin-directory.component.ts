@@ -3,14 +3,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import {
-  TenantDirectoryItem, TenantDirectoryKind, TenantDirectoryPage, TenantWorkspaceService,
+  TenantDirectoryItem, TenantDirectoryKind, TenantDirectoryPage,
+  TenantPendingMemberCreateRequest, TenantWorkspaceService,
 } from './tenant-workspace.service';
 
 @Component({
   selector: 'app-tenant-admin-directory',
   standalone: true,
-  imports: [MatButtonModule, RouterLink],
+  imports: [MatButtonModule, RouterLink, FormsModule, MatFormFieldModule, MatInputModule],
   styleUrl: './tenant-workspace.styles.scss',
   template: `
     <section class="tenant-page">
@@ -20,8 +24,56 @@ import {
           <h1>{{ title() }}</h1>
           <p>این فهرست فقط متعلق به فضای کاری فعلی است؛ مدیریت نقش هر عضو در صفحه اختصاصی انجام می‌شود.</p>
         </div>
-        <button mat-stroked-button type="button" (click)="load()" [disabled]="loading()">به‌روزرسانی</button>
+        <div class="tenant-heading-actions">
+          @if (kind() === 'members' && canCreateMembers()) {
+            <button mat-flat-button type="button" (click)="openCreate()"
+              [disabled]="loading() || saving()">ثبت عضو غیرفعال</button>
+          }
+          <button mat-stroked-button type="button" (click)="load()" [disabled]="loading() || saving()">به‌روزرسانی</button>
+        </div>
       </div>
+      @if (notice()) {
+        <div class="tenant-feedback" role="status">{{ notice() }}</div>
+      }
+      @if (kind() === 'members' && createOpen() && canCreateMembers()) {
+        <section class="tenant-panel" aria-label="ثبت عضو غیرفعال">
+          <h2>افزودن عضو بدون دسترسی ورود</h2>
+          <p>حساب کارمند غیرفعال ساخته می‌شود. هنوز هیچ دعوت‌نامه، رمز عبور یا نقشی برای او صادر نمی‌شود.</p>
+          <form class="tenant-member-create-form" (ngSubmit)="create()" #createForm="ngForm">
+            <mat-form-field appearance="outline">
+              <mat-label>نام کاربری</mat-label>
+              <input matInput name="userName" required minlength="3" maxlength="100"
+                [ngModel]="userName()" (ngModelChange)="userName.set($event)"
+                autocomplete="off" [disabled]="saving()" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>ایمیل</mat-label>
+              <input matInput name="email" type="email" required maxlength="256"
+                [ngModel]="email()" (ngModelChange)="email.set($event)"
+                autocomplete="off" [disabled]="saving()" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>نام</mat-label>
+              <input matInput name="firstName" required maxlength="80"
+                [ngModel]="firstName()" (ngModelChange)="firstName.set($event)"
+                [disabled]="saving()" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>نام خانوادگی</mat-label>
+              <input matInput name="lastName" required maxlength="80"
+                [ngModel]="lastName()" (ngModelChange)="lastName.set($event)"
+                [disabled]="saving()" />
+            </mat-form-field>
+            @if (saveError()) { <p role="alert">{{ saveError() }}</p> }
+            <div class="tenant-heading-actions">
+              <button mat-flat-button type="submit"
+                [disabled]="saving() || !createForm.valid">ثبت حساب غیرفعال</button>
+              <button mat-stroked-button type="button" [disabled]="saving()"
+                (click)="closeCreate()">انصراف</button>
+            </div>
+          </form>
+        </section>
+      }
       @if (loading()) {
         <div class="tenant-feedback" role="status">در حال دریافت اطلاعات...</div>
       } @else if (error()) {
@@ -80,6 +132,15 @@ export class TenantAdminDirectoryComponent implements OnInit {
   readonly page = signal(1);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly canCreateMembers = signal(false);
+  readonly createOpen = signal(false);
+  readonly saving = signal(false);
+  readonly saveError = signal<string | null>(null);
+  readonly notice = signal<string | null>(null);
+  readonly userName = signal('');
+  readonly email = signal('');
+  readonly firstName = signal('');
+  readonly lastName = signal('');
 
   ngOnInit(): void {
     this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
@@ -89,10 +150,111 @@ export class TenantAdminDirectoryComponent implements OnInit {
         return;
       }
       this.kind.set(kind);
+      this.canCreateMembers.set(false);
+      this.createOpen.set(false);
       this.page.set(1);
       this.load();
     });
   }
+  private refreshCreateAccess(): void {
+    this.canCreateMembers.set(false);
+    this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: value => {
+        const allowed = value?.canViewMembers === true &&
+          value?.canCreateMembers === true;
+        this.canCreateMembers.set(allowed);
+        if (!allowed) this.createOpen.set(false);
+      },
+      error: () => {
+        this.canCreateMembers.set(false);
+        this.createOpen.set(false);
+      },
+    });
+  }
+
+  openCreate(): void {
+    if (!this.canCreateMembers() || this.loading() || this.saving()) return;
+    this.createOpen.set(true);
+    this.saveError.set(null);
+    this.notice.set(null);
+  }
+
+  closeCreate(): void {
+    if (this.saving()) return;
+    this.createOpen.set(false);
+    this.saveError.set(null);
+  }
+
+  create(): void {
+    if (this.kind() !== 'members' || !this.createOpen() ||
+        !this.canCreateMembers() || this.saving()) return;
+    const request: TenantPendingMemberCreateRequest = {
+      userName: this.userName().trim(),
+      email: this.email().trim(),
+      firstName: this.firstName().trim(),
+      lastName: this.lastName().trim(),
+    };
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9._+\\-]{2,99}$/.test(request.userName) ||
+        !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(request.email) ||
+        !request.firstName || request.firstName.length > 80 ||
+        !request.lastName || request.lastName.length > 80) {
+      this.saveError.set('نام کاربری، ایمیل و مشخصات عضو را بررسی کنید.');
+      return;
+    }
+    this.saving.set(true);
+    this.saveError.set(null);
+    // Re-check immediately before write. Backend still independently
+    // validates local Owner, registered ACTION and live scoped grants.
+    this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: cap => {
+        if (cap?.canViewMembers !== true || cap?.canCreateMembers !== true) {
+          this.creationDenied();
+          return;
+        }
+        this.api.createPendingMember(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+          next: created => {
+            this.saving.set(false);
+            if (!created?.id || created.isActive !== false) {
+              this.canCreateMembers.set(false);
+              this.createOpen.set(false);
+              this.saveError.set('پاسخ سرور قابل تأیید نیست؛ اطلاعات را دوباره بررسی کنید.');
+              return;
+            }
+            this.createOpen.set(false);
+            this.userName.set('');
+            this.email.set('');
+            this.firstName.set('');
+            this.lastName.set('');
+            this.notice.set('حساب غیرفعال ایجاد شد؛ هنوز دعوت‌نامه یا دسترسی ورود ندارد.');
+            this.page.set(1);
+            this.load();
+          },
+          error: (e: { status?: number }) => {
+            this.saving.set(false);
+            if (e?.status === 401 || e?.status === 403 || e?.status === 404) {
+              this.creationDenied();
+              return;
+            }
+            this.saveError.set(e?.status === 409
+              ? 'نام کاربری یا ایمیل از قبل در همین فضای کاری ثبت شده است.'
+              : e?.status === 429 ? 'تعداد درخواست‌ها زیاد است؛ بعداً دوباره تلاش کنید.'
+                : e?.status === 400 ? 'اطلاعات عضو معتبر نیست.'
+                  : 'ایجاد عضو انجام نشد. وضعیت را بررسی و دوباره تلاش کنید.');
+          },
+        });
+      },
+      error: () => this.creationDenied(),
+    });
+  }
+
+  private creationDenied(): void {
+    this.saving.set(false);
+    this.createOpen.set(false);
+    this.canCreateMembers.set(false);
+    this.result.set(null);
+    this.error.set('دسترسی ایجاد عضو معتبر نیست یا لغو شده است؛ صفحه را به‌روزرسانی کنید.');
+  }
+
   title(): string {
     switch (this.kind()) {
       case 'members': return 'اعضای فضای کاری';
@@ -122,7 +284,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
     }
   }
   load(): void {
-    if (this.loading()) return;
+    if (this.loading() || this.saving()) return;
+    if (this.kind() === 'members') this.refreshCreateAccess();
     this.loading.set(true);
     this.error.set(null);
     this.result.set(null);
