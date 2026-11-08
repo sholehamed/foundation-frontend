@@ -58,6 +58,7 @@ describe('Tenant role lifecycle page', () => {
     });
     expect(getRoles).toHaveBeenCalledTimes(2);
     expect(component.editorOpen()).toBe(false);
+    fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('بدون هیچ مجوزی');
     fixture.destroy();
   });
