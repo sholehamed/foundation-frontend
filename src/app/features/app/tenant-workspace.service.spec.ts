@@ -57,6 +57,13 @@ describe('TenantWorkspaceService current-tenant API', () => {
       request.flush({ items: [], page: 2, hasNext: false });
     }
 
+    api.getRolePermissions('owned-role-id').subscribe();
+    const matrix = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/roles/owned-role-id/permissions');
+    expect(matrix.request.method).toBe('GET');
+    expect(matrix.request.params.keys()).toEqual([]);
+    matrix.flush({ roleId: 'owned-role-id', roleName: 'Operator', permissions: [] });
+
     const payload = { name: 'Branch', city: 'Tehran', address: 'Street', phone: null };
     api.createBranch(payload).subscribe();
     const create = http.expectOne(environment.apiUrl + '/tenant/workspace/branches');

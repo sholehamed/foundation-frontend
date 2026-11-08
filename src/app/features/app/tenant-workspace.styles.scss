@@ -60,3 +60,13 @@
 .tenant-form-actions{margin-top:20px;}
 .branch-card>button{margin-top:12px;align-self:flex-start;}
 @media(max-width:610px){.tenant-form-fields{grid-template-columns:1fr;}.tenant-form-fields .wide{grid-column:auto;}}
+
+.tenant-role-permission-list{display:grid;gap:0;}
+.tenant-role-permission-item{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:17px 0;border-bottom:1px solid var(--borderColor,#e6e5ed);}
+.tenant-role-permission-item:last-child{border-bottom:0;}
+.tenant-role-permission-item h2{font-size:15px;margin:0 0 5px;overflow-wrap:anywhere;}
+.tenant-role-permission-item small{display:block;font-size:12px;color:var(--bodyColor,#767781);direction:ltr;text-align:right;overflow-wrap:anywhere;}
+.tenant-role-permission-state{white-space:nowrap;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;background:#eef5ef;color:#24794a;}
+.tenant-role-permission-state.denied{background:#f5e8e8;color:#a74242;}
+.tenant-role-permission-state.missing{background:#f4f2f0;color:#82736d;}
+@media(max-width:610px){.tenant-role-permission-item{align-items:flex-start;flex-direction:column;}}
