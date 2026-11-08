@@ -9,6 +9,8 @@ import { environment } from '../../../../../environments/environment';
 import { CaptchaComponent } from '../../../components/share-captcha/share-captcha.component';
 import { AuthService, LoginContext } from '../../../services/auth.service';
 import { validateBffAuthorizationReturnUrl } from '../../../util/bff-login-continuation';
+import { isTenantWorkspaceHost } from '../../../util/tenant-workspace-host';
+import { BffTenantSessionService } from '../../../services/bff-tenant-session.service';
 import { CustomInputComponent } from '../../../components/input-string.component';
 import { CustomizerSettingsService } from '../../../services/customizer-settings.service';
 
@@ -47,6 +49,16 @@ router:Router=inject(Router)
   get hasJustRegistered(): boolean {
     return this.router.parseUrl(this.router.url).queryParams['registered'] === '1' &&
       this.login_context === 'tenant';
+  }
+
+  get bffTenantPilotLogin(): boolean { return environment.bffTenantPilotEnabled &&
+    this.login_context === 'tenant' &&
+    isTenantWorkspaceHost(window.location.hostname, environment.workspaceBaseDomain); }
+
+  private readonly bffTenantSession = inject(BffTenantSessionService);
+
+  beginBffLogin(): void {
+    this.bffTenantSession.login(this.getRedirectUrl());
   }
 
   AppName = environment.AppName;

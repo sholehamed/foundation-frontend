@@ -65,7 +65,13 @@
                         <p role="alert" class="login-error">{{ loginError }}</p>
                     }
 
-                    <!-- Form -->
+                    @if (bffTenantPilotLogin) {
+                        <button type="button" mat-button class="login-button"
+                                (click)="beginBffLogin()">
+                            ورود امن از طریق سرویس هویت
+                        </button>
+                    } @else {
+                    <!-- Legacy and Identity-host interactive form -->
                     <form
                         [formGroup]="loginForm"
                         (ngSubmit)="GetToken()"
@@ -161,6 +167,7 @@
                         </div>
 
                     </form>
+                    }
 
                 </div>
 

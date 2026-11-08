@@ -62,6 +62,13 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    children: [{ path: 'login', component: SignInComponent, data: { login_context: 'tenant' } }],
+    children: [
+      { path: 'login', component: SignInComponent, data: { login_context: 'tenant' } },
+      {
+        path: 'access-denied',
+        loadComponent: () => import('./shared/pages/tenant-access-denied.component')
+          .then(x => x.TenantAccessDeniedComponent),
+      },
+    ],
   },
 ];

@@ -15,6 +15,7 @@ import { routes } from './app.routes'
 import moment from 'moment'
 import { environment } from '../environments/environment'
 import { TenantContextService } from './shared/services/tenant-context.service'
+import { TokenStorageService } from './shared/services/token-storage.service'
 import { isTenantWorkspaceHost } from './shared/util/tenant-workspace-host'
 import { provideJalaliDateAdapter } from './shared/util/JalaliDateAdapter'
 import { MatPaginatorIntl } from '@angular/material/paginator'
@@ -32,6 +33,11 @@ export const appConfig: ApplicationConfig = {
       // The Identity-host Angular login shell is not a Tenant workspace.
       if (!isTenantWorkspaceHost(window.location.hostname, environment.workspaceBaseDomain))
         return
+      if (environment.bffTenantPilotEnabled) {
+        // Stale legacy OAuth credentials must not coexist with this cookie
+        // pilot. Do not confuse Tenant branding cache with auth state.
+        inject(TokenStorageService).clear()
+      }
       return inject(TenantContextService).initialize()
     }),
     { provide: MatPaginatorIntl, useClass: MatPaginatorIntlFa },
