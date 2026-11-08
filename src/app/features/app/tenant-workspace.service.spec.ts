@@ -28,6 +28,15 @@ describe('TenantWorkspaceService current-tenant API', () => {
     expect(branches.request.params.keys()).toEqual([]);
     branches.flush([]);
 
+
+    api.getUiAccess().subscribe();
+    const ui = http.expectOne(environment.apiUrl + '/tenant/workspace/ui-access/me');
+    expect(ui.request.method).toBe('GET');
+    expect(ui.request.params.keys()).toEqual([]);
+    ui.flush({ entries: [
+      { key: 'TENANT.MEMBERS.READ', kind: 'PAGE', route: '/dashboard/members', allowed: true },
+    ] });
+
     api.getAdminCapabilities().subscribe();
     const capabilities = http.expectOne(environment.apiUrl + '/tenant/workspace/admin-capabilities');
     expect(capabilities.request.method).toBe('GET');

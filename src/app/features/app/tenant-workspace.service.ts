@@ -40,7 +40,29 @@ export interface TenantWorkspaceBranch {
   isMain: boolean;
 }
 
-export interface TenantAdminCapabilities { canViewAdministration: boolean; canManageBranches: boolean; }
+
+export const TenantPermissionKeys = {
+  members: 'TENANT.MEMBERS.READ',
+  roles: 'TENANT.ROLES.READ',
+  groups: 'TENANT.GROUPS.READ',
+  branchesManage: 'TENANT.BRANCHES.MANAGE',
+} as const;
+
+export interface TenantUiAccessItem {
+  key: string;
+  kind: 'PAGE' | 'ACTION';
+  route: string;
+  allowed: boolean;
+}
+export interface TenantUiAccessSnapshot { entries: TenantUiAccessItem[]; }
+
+export interface TenantAdminCapabilities {
+  canViewAdministration: boolean;
+  canViewMembers: boolean;
+  canViewRoles: boolean;
+  canViewGroups: boolean;
+  canManageBranches: boolean;
+}
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
   id: string; userName: string; email: string;
@@ -62,6 +84,12 @@ export class TenantWorkspaceService {
     return this.http.get<TenantWorkspaceSummary>(this.root);
   }
 
+
+
+  /** UI is a hint; backend rechecks the same live permission per protected operation. */
+  getUiAccess(): Observable<TenantUiAccessSnapshot> {
+    return this.http.get<TenantUiAccessSnapshot>(this.root + '/ui-access/me');
+  }
 
   getAdminCapabilities(): Observable<TenantAdminCapabilities> {
     return this.http.get<TenantAdminCapabilities>(this.root + '/admin-capabilities');
