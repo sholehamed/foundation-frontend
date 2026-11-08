@@ -14,7 +14,7 @@ export const apiAuthInterceptor: HttpInterceptorFn = (request, next) => {
   // Invitation redemption uses only its short-lived one-time token and a
   // NEW password; never append OAuth Bearer or browser cookies, and never
   // send it to a different origin. This must precede BFF branch handling.
-  if (/\\/public\\/tenant-invitations\\/activate(?:[/?]|$)/i.test(request.url)) {
+  if (/\/public\/tenant-invitations\/activate(?:[/?]|$)/i.test(request.url)) {
     const api = new URL(apiBase, window.location.origin);
     const target = new URL(request.url, window.location.origin);
     if (api.origin !== window.location.origin ||
