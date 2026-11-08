@@ -171,3 +171,5 @@ The two-TestServer flow excludes the real password/CAPTCHA UI and browser cookie
 [Backend state](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-STATE.md) · [Roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/PROJECT-ROADMAP.md) · [ADR-0001](https://github.com/sholehamed/foundation-backend/blob/main/docs/decisions/ADR-0001-browser-bff.md) · [Browser client contract](architecture/browser-bff-client.md) · [Identity UI handoff](development/BFF-04-IDENTITY-UI-HANDOFF.md).
 
 This documentation-only continuation does not change Angular runtime behavior. Read the current checkpoint before historical implementation notes.
+
+- **Additional FR-07B verification:** System Sidebar now filters live menu rows by authorized registered PAGE routes in opt-in mode (no fallback), and CRUD state/lock/delete/API sync handlers recheck ACTIONs immediately before UI writes. [FR-07B runbook](development/FR-07B-ALL-SYSTEM-UI-GUARDS.md) details limitations. Flag remains OFF by default.

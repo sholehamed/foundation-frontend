@@ -29,3 +29,10 @@ Before enabling in a test build:
 - No Tenant-specific UI gate, no offline data sync, and no SQL Server concurrent FeatureRegistry Apply release certification.
 
 Tests verify all System route guard attachment, nested route-template matching, refusal of unknown/invalid snapshots, no request duplication per navigation, fresh action revocation checks, default-OFF behavior, and standalone directive visibility. Backend tests verify scoped grants and SQL catalog metadata separately. See [issue #44](https://github.com/sholehamed/foundation-backend/issues/44).
+
+## Live Sidebar and action-time hardening (final FR-07B slice)
+
+- In enforced System mode, Sidebar joins the existing current-user `Menus/me` response with the same already-shared `UiAccess/me` snapshot. It filters out unknown, denied, disabled or external PAGE links while preserving containers that still have authorized children. Any missing/invalid permission response results in an **empty** navigation rather than a privileged fallback. Tenant sidebar is unaffected; the flag remains OFF by default.
+- Existing System CRUD list toggles (change-state and account lock), actual Delete handlers, API resource sync, group member add/remove, Menu Management and Registry Apply now **recheck ACTION access at click time** while enforced; revocation between page render and click stops that UI-origin write. Their API endpoints continue to require independent live authorization and are **not secured by the client**.
+- Dead, unimplemented placeholder buttons or missing Group Role assignment screens are not invented; metadata-only ACTIONs have no new frontend workflow. System Admin/User sensitive catalog entries remain disabled and their backend write flows still require separate review.
+- Latest build/unit gate, exact System route coverage and actual target DB grant rollout are required before enabling.
