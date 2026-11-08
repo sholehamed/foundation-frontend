@@ -44,7 +44,7 @@ describe('SystemDashboardComponent — meaningful state and numbers', () => {
     expect(component.stats().find(x => x.label === 'کل کاربران')?.value).toBe(42);
     expect(component.activePercent()).toBe(70);
     expect(fixture.nativeElement.textContent).toContain('نمونه کسب‌وکار');
-    expect(fixture.nativeElement.textContent).toContain('۷');
+    expect(fixture.nativeElement.textContent).toContain('کسب‌وکارهای فعال7');
   });
 
   it('shows loading then a genuine empty-business state without fabricated data', () => {
