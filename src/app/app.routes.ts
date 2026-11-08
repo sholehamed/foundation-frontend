@@ -46,8 +46,10 @@ export const routes: Routes = [
         path: kind,
         data: { directoryKind: kind },
         canActivate: [tenantOwnerDirectoryGuard],
-        loadComponent: () => import('./features/app/tenant-admin-directory.component')
-          .then(x => x.TenantAdminDirectoryComponent),
+        loadComponent: () => kind === 'roles'
+          ? import('./features/app/tenant-roles.component').then(x => x.TenantRolesComponent)
+          : import('./features/app/tenant-admin-directory.component')
+              .then(x => x.TenantAdminDirectoryComponent),
       })),
     ],
   },

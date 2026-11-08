@@ -47,6 +47,9 @@ export const TenantPermissionKeys = {
   groups: 'TENANT.GROUPS.READ',
   branchesManage: 'TENANT.BRANCHES.MANAGE',
   rolePermissionAssign: 'TENANT.ROLES.ASSIGN-PERMISSIONS',
+  rolesCreate: 'TENANT.ROLES.CREATE',
+  rolesUpdate: 'TENANT.ROLES.UPDATE',
+  rolesChangeState: 'TENANT.ROLES.CHANGE-STATE',
 } as const;
 
 export interface TenantUiAccessItem {
@@ -63,6 +66,9 @@ export interface TenantAdminCapabilities {
   canViewRoles: boolean;
   canViewGroups: boolean;
   canManageBranches: boolean;
+  canCreateRoles: boolean;
+  canUpdateRoles: boolean;
+  canChangeRoleState: boolean;
 }
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
@@ -71,6 +77,21 @@ export interface TenantAdminMember {
 }
 export interface TenantAdminCatalogItem {
   id: string; name: string; description: string | null; isActive: boolean;
+}
+export interface TenantAdminRole extends TenantAdminCatalogItem {
+  isOwner: boolean;
+  version: string;
+}
+export interface TenantRoleWriteRequest {
+  name: string;
+  description: string | null;
+}
+export interface TenantRoleUpdateRequest extends TenantRoleWriteRequest {
+  expectedVersion: string;
+}
+export interface TenantRoleStateRequest {
+  isActive: boolean;
+  expectedVersion: string;
 }
 export interface TenantRolePermissionEntry {
   code: string;
@@ -113,8 +134,22 @@ export class TenantWorkspaceService {
   getMembers(page = 1): Observable<TenantDirectoryPage<TenantAdminMember>> {
     return this.http.get<TenantDirectoryPage<TenantAdminMember>>(this.root + '/members', { params: { page } });
   }
-  getRoles(page = 1): Observable<TenantDirectoryPage<TenantAdminCatalogItem>> {
-    return this.http.get<TenantDirectoryPage<TenantAdminCatalogItem>>(this.root + '/roles', { params: { page } });
+  getRoles(page = 1): Observable<TenantDirectoryPage<TenantAdminRole>> {
+    return this.http.get<TenantDirectoryPage<TenantAdminRole>>(this.root + '/roles', { params: { page } });
+  }
+
+  createRole(request: TenantRoleWriteRequest): Observable<TenantAdminRole> {
+    return this.http.post<TenantAdminRole>(this.root + '/roles', request);
+  }
+
+  updateRole(roleId: string, request: TenantRoleUpdateRequest): Observable<TenantAdminRole> {
+    return this.http.put<TenantAdminRole>(
+      this.root + '/roles/' + encodeURIComponent(roleId), request);
+  }
+
+  changeRoleState(roleId: string, request: TenantRoleStateRequest): Observable<TenantAdminRole> {
+    return this.http.patch<TenantAdminRole>(
+      this.root + '/roles/' + encodeURIComponent(roleId) + '/state', request);
   }
 
   /** Read-only direct grants on an owned Tenant role, NOT the actor's effective permissions. */
