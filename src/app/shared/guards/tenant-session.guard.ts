@@ -5,6 +5,22 @@ import { environment } from '../../../environments/environment';
 import { TokenStorageService } from '../services/token-storage.service';
 import { BffTenantSessionService } from '../services/bff-tenant-session.service';
 import { isTenantWorkspaceHost } from '../util/tenant-workspace-host';
+import type { BffSessionResponse } from '../models/bff-session.contract';
+
+/** Publicly testable, conservative UX check. Never a server authorization source. */
+export function bffSessionMatchesTenantHost(
+  session: BffSessionResponse, hostname: string, baseDomain: string,
+): boolean {
+  if (!isTenantWorkspaceHost(hostname, baseDomain)) return false;
+  const host = hostname.toLowerCase().replace(/\.$/, '');
+  const suffix = '.' + baseDomain.toLowerCase().replace(/\.$/, '');
+  const expectedSlug = host.slice(0, -suffix.length);
+  return session.authenticated === true &&
+    session.context.type === 'tenant' &&
+    !!session.user?.id &&
+    !!session.context.tenantId &&
+    session.context.tenantSlug?.toLowerCase() === expectedSlug;
+}
 
 /** Navigation UX only; live Tenant authorization always belongs to .NET. */
 export const tenantSessionGuard: CanActivateFn = (_route, state) => {
@@ -22,9 +38,8 @@ export const tenantSessionGuard: CanActivateFn = (_route, state) => {
       return login();
 
     return inject(BffTenantSessionService).load().pipe(
-      map(session => session.context.type === 'tenant' &&
-        session.context.tenantSlug.toLowerCase() === slug &&
-        !!session.context.tenantId && !!session.user?.id
+      map(session => bffSessionMatchesTenantHost(
+        session, host, environment.workspaceBaseDomain)
         ? true : router.parseUrl('/auth/access-denied')),
       catchError(error => of(error.status === 401 ? login()
         : router.parseUrl('/auth/access-denied'))),
