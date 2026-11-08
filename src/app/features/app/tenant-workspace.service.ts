@@ -53,6 +53,7 @@ export const TenantPermissionKeys = {
   membersAssignRoles: 'TENANT.MEMBERS.ASSIGN-ROLES',
   membersCreate: 'TENANT.MEMBERS.CREATE',
   membersInvite: 'TENANT.MEMBERS.INVITE',
+  membersIssueTempPassword: 'TENANT.MEMBERS.ISSUE-TEMP-PASSWORD',
 } as const;
 
 export interface TenantUiAccessItem {
@@ -75,6 +76,7 @@ export interface TenantAdminCapabilities {
   canAssignMemberRoles: boolean;
   canCreateMembers: boolean;
   canInviteMembers: boolean;
+  canIssueTemporaryPassword: boolean;
 }
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
@@ -172,6 +174,18 @@ export class TenantWorkspaceService {
   invitePendingMember(memberId: string): Observable<{ status: 'submitted'; expiresAtUtc: string }> {
     return this.http.post<{ status: 'submitted'; expiresAtUtc: string }>(
       this.root + '/members/' + encodeURIComponent(memberId) + '/invitations', {},
+    );
+  }
+
+  /**
+   * Returns an initial password ONCE, for explicit in-person handoff.
+   * Caller MUST clear it from JS state on close/navigate; never store it.
+   */
+  issueTemporaryPassword(memberId: string): Observable<{
+    temporaryPassword: string; expiresAtUtc: string;
+  }> {
+    return this.http.post<{ temporaryPassword: string; expiresAtUtc: string }>(
+      this.root + '/members/' + encodeURIComponent(memberId) + '/temporary-password', {},
     );
   }
 
