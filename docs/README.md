@@ -28,3 +28,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-07B — Full System live UI route/action guards (opt-in)](development/FR-07B-ALL-SYSTEM-UI-GUARDS.md)
 
 - [FR-08A — System Administrator dashboard with real server metrics](development/FR-08A-SYSTEM-DASHBOARD.md)
+
+- [FR-08B — Tenant Admin read-only workspace starter](development/FR-08B-TENANT-WORKSPACE.md)

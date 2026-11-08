@@ -14,8 +14,27 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [tenantSessionGuard],
-    loadComponent: () => import('./features/app/tenant-dashboard.component')
-      .then(x => x.TenantDashboardComponent),
+    canActivateChild: [tenantSessionGuard],
+    loadComponent: () => import('./features/app/tenant-workspace-layout.component')
+      .then(x => x.TenantWorkspaceLayoutComponent),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./features/app/tenant-dashboard.component')
+          .then(x => x.TenantDashboardComponent),
+      },
+      {
+        path: 'business',
+        loadComponent: () => import('./features/app/tenant-business-profile.component')
+          .then(x => x.TenantBusinessProfileComponent),
+      },
+      {
+        path: 'branches',
+        loadComponent: () => import('./features/app/tenant-branches.component')
+          .then(x => x.TenantBranchesComponent),
+      },
+    ],
   },
   {
     path: 'auth',
