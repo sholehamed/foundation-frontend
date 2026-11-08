@@ -70,3 +70,8 @@
 .tenant-role-permission-state.denied{background:#f5e8e8;color:#a74242;}
 .tenant-role-permission-state.missing{background:#f4f2f0;color:#82736d;}
 @media(max-width:610px){.tenant-role-permission-item{align-items:flex-start;flex-direction:column;}}
+
+.tenant-permission-toolbar{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin:12px 0 14px;}
+.tenant-permission-toggle{display:flex;gap:9px;align-items:center;cursor:pointer;font-size:13px;font-weight:600;}
+.tenant-permission-toggle input{width:17px;height:17px;accent-color:#98586d;cursor:pointer;}
+.tenant-permission-actions{margin-top:18px;justify-content:flex-end;}
