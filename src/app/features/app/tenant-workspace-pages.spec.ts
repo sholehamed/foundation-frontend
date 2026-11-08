@@ -22,15 +22,17 @@ const branches: TenantWorkspaceBranch[] = [
 describe('Tenant Admin workspace pages', () => {
   const getWorkspace = vi.fn(() => of(workspace));
   const getBranches = vi.fn(() => of(branches));
+  const getAdminCapabilities = vi.fn(() => of({canViewAdministration: true, canManageBranches: false}));
 
   beforeEach(async () => {
     getWorkspace.mockReset().mockReturnValue(of(workspace));
     getBranches.mockReset().mockReturnValue(of(branches));
+    getAdminCapabilities.mockReset().mockReturnValue(of({canViewAdministration: true, canManageBranches: false}));
     await TestBed.configureTestingModule({
       imports: [TenantDashboardComponent, TenantBusinessProfileComponent, TenantBranchesComponent],
       providers: [
         provideRouter([]),
-        { provide: TenantWorkspaceService, useValue: { getWorkspace, getBranches } },
+        { provide: TenantWorkspaceService, useValue: { getWorkspace, getBranches, getAdminCapabilities } },
       ],
     }).compileComponents();
   });
