@@ -4,6 +4,7 @@ import { catchError, Observable, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TenantContextService } from './tenant-context.service';
 import { TokenStorageService } from './token-storage.service';
+import { isTenantWorkspaceHost } from '../util/tenant-workspace-host';
 
 export interface AuthTokens {
   access_token: string;
@@ -81,6 +82,14 @@ export class AuthService {
     );
   }
 
+  private isBffTenantOrIdentityHost(): boolean {
+    if (!environment.bffTenantPilotEnabled) return false;
+    const host = window.location.hostname.toLowerCase();
+    const base = environment.workspaceBaseDomain.toLowerCase();
+    return isTenantWorkspaceHost(host, base) ||
+      host === 'identity.' + base || host === 'auth.' + base;
+  }
+
   private readCookie(name: string): string | null {
     const prefix = name + '=';
     const item = document.cookie
@@ -107,6 +116,13 @@ export class AuthService {
     captchaId: string,
     login_context: string,
   ): Observable<UserInfo> {
+    // Even a direct consumer of AuthService cannot accidentally resume
+    // the JS OAuth Password Grant on a pilot Tenant/Identity browser host.
+    if (this.isBffTenantOrIdentityHost()) {
+      return throwError(() => new Error(
+        'OAuth password-token login is disabled on the BFF Tenant/Identity pilot.',
+      ));
+    }
     const body = new URLSearchParams();
 
     body.set('grant_type', environment.grant_type);
@@ -203,6 +219,11 @@ export class AuthService {
   }
 
   refreshToken(): Observable<AuthTokens> {
+    if (this.isBffTenantOrIdentityHost()) {
+      return throwError(() => new Error(
+        'Browser refresh tokens are not available in BFF mode.',
+      ));
+    }
     const refreshToken = this.getRefreshToken();
 
     if (!refreshToken) {
