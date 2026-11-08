@@ -36,6 +36,13 @@ export const routes: Routes = [
           .then(x => x.TenantBranchesComponent),
       },
       {
+        path: 'members/:id/roles',
+        data: { directoryKind: 'members' },
+        canActivate: [tenantOwnerDirectoryGuard],
+        loadComponent: () => import('./features/app/tenant-member-roles.component')
+          .then(x => x.TenantMemberRolesComponent),
+      },
+      {
         path: 'roles/:id/permissions',
         data: { directoryKind: 'roles' },
         canActivate: [tenantOwnerDirectoryGuard],

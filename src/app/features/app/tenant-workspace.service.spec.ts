@@ -104,6 +104,25 @@ describe('TenantWorkspaceService current-tenant API', () => {
     roleState.flush({ id: 'owned-role', name: 'Reception 2', description: null,
       isActive: false, isOwner: false, version: 'AwIDBAUGBwg=' });
 
+    api.getMemberRoles('member-1').subscribe();
+    const memberRoles = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/members/member-1/roles');
+    expect(memberRoles.request.method).toBe('GET');
+    expect(memberRoles.request.params.keys()).toEqual([]);
+    memberRoles.flush({ userId: 'member-1', userName: 'staff', version: 'AQIDBAUGBwg=',
+      canEdit: true, roles: [] });
+
+    api.replaceMemberRoles('member-1', 'AQIDBAUGBwg=', ['role-1']).subscribe();
+    const changeMemberRoles = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/members/member-1/roles');
+    expect(changeMemberRoles.request.method).toBe('PUT');
+    expect(changeMemberRoles.request.body).toEqual({
+      expectedVersion: 'AQIDBAUGBwg=', roleIds: ['role-1'],
+    });
+    expect(changeMemberRoles.request.body).not.toHaveProperty('tenantId');
+    expect(changeMemberRoles.request.body).not.toHaveProperty('actorUserId');
+    changeMemberRoles.flush({ version: 'AQIDBAUGBwk=' });
+
     const payload = { name: 'Branch', city: 'Tehran', address: 'Street', phone: null };
     api.createBranch(payload).subscribe();
     const create = http.expectOne(environment.apiUrl + '/tenant/workspace/branches');

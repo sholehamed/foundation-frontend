@@ -10,8 +10,8 @@ describe('Tenant Admin read-only child navigation', () => {
     expect(route?.canActivateChild).toContain(tenantSessionGuard);
 
     const pages = route?.children ?? [];
-    expect(pages.map(x => x.path)).toEqual(['', 'business', 'branches', 'roles/:id/permissions', 'members', 'roles', 'groups']);
-    expect(pages.filter(x => ['members', 'roles', 'groups', 'roles/:id/permissions'].includes(x.path ?? ''))
+    expect(pages.map(x => x.path)).toEqual(['', 'business', 'branches', 'members/:id/roles', 'roles/:id/permissions', 'members', 'roles', 'groups']);
+    expect(pages.filter(x => ['members', 'roles', 'groups', 'members/:id/roles', 'roles/:id/permissions'].includes(x.path ?? ''))
       .every(x => x.canActivate?.includes(tenantOwnerDirectoryGuard))).toBe(true);
     expect(pages.every(x => !!x.loadComponent)).toBe(true);
     expect(pages.find(x => x.path === 'roles')?.data?.['directoryKind']).toBe('roles');
