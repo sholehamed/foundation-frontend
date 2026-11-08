@@ -18,10 +18,10 @@
     <app-text-filter [grid]="grid" field="code" label="جستجوی کد"></app-text-filter>
 </ng-template>
 <ng-template [gridCellTemplate]="'isActive'" let-value="value" let-row="row">
-    <app-cell-toggle (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
+    <app-cell-toggle *systemCan="'system.permissions.action.change-state'" (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
 </ng-template>
  <ng-template #HeaderActions>
-            <button
+            <button *systemCan="resourceId ? '/system/resources/:resourceId/permissions/create' : '/system/permissions/create'"
                     class="add-btn refined-add-btn"
                     type="button"
                     routerLink="create"
@@ -41,8 +41,8 @@
         </button>
 
         <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
-            <button mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
-            <button mat-menu-item type="button" (click)="remove(row.id)">حذف</button>
+            <button *systemCan="resourceId ? '/system/resources/:resourceId/permissions/:permissionId/edit' : '/system/permissions/:permissionId/edit'" mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
+            <button *systemCan="'system.permissions.action.delete'" mat-menu-item type="button" (click)="remove(row.id)">حذف</button>
         </mat-menu>
     </ng-template>
 </app-grid>

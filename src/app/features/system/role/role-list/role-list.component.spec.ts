@@ -8,15 +8,20 @@ import { rolePermissionUiKeys } from '../../../../shared/permissions/role-permis
 
 describe('Role list live manage-permissions entry', () => {
   const canAccess = vi.fn(() => of(false));
+  const refreshAction = vi.fn(() => of(false));
+  const changeState = vi.fn(() => of(undefined));
 
   beforeEach(async () => {
     canAccess.mockReset();
     canAccess.mockReturnValue(of(false));
+    refreshAction.mockReset();
+    refreshAction.mockReturnValue(of(false));
+    changeState.mockReset();
     await TestBed.configureTestingModule({
       imports: [RoleListComponent],
       providers: [
-        { provide: RolesService, useValue: {} },
-        { provide: SystemUiAccessService, useValue: { canAccess } },
+        { provide: RolesService, useValue: { changeState } },
+        { provide: SystemUiAccessService, useValue: { canAccess, refreshAction } },
         { provide: SYSTEM_UI_ACCESS_PILOT_ENABLED, useValue: true },
       ],
     }).overrideComponent(RoleListComponent, {
@@ -37,6 +42,18 @@ describe('Role list live manage-permissions entry', () => {
     const fixture = TestBed.createComponent(RoleListComponent);
     fixture.detectChanges();
     expect(fixture.componentInstance.canManageRolePermissions()).toBe(true);
+    fixture.destroy();
+  });
+
+  it('rechecks CHANGE-STATE on click and never writes after action revocation', () => {
+    const fixture = TestBed.createComponent(RoleListComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.changeState('role-one');
+    expect(refreshAction).toHaveBeenCalledWith('system.roles.action.change-state');
+    expect(changeState).not.toHaveBeenCalled();
+    refreshAction.mockReturnValueOnce(of(true));
+    fixture.componentInstance.changeState('role-one');
+    expect(changeState).toHaveBeenCalledWith('role-one');
     fixture.destroy();
   });
 

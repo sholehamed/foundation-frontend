@@ -1,6 +1,10 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SystemCanDirective } from '../../../shared/permissions/system-can.directive';
+import { SystemUiAccessService } from '../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../shared/permissions/system-ui-access-pilot.token';
 import { RouterLink } from '@angular/router';
 import { MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule } from '@angular/material/tree';
 import { MenuCategoryDto, MenuDto, MenuOrderItem, MenuCreateCommand } from './menu-management.model';
@@ -39,6 +43,7 @@ interface MenuFlatNode {
   styleUrls: ['./menu-management.component.scss'],
   imports: [
     CommonModule,
+    SystemCanDirective,
     RouterLink,
     MenuEditorDrawerComponent,
     MatSidenavModule,
@@ -60,6 +65,17 @@ interface MenuFlatNode {
 export class MenuManagementPage implements OnInit {
   private readonly api = inject(MenuApiService);
   private readonly dialog = inject(MatDialog);
+  private readonly enabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly access = this.enabled ? inject(SystemUiAccessService) : null;
+  private readonly destroyRef = inject(DestroyRef);
+  readonly canReorder = signal(!this.enabled);
+
+  private permit(key: string, action: () => void): void {
+    if (!this.enabled) { action(); return; }
+    this.access!.refreshAction(key)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(allowed => { if (allowed) action(); });
+  }
 
   categories = signal<MenuCategoryDto[]>([]);
   selectedCategory = signal<MenuCategoryDto | null>(null);
@@ -96,6 +112,11 @@ export class MenuManagementPage implements OnInit {
 
   ngOnInit() {
     this.loadCategories();
+    if (this.enabled) {
+      this.access!.canAccess('system.menu-management.action.reorder')
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(allowed => this.canReorder.set(allowed));
+    }
   }
 
   loadCategories() {
@@ -126,21 +147,29 @@ export class MenuManagementPage implements OnInit {
   }
 
   createRootMenu() {
-    this.selectedMenu.set(null);
-    this.drawerMode.set('create-root');
+    this.permit('system.menu-management.action.create', () => {
+      this.selectedMenu.set(null);
+      this.drawerMode.set('create-root');
+    });
   }
 
   createChildMenu(node: MenuFlatNode) {
-    this.selectedMenu.set(node.original);
-    this.drawerMode.set('create-child');
+    this.permit('system.menu-management.action.create', () => {
+      this.selectedMenu.set(node.original);
+      this.drawerMode.set('create-child');
+    });
   }
 
   editMenu(node: MenuFlatNode) {
-    this.selectedMenu.set(node.original);
-    this.drawerMode.set('edit');
+    this.permit('system.menu-management.action.update', () => {
+      this.selectedMenu.set(node.original);
+      this.drawerMode.set('edit');
+    });
   }
 
   openCategoryDialog(category?: MenuCategoryDto) {
+    const action = category ? 'update' : 'create';
+    this.permit('system.menu-management.action.' + action, () => {
     const dialogRef = this.dialog.open(MenuCategoryDialogComponent, {
       width: '400px',
       data: category ?? null
@@ -151,12 +180,16 @@ export class MenuManagementPage implements OnInit {
         this.loadCategories();
       }
     });
+    });
   }
 
   onMenuSaved(command: MenuCreateCommand) {
     const category = this.selectedCategory();
     if (!category) return;
 
+    this.permit(this.drawerMode() === 'edit'
+      ? 'system.menu-management.action.update'
+      : 'system.menu-management.action.create', () => {
     if (this.drawerMode() === 'edit' && this.selectedMenu()) {
       this.api.updateMenu(this.selectedMenu()!.id, command).subscribe(() => {
         this.closeDrawer();
@@ -168,6 +201,7 @@ export class MenuManagementPage implements OnInit {
         this.loadMenus(category.id);
       });
     }
+    });
   }
 
   closeDrawer() {
@@ -181,6 +215,11 @@ export class MenuManagementPage implements OnInit {
   }
 
 dropMenu(event: CdkDragDrop<MenuFlatNode[]>) {
+  this.permit('system.menu-management.action.reorder',
+    () => this.commitDropMenu(event));
+}
+
+private commitDropMenu(event: CdkDragDrop<MenuFlatNode[]>) {
   const category = this.selectedCategory();
   if (!category || event.previousIndex === event.currentIndex) return;
 
@@ -257,14 +296,13 @@ private updateOrdersRecursive(nodes: MenuDto[]): void {
 
 
   deleteMenu(node: MenuFlatNode) {
-    if (confirm(`آیا از حذف منوی "${node.title}" مطمئن هستید؟`)) {
+    if (!confirm(`آیا از حذف منوی "${node.title}" مطمئن هستید؟`)) return;
+    this.permit('system.menu-management.action.delete', () => {
       this.api.deleteMenu(node.id).subscribe(() => {
         const category = this.selectedCategory();
-        if (category) {
-          this.loadMenus(category.id);
-        }
+        if (category) this.loadMenus(category.id);
       });
-    }
+    });
   }
 
 

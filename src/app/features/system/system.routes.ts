@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 import { PanelLayoutComponent } from '../../shared/layouts/dashboard-layout/panel-layout.component'
 import { SignInComponent } from '../../shared/pages/auth/sign-in/sign-in.component'
 import { systemSessionGuard } from '../../shared/guards/system-session.guard'
+import { systemAllUiAccessGuard } from '../../shared/guards/system-all-ui-access.guard'
 import { systemFeatureRouteSegments } from './feature-registry/system-feature.manifest'
 
 export default [
@@ -9,6 +10,7 @@ export default [
     path: '',
     component: PanelLayoutComponent,
     canActivate: [systemSessionGuard],
+    canActivateChild: [systemAllUiAccessGuard],
     children: [
       {
         path: '',
@@ -89,6 +91,11 @@ export default [
         data: { breadcrumb: 'مدیریت منو' },
       },
     ],
+  },
+  {
+    path: 'access-denied',
+    loadComponent: () => import('../../shared/pages/system-access-denied.component')
+      .then(x => x.SystemAccessDeniedComponent),
   },
   {
     path: 'auth',

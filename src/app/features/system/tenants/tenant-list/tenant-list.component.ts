@@ -1,3 +1,5 @@
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,6 +27,15 @@ import { CustomizerSettingsService } from '../../../../shared/services/customize
   styleUrl: './tenant-list.component.scss',
 })
 export class TenantListComponent {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
 
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService);
   service: TenantsService = inject(TenantsService);
@@ -56,11 +67,13 @@ list = signal<PagedList | null>(null);
     },
   ];
 changeState(id:string){
+    this.runUiAction('system.tenants.action.change-state', () => {
 this.service.changeState(id).subscribe({
   next:v=>{
     
   }
 })
+    });
 }
   loadUsers(query: GridQuery): void {
 

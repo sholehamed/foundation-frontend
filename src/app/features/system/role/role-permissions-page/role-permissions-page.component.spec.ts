@@ -12,12 +12,15 @@ describe('RolePermissionsPageComponent gated Save', () => {
     of({ nodes: [], selectedPermissionIds: [] }));
   const updateRolePermissions = vi.fn(() => of(undefined));
   const canAccess = vi.fn(() => of(true));
+  const refreshAction = vi.fn(() => of(true));
 
   beforeEach(async () => {
     getRolePermissionTreeNodes.mockClear();
     updateRolePermissions.mockClear();
     canAccess.mockReset();
     canAccess.mockReturnValue(of(true));
+    refreshAction.mockReset();
+    refreshAction.mockReturnValue(of(true));
     await TestBed.configureTestingModule({
       imports: [RolePermissionsPageComponent],
       providers: [
@@ -25,7 +28,7 @@ describe('RolePermissionsPageComponent gated Save', () => {
         { provide: RolesService, useValue: {
           getRolePermissionTreeNodes, updateRolePermissions,
         }},
-        { provide: SystemUiAccessService, useValue: { canAccess } },
+        { provide: SystemUiAccessService, useValue: { canAccess, refreshAction } },
         { provide: SYSTEM_UI_ACCESS_PILOT_ENABLED, useValue: false },
       ],
     }).compileComponents();
@@ -58,9 +61,10 @@ describe('RolePermissionsPageComponent gated Save', () => {
 
     // The user is revoked after the page has already loaded: UI must never
     // send a write based on the previous button state.
-    canAccess.mockReturnValueOnce(of(false));
+    refreshAction.mockReturnValueOnce(of(false));
     component.save();
-    expect(canAccess).toHaveBeenCalledTimes(2);
+    expect(canAccess).toHaveBeenCalledTimes(1);
+    expect(refreshAction).toHaveBeenCalledOnce();
     expect(updateRolePermissions).not.toHaveBeenCalled();
     expect(component.canSavePermissions()).toBe(false);
     expect(component.saving).toBe(false);

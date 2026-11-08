@@ -6,7 +6,7 @@
         <span>مدیریت گروه‌های اصلی ناوبری</span>
       </div>
 
-      <button mat-icon-button color="primary" matTooltip="افزودن دسته‌بندی" (click)="openCategoryDialog()">
+      <button *systemCan="'system.menu-management.action.create'" mat-icon-button color="primary" matTooltip="افزودن دسته‌بندی" (click)="openCategoryDialog()">
         <mat-icon>add</mat-icon>
       </button>
     </div>
@@ -28,7 +28,7 @@
         <span class="category-title">{{ category.title }}</span>
         
         <div class="category-actions">
-          <button mat-icon-button (click)="openCategoryDialog(category); $event.stopPropagation()">
+          <button *systemCan="'system.menu-management.action.update'" mat-icon-button (click)="openCategoryDialog(category); $event.stopPropagation()">
             <mat-icon class="edit-cat-btn">edit</mat-icon>
           </button>
           <mat-icon class="state-icon" [class.inactive]="!category.isActive">
@@ -48,11 +48,11 @@
         </span>
       </div>
       <span class="toolbar-spacer"></span>
-      <a mat-stroked-button routerLink="/system/feature-registry" aria-label="رجیستری قابلیت‌ها">
+      <a *systemCan="'/system/feature-registry'" mat-stroked-button routerLink="/system/feature-registry" aria-label="رجیستری قابلیت‌ها">
         <mat-icon>sync</mat-icon>
         رجیستری قابلیت‌ها
       </a>
-      <button
+      <button *systemCan="'system.menu-management.action.create'"
         mat-flat-button
         color="primary"
         [disabled]="!selectedCategory()"
@@ -66,6 +66,7 @@
     <section class="tree-surface">
       <div
         cdkDropList
+        [cdkDropListDisabled]="!canReorder()"
         class="menu-tree-drop-list"
         (cdkDropListDropped)="dropMenu($event)"
       >
@@ -160,15 +161,15 @@
     {{ node.original.isActive ? 'toggle_on' : 'toggle_off' }}
   </mat-icon>
 
-  <button mat-icon-button matTooltip="افزودن زیرمنو" (click)="createChildMenu(node)">
+  <button *systemCan="'system.menu-management.action.create'" mat-icon-button matTooltip="افزودن زیرمنو" (click)="createChildMenu(node)">
     <mat-icon>subdirectory_arrow_left</mat-icon>
   </button>
 
-  <button mat-icon-button matTooltip="ویرایش" (click)="editMenu(node)">
+  <button *systemCan="'system.menu-management.action.update'" mat-icon-button matTooltip="ویرایش" (click)="editMenu(node)">
     <mat-icon>edit</mat-icon>
   </button>
 
-  <button mat-icon-button color="warn" matTooltip="حذف" (click)="deleteMenu(node)">
+  <button *systemCan="'system.menu-management.action.delete'" mat-icon-button color="warn" matTooltip="حذف" (click)="deleteMenu(node)">
     <mat-icon>delete</mat-icon>
   </button>
 </ng-template>

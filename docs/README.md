@@ -24,3 +24,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-05B — Angular actual nested-route discovery and Registry v2 validation](development/FR-05B-NESTED-UI-ROUTES.md)
 
 - [FR-06B — Live System UI route/action permission pilot](development/FR-06B-LIVE-UI-ACCESS-PILOT.md)
+
+- [FR-07B — Full System live UI route/action guards (opt-in)](development/FR-07B-ALL-SYSTEM-UI-GUARDS.md)

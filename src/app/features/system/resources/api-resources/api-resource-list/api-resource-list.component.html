@@ -18,7 +18,7 @@
     <app-text-filter [grid]="grid" field="code" label="جستجوی کد"></app-text-filter>
 </ng-template>
 <ng-template [gridCellTemplate]="'isActive'" let-value="value" let-row="row">
-    <app-cell-toggle (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
+    <app-cell-toggle *systemCan="'system.api-resources.action.change-state'" (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
 </ng-template>
 <ng-template [gridCellTemplate]="'isDeprecated'" let-value="value" let-row="row">
     {{ value ? 'بله' : 'خیر' }}
@@ -27,7 +27,7 @@
     {{ value ? 'بله' : 'خیر' }}
 </ng-template>
  <ng-template #HeaderActions>
-            <button
+            <button *systemCan="resourceId ? '/system/resources/:resourceId/apiResources/create' : '/system/api-resources/create'"
                     class="add-btn refined-add-btn"
                     type="button"
                     routerLink="create"
@@ -35,6 +35,7 @@
                     <i class="material-symbols-outlined">add</i>
                     جدید
                 </button>
+                <ng-container *systemCan="'system.api-resources.action.sync'">
                 <button
                     *ngIf="resourceId"
                     class="add-btn refined-add-btn"
@@ -44,6 +45,7 @@
                     <i class="material-symbols-outlined">sync</i>
                     به روزرسانی
                 </button>
+                </ng-container>
         </ng-template>
         
 <ng-template #actionTemplate let-row>
@@ -56,8 +58,8 @@
         </button>
 
         <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
-            <button mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
-            <button mat-menu-item type="button" (click)="remove(row.id)">حذف</button>
+            <button *systemCan="resourceId ? '/system/resources/:resourceId/apiResources/:apiResourceId/edit' : '/system/api-resources/:apiResourceId/edit'" mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
+            <button *systemCan="'system.api-resources.action.delete'" mat-menu-item type="button" (click)="remove(row.id)">حذف</button>
         </mat-menu>
     </ng-template>
 </app-grid>

@@ -4,7 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ToggleService } from '../header/toggle.service';
-import { MenuCategoryDto, SidebarMenuService } from './sidebar-menu.service';
+import { MenuCategoryDto, SidebarMenuService, filterSystemNavigation } from './sidebar-menu.service';
+import { SystemUiAccessService } from '../../../../permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../permissions/system-ui-access-pilot.token';
+import { forkJoin, map } from 'rxjs';
 import { SidebarMenuItemComponent } from './sidebar-menu-item.component/sidebar-menu-item.component';
 import { TenantContextService } from '../../../../services/tenant-context.service';
 import { CustomizerSettingsService } from '../../../../services/customizer-settings.service';
@@ -33,6 +36,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   readonly themeService = inject(CustomizerSettingsService);
   private readonly menuService = inject(SidebarMenuService);
   private readonly router = inject(Router);
+  private readonly pilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiAccess = this.pilotEnabled ? inject(SystemUiAccessService) : null;
 
   readonly isSidebarToggled = this.toggleService.isSidebarToggled;
   readonly isToggled = this.themeService.isNavbarToggled;
@@ -79,8 +84,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.menuError.set(false);
     this.menuSections.set([]);
 
-    this.menuService.getMyNavigation()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    const menuSource = this.pilotEnabled && this.homeRoute === '/system/dashboard'
+      ? forkJoin({
+          sections: this.menuService.getMyNavigation(),
+          snapshot: this.uiAccess!.snapshot(),
+        }).pipe(map(({ sections, snapshot }) => filterSystemNavigation(sections, snapshot)))
+      : this.menuService.getMyNavigation();
+
+    menuSource.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: sections => {
           this.menuSections.set(sections);

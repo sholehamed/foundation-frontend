@@ -1,3 +1,5 @@
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
 import { CommonModule } from '@angular/common'
 import { Component, inject, signal } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -58,6 +60,15 @@ import { AdminsService } from '../admins.service'
   styleUrl: './admin-list.component.scss',
 })
 export class AdminListComponent {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService)
   service: AdminsService = inject(AdminsService)
   _selectedIds: string[] = []
@@ -116,15 +127,19 @@ export class AdminListComponent {
     },
   ]
   changeState(id: string) {
+    this.runUiAction('system.admins.action.change-state', () => {
     this.service.changeState(id).subscribe({
       next: (v) => {},
     })
-  }
+      });
+}
   changeLockState(id: string) {
+    this.runUiAction('system.admins.action.change-lock', () => {
     this.service.changeLockState(id).subscribe({
       next: (v) => {},
     })
-  }
+      });
+}
   loadUsers(query: GridQuery): void {
     this.service.pagedList(query).subscribe({
       next: (res) => {

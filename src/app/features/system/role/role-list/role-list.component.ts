@@ -24,6 +24,15 @@ import { rolePermissionUiKeys } from '../../../../shared/permissions/role-permis
   styleUrl: './role-list.component.scss',
 })
 export class RoleListComponent implements OnInit {
+  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
+  private runUiAction(key: string, action: () => void): void {
+    if (!this.uiActionPilotEnabled) { action(); return; }
+    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
+      if (allowed) action();
+    });
+  }
+
   private readonly uiAccess = inject(SystemUiAccessService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly pilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
@@ -67,11 +76,13 @@ list = signal<PagedList | null>(null);
 
   
 changeState(id:string){
+    this.runUiAction('system.roles.action.change-state', () => {
 this.service.changeState(id).subscribe({
   next:v=>{
     
   }
 })
+    });
 }
   loadList(query: GridQuery): void {
 
