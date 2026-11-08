@@ -194,8 +194,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
       firstName: this.firstName().trim(),
       lastName: this.lastName().trim(),
     };
-    if (!/^[a-zA-Z0-9][a-zA-Z0-9._+\\-]{2,99}$/.test(request.userName) ||
-        !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(request.email) ||
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9._+-]{2,99}$/.test(request.userName) ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email) ||
         !request.firstName || request.firstName.length > 80 ||
         !request.lastName || request.lastName.length > 80) {
       this.saveError.set('نام کاربری، ایمیل و مشخصات عضو را بررسی کنید.');
