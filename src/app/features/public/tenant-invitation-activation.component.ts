@@ -1,11 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { isTenantWorkspaceHost } from '../../shared/util/tenant-workspace-host';
 import { takeInvitationToken } from '../../shared/util/tenant-invitation-token';
@@ -66,8 +64,11 @@ import { takeInvitationToken } from '../../shared/util/tenant-invitation-token';
   `],
 })
 export class TenantInvitationActivationComponent implements OnInit {
-  private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
+  private requestAbort: AbortController | null = null;
+  constructor() {
+    this.destroyRef.onDestroy(() => this.requestAbort?.abort());
+  }
   private token: string | null = null;
   private tenantSlug: string | null = null;
   readonly ready = signal(false);
@@ -104,7 +105,7 @@ export class TenantInvitationActivationComponent implements OnInit {
     this.ready.set(true);
   }
 
-  activate(): void {
+  async activate(): Promise<void> {
     if (!this.ready() || this.saving() || this.activated() ||
         !this.token || !this.tenantSlug) return;
     this.form.markAllAsTouched();
@@ -117,37 +118,61 @@ export class TenantInvitationActivationComponent implements OnInit {
       this.error.set('رمز عبور و تکرار آن را بررسی کنید.');
       return;
     }
+
     this.error.set('');
     this.saving.set(true);
-    this.http.post<{ activated: boolean }>(
-      environment.apiUrl + '/public/tenant-invitations/activate',
-      { tenantSlug: this.tenantSlug, token: this.token, password },
-      { withCredentials: false },
-    ).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: response => {
-        this.saving.set(false);
-        this.form.reset({ password: '', confirm: '' });
-        if (response?.activated !== true) {
-          this.error.set('پاسخ سرور برای فعال‌سازی معتبر نیست.');
-          return;
-        }
-        this.token = null;
-        this.ready.set(false);
-        this.activated.set(true);
-      },
-      error: (err: { status?: number }) => {
-        this.saving.set(false);
-        this.form.reset({ password: '', confirm: '' });
-        if (err.status === 400 || err.status === 404 || err.status === 409) {
+    const controller = new AbortController();
+    this.requestAbort = controller;
+    try {
+      // Unlike withCredentials:false on a same-origin XHR, fetch omit
+      // *guarantees* cookies are never sent, including same-origin cookies.
+      // No Angular OAuth interceptor, redirect or foreign-origin request
+      // can see the invitation token or the new password.
+      const response = await fetch(
+        environment.apiUrl + '/public/tenant-invitations/activate', {
+          method: 'POST',
+          mode: 'same-origin',
+          credentials: 'omit',
+          redirect: 'error',
+          cache: 'no-store',
+          referrerPolicy: 'no-referrer',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tenantSlug: this.tenantSlug, token: this.token, password,
+          }),
+          signal: controller.signal,
+        },
+      );
+      if (controller.signal.aborted) return;
+      if (!response.ok) {
+        if ([400, 401, 404, 409].includes(response.status)) {
           this.token = null;
           this.ready.set(false);
           this.error.set('لینک دعوت‌نامه نامعتبر، منقضی یا قبلاً استفاده شده است.');
         } else {
-          this.error.set(err.status === 429
+          this.error.set(response.status === 429
             ? 'درخواست‌ها بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.'
-            : 'ارتباط با سرور برقرار نشد. دوباره تلاش کنید.');
+            : 'فعال‌سازی تأیید نشد. دوباره تلاش کنید.');
         }
-      },
-    });
+        return;
+      }
+      const body: { activated?: boolean } = await response.json();
+      if (body.activated !== true) {
+        this.error.set('پاسخ سرور برای فعال‌سازی معتبر نیست.');
+        return;
+      }
+      this.token = null;
+      this.ready.set(false);
+      this.activated.set(true);
+    } catch {
+      if (!controller.signal.aborted)
+        this.error.set('ارتباط امن با سرور برقرار نشد. دوباره تلاش کنید.');
+    } finally {
+      if (!controller.signal.aborted) {
+        this.saving.set(false);
+        this.form.reset({ password: '', confirm: '' });
+      }
+      if (this.requestAbort === controller) this.requestAbort = null;
+    }
   }
 }
