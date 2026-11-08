@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { SignInComponent } from './shared/pages/auth/sign-in/sign-in.component';
 import { tenantSessionGuard } from './shared/guards/tenant-session.guard';
+import { tenantOwnerDirectoryGuard } from './shared/guards/tenant-owner-directory.guard';
 
 export const routes: Routes = [
   {
@@ -34,6 +35,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/app/tenant-branches.component')
           .then(x => x.TenantBranchesComponent),
       },
+      ...(['members', 'roles', 'groups'] as const).map(kind => ({
+        path: kind,
+        data: { directoryKind: kind },
+        canActivate: [tenantOwnerDirectoryGuard],
+        loadComponent: () => import('./features/app/tenant-admin-directory.component')
+          .then(x => x.TenantAdminDirectoryComponent),
+      })),
     ],
   },
   {
