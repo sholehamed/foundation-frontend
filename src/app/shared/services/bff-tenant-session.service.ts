@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, switchMap, tap, finalize, throwError } from 'rxjs';
+import { catchError, map, Observable, switchMap, tap, finalize, throwError } from 'rxjs';
 import type { BffSessionResponse } from '../models/bff-session.contract';
 
 /** Safe, local Tenant navigation target. Never accept an absolute or protocol-relative URL. */
@@ -37,6 +37,9 @@ export class BffTenantSessionService {
         throw new Error('Invalid Tenant BFF session contract.');
       }
       this.session.set(value);
+    }), catchError(error => {
+      this.session.set(null);
+      return throwError(() => error);
     }));
   }
 
