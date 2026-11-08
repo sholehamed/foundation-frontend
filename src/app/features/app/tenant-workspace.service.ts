@@ -33,6 +33,18 @@ export interface TenantWorkspaceBranch {
   isMain: boolean;
 }
 
+export interface TenantAdminCapabilities { canViewAdministration: boolean; }
+export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
+export interface TenantAdminMember {
+  id: string; userName: string; email: string;
+  firstName: string | null; lastName: string | null; isActive: boolean;
+}
+export interface TenantAdminCatalogItem {
+  id: string; name: string; description: string | null; isActive: boolean;
+}
+export type TenantDirectoryKind = 'members' | 'roles' | 'groups';
+export type TenantDirectoryItem = TenantAdminMember | TenantAdminCatalogItem;
+
 @Injectable({ providedIn: 'root' })
 export class TenantWorkspaceService {
   private readonly http = inject(HttpClient);
@@ -43,6 +55,19 @@ export class TenantWorkspaceService {
     return this.http.get<TenantWorkspaceSummary>(this.root);
   }
 
+
+  getAdminCapabilities(): Observable<TenantAdminCapabilities> {
+    return this.http.get<TenantAdminCapabilities>(this.root + '/admin-capabilities');
+  }
+  getMembers(page = 1): Observable<TenantDirectoryPage<TenantAdminMember>> {
+    return this.http.get<TenantDirectoryPage<TenantAdminMember>>(this.root + '/members', { params: { page } });
+  }
+  getRoles(page = 1): Observable<TenantDirectoryPage<TenantAdminCatalogItem>> {
+    return this.http.get<TenantDirectoryPage<TenantAdminCatalogItem>>(this.root + '/roles', { params: { page } });
+  }
+  getGroups(page = 1): Observable<TenantDirectoryPage<TenantAdminCatalogItem>> {
+    return this.http.get<TenantDirectoryPage<TenantAdminCatalogItem>>(this.root + '/groups', { params: { page } });
+  }
   getBranches(): Observable<TenantWorkspaceBranch[]> {
     return this.http.get<TenantWorkspaceBranch[]>(this.root + '/branches');
   }
