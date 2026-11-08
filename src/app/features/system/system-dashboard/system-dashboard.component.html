@@ -1,19 +1,135 @@
-<div class="row">
-
-    <div class="col-xxl-2 col-sm-4">
-        <app-count-widget class="col-xxl-2 col-sm-4" Icon="business" Title="کل مستاجرها" [Value]="_dashboardCards()!.totalTenants"></app-count-widget>
+<section class="system-overview" dir="rtl">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">FOUNDATION / SYSTEM ADMINISTRATION</p>
+      <h1>داشبورد مدیریت سیستم</h1>
+      <p class="subheading">نمای کلی کسب‌وکارها، حساب‌های کاربری و ساختار دسترسی پلتفرم.</p>
     </div>
-<div class="col-xxl-2 col-sm-4">
-    <app-count-widget class="col-xxl-2 col-sm-4" Icon="check_circle" Title="مستاجرهای فعال" [Value]="_dashboardCards()!.activeTenants"></app-count-widget>
-</div>
-<div class="col-xxl-2 col-sm-4">
-    <app-count-widget class="col-xxl-2 col-sm-4" Icon="group" Title="کل کاربران" [Value]="_dashboardCards()!.totalUsers"></app-count-widget>
-</div>
-<div class="col-xxl-2 col-sm-4">
-    <app-count-widget class="col-xxl-2 col-sm-4" Icon="admin_panel_settings" Title="کل نقش ها" [Value]="_dashboardCards()!.totalUsers"></app-count-widget>
-</div>
-<div class="col-xxl-2 col-sm-4">
-    <app-count-widget class="col-xxl-2 col-sm-4" Icon="key" Title="کل  دسترسی ها" [Value]="_dashboardCards()!.totalPermissions"></app-count-widget>
-</div>
-</div>
+    <button mat-stroked-button type="button" (click)="load()" [disabled]="loading()">
+      <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+      به‌روزرسانی
+    </button>
+  </header>
 
+  @if (loading()) {
+    <div role="status" class="message-block">
+      <span class="material-symbols-outlined" aria-hidden="true">hourglass_top</span>
+      در حال دریافت آمار واقعی سیستم...
+    </div>
+  } @else if (error()) {
+    <div role="alert" class="message-block error-message">
+      <span class="material-symbols-outlined" aria-hidden="true">error_outline</span>
+      <p>{{ error() }}</p>
+      <button mat-flat-button type="button" (click)="load()">تلاش مجدد</button>
+    </div>
+  } @else if (dashboard(); as data) {
+    <div class="stats-grid" aria-label="شاخص‌های سیستم">
+      @for (stat of stats(); track stat.label) {
+        <article class="stat-card" [attr.data-kind]="stat.kind">
+          <div class="stat-meta">
+            <span class="stat-icon material-symbols-outlined" aria-hidden="true">{{ stat.icon }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
+          <strong class="stat-number">{{ stat.value | number }}</strong>
+        </article>
+      }
+    </div>
+
+    <div class="details-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>وضعیت کسب‌وکارها</h2>
+            <p>از مجموع {{ data.totalTenants | number }} کسب‌وکار ثبت‌شده</p>
+          </div>
+          <span class="percent">{{ activePercent() }}٪ فعال</span>
+        </div>
+        <div class="progress-track" role="progressbar" [attr.aria-valuenow]="activePercent()"
+          aria-valuemin="0" aria-valuemax="100" aria-label="درصد کسب‌وکارهای فعال">
+          <div class="progress-fill" [style.width.%]="activePercent()"></div>
+        </div>
+        <div class="legend">
+          <span><i class="dot active"></i> فعال: {{ data.activeTenants | number }}</span>
+          <span><i class="dot inactive"></i> غیرفعال: {{ data.inactiveTenants | number }}</span>
+        </div>
+        @if (data.totalTenants === 0) {
+          <p class="empty-note">هنوز کسب‌وکاری در پلتفرم ثبت نشده است.</p>
+        }
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>ترکیب حساب‌های کاربری</h2>
+            <p>بر اساس نوع حساب ثبت‌شده در Identity</p>
+          </div>
+          <span class="material-symbols-outlined panel-symbol" aria-hidden="true">account_circle</span>
+        </div>
+        <div class="account-rows">
+          <div><span>حساب‌های System</span><strong>{{ data.systemUsers | number }}</strong></div>
+          <div><span>حساب‌های Tenant</span><strong>{{ data.tenantUsers | number }}</strong></div>
+          <div class="account-total"><span>مجموع کاربران</span><strong>{{ data.totalUsers | number }}</strong></div>
+        </div>
+      </article>
+    </div>
+
+    <div class="details-grid lower-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>آخرین کسب‌وکارهای ثبت‌شده</h2>
+            <p>آخرین ۶ رکورد بر اساس زمان ثبت در دیتابیس</p>
+          </div>
+          <a *systemCan="'/system/tenants'" routerLink="/system/tenants" class="text-link">مشاهده همه</a>
+        </div>
+
+        @if (data.recentTenants.length === 0) {
+          <p class="empty-note">فعلاً کسب‌وکاری برای نمایش وجود ندارد.</p>
+        } @else {
+          <div class="tenant-list">
+            @for (tenant of data.recentTenants; track tenant.id) {
+              <div class="tenant-row">
+                <div class="tenant-avatar" aria-hidden="true">
+                  <span class="material-symbols-outlined">storefront</span>
+                </div>
+                <div class="tenant-description">
+                  <strong>{{ tenant.name }}</strong>
+                  <small>{{ tenant.slug }}</small>
+                </div>
+                <div class="tenant-trailing">
+                  <span class="status" [class.active]="tenant.isActive">
+                    {{ tenant.isActive ? 'فعال' : 'غیرفعال' }}
+                  </span>
+                  <small>{{ hasValidDate(tenant.createdAt) ? (tenant.createdAt | date:'yyyy/MM/dd') : '—' }}</small>
+                </div>
+                <a *systemCan="'/system/tenants/:tenantId/overview'"
+                  [routerLink]="['/system/tenants', tenant.id, 'overview']"
+                  [attr.aria-label]="'مشاهده جزئیات ' + tenant.name" class="item-link">
+                  <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+                </a>
+              </div>
+            }
+          </div>
+        }
+      </article>
+
+      <article class="panel shortcuts">
+        <div class="panel-heading">
+          <div>
+            <h2>دسترسی سریع</h2>
+            <p>ورود به بخش‌های مدیریتی موجود</p>
+          </div>
+        </div>
+        <div class="shortcuts-grid">
+          @for (item of shortcuts; track item.path) {
+            <a *systemCan="item.path" [routerLink]="item.path" class="shortcut">
+              <span class="material-symbols-outlined" aria-hidden="true">{{ item.icon }}</span>
+              <strong>{{ item.title }}</strong>
+              <small>{{ item.description }}</small>
+            </a>
+          }
+        </div>
+      </article>
+    </div>
+  }
+</section>

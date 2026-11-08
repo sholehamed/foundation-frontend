@@ -1,5 +1,11 @@
 # Foundation Frontend — project state and handoff
 
+## FR-08A — System landing dashboard, real metrics (2026-11-08)
+
+- PR/CI pending: [System dashboard implementation](development/FR-08A-SYSTEM-DASHBOARD.md), companion Backend PR #50. /system/dashboard now renders actual business tenant activity, account/roles/permissions/modules/groups counters, six recent businesses and permission-aware navigation, with loading/error/retry and empty states. Historical Roles counter bug fixed. System login path remains /system/dashboard.
+- Tenant Admin remains a separate, tenant-scoped FR-08B effort; current /dashboard is an initial read-only workspace view. No BFF, grants, client access enforcement switch or SQL changes.
+
+
 ## FR-07B — System-wide live UI access guard and shared snapshot (2026-11-08)
 
 - **PR/CI gate:** [FR-07B System UI runbook](development/FR-07B-ALL-SYSTEM-UI-GUARDS.md), Backend [PR #49](https://github.com/sholehamed/foundation-backend/pull/49). Single no-store UI snapshot per navigation for 45 PAGEs / 35 ACTIONs. `canActivateChild` checks all executable System leaf routes from Angular path templates and denies unrecognized/disabled routes to a dedicated unprotected-from-loop access-denied page.
