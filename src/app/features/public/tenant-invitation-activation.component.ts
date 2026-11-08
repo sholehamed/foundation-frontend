@@ -6,9 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { environment } from '../../../../environments/environment';
-import { isTenantWorkspaceHost } from '../../../shared/util/tenant-workspace-host';
-import { takeInvitationToken } from '../../../shared/util/tenant-invitation-token';
+import { environment } from '../../../environments/environment';
+import { isTenantWorkspaceHost } from '../../shared/util/tenant-workspace-host';
+import { takeInvitationToken } from '../../shared/util/tenant-invitation-token';
 
 /**
  * Public, cookie-free redemption. The initial token is captured in main.ts
