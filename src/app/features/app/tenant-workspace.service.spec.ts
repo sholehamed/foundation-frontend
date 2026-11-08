@@ -57,6 +57,19 @@ describe('TenantWorkspaceService current-tenant API', () => {
       request.flush({ items: [], page: 2, hasNext: false });
     }
 
+    const pending = {
+      userName: 'new.staff', email: 'new@local.test', firstName: 'New', lastName: 'Staff',
+    };
+    api.createPendingMember(pending).subscribe();
+    const createMember = http.expectOne(environment.apiUrl + '/tenant/workspace/members');
+    expect(createMember.request.method).toBe('POST');
+    expect(createMember.request.body).toEqual(pending);
+    expect(createMember.request.body).not.toHaveProperty('tenantId');
+    expect(createMember.request.body).not.toHaveProperty('isActive');
+    expect(createMember.request.body).not.toHaveProperty('password');
+    expect(createMember.request.body).not.toHaveProperty('roleIds');
+    createMember.flush({ id: 'new-id', ...pending, isActive: false });
+
     api.getRolePermissions('owned-role-id').subscribe();
     const matrix = http.expectOne(environment.apiUrl +
       '/tenant/workspace/roles/owned-role-id/permissions');
