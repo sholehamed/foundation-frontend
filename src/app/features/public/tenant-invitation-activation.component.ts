@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { isTenantWorkspaceHost } from '../../shared/util/tenant-workspace-host';
 import { takeInvitationToken } from '../../shared/util/tenant-invitation-token';
+import { activationRequestOptions } from '../../shared/util/tenant-invitation-activation-request';
 
 /**
  * Public, cookie-free redemption. The initial token is captured in main.ts
@@ -130,17 +131,9 @@ export class TenantInvitationActivationComponent implements OnInit {
       // can see the invitation token or the new password.
       const response = await fetch(
         environment.apiUrl + '/public/tenant-invitations/activate', {
-          method: 'POST',
-          mode: 'same-origin',
-          credentials: 'omit',
-          redirect: 'error',
-          cache: 'no-store',
-          referrerPolicy: 'no-referrer',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            tenantSlug: this.tenantSlug, token: this.token, password,
-          }),
-          signal: controller.signal,
+          ...activationRequestOptions(
+            this.tenantSlug, this.token, password, controller.signal,
+          ),
         },
       );
       if (controller.signal.aborted) return;
