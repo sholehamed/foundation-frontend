@@ -1,3 +1,9 @@
+## FR-13B-1 — Tenant inactive member creation UI (2026-11-09)
+
+- Added a server-capability-gated form on the existing /dashboard/members page. POST only {userName,email,firstName,lastName}; never client TenantId/role/password/active status. Rechecks canViewMembers+canCreateMembers immediately before write; 401/403/404 clears local rows and create permission.
+- This creates **inactive**, non-login employee records only, not invitations. No email/token, password activation or auto grants. Backend [PR #73](https://github.com/sholehamed/foundation-backend/pull/73) requires reviewed SQL audit migration and manual Tenant catalog Apply; both repos' CI must pass before respective merges.
+- [UI contract and limitations](development/FR-13B1-TENANT-INACTIVE-MEMBER-UI.md). Parent [FR-13](https://github.com/sholehamed/foundation-backend/issues/70).
+
 # Foundation Frontend — project state and handoff
 
 ## FR-08B — Tenant Admin read-only workspace starter (2026-11-08)
