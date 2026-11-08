@@ -1,5 +1,13 @@
 # Foundation Frontend — project state and handoff
 
+## FR-07B — System-wide live UI access guard and shared snapshot (2026-11-08)
+
+- **PR/CI gate:** [FR-07B System UI runbook](development/FR-07B-ALL-SYSTEM-UI-GUARDS.md), Backend [PR #49](https://github.com/sholehamed/foundation-backend/pull/49). Single no-store UI snapshot per navigation for 45 PAGEs / 35 ACTIONs. `canActivateChild` checks all executable System leaf routes from Angular path templates and denies unrecognized/disabled routes to a dedicated unprotected-from-loop access-denied page.
+- Reusable `*systemCan` directive applied to main System lists and CRUD, state, nested Resource and actual Menu/Group/Registry actions. Sensitive mutations re-evaluate the ACTION decision on click. One HTTP request is shared by guard and presentation per navigation; no caller role/tenant IDs or token grant claims.
+- **Default OFF**: `systemUiAccessPilotEnabled=false` in all environments pending reviewed Registry Apply and explicit Master-scope grants. This code is UI only, not server-side granular API enforcement; BFF/auth/production SQL unaffected.
+- Dead Angular navigation links identified in Groups and Tenants were corrected/hidden; details and rollout/test constraints are in the runbook.
+
+
 ## FR-06B — live System UI access Guard and Save pilot (2026-11-07)
 
 - **PR/CI gate:** [FR-06B runbook](development/FR-06B-LIVE-UI-ACCESS-PILOT.md), Backend [PR #48](https://github.com/sholehamed/foundation-backend/pull/48). Angular `SystemUiAccessService` checks one code-owned key via live `UiAccess/me/{key}` and fails closed on error/mismatched response.

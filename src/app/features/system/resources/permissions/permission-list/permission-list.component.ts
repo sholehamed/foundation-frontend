@@ -1,3 +1,4 @@
+import { SystemCanDirective } from '../../../../../shared/permissions/system-can.directive';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, inject, Input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +32,7 @@ import { PermissionsService } from '../permissions.service';
 import { CustomizerSettingsService } from '../../../../../shared/services/customizer-settings.service';
 @Component({
   selector: 'app-permission-list',
-    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent, TextFilterComponent],
+    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent, TextFilterComponent],
   templateUrl: './permission-list.component.html',
   styleUrl: './permission-list.component.scss',
 })

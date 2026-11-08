@@ -1,3 +1,4 @@
+import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CellToggleComponent, GridCellTemplateDirective, GridColumn, GridComponent, GridHeaderFilterTemplateDirective, GridQuery, PagedList, PageHeaderComponent, TextFilterComponent } from '../../../../shared/components/grid-components';
@@ -19,7 +20,7 @@ import { rolePermissionUiKeys } from '../../../../shared/permissions/role-permis
 
 @Component({
   selector: 'app-role-list.component',
-    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatMenuModule, MatTableModule, MatPaginatorModule, MatFormFieldModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent],
+    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatMenuModule, MatTableModule, MatPaginatorModule, MatFormFieldModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent],
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss',
 })

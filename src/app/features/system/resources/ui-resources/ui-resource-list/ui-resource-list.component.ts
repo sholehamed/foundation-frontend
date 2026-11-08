@@ -1,3 +1,4 @@
+import { SystemCanDirective } from '../../../../../shared/permissions/system-can.directive';
 import { AfterViewInit, Component, inject, Input, signal } from '@angular/core';
 import { ResourcesService } from '../../resources.service';
 import { CommonModule } from '@angular/common';
@@ -31,7 +32,7 @@ PagedList
 import { CustomizerSettingsService } from '../../../../../shared/services/customizer-settings.service';
 @Component({
   selector: 'app-ui-resource-list.component',
-    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent],
+    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, GridComponent, RouterLink, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, SelectFilterComponent, PageHeaderComponent],
   templateUrl: './ui-resource-list.component.html',
   styleUrl: './ui-resource-list.component.scss',
 })

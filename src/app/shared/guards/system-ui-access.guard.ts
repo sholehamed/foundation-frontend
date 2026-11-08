@@ -15,9 +15,7 @@ export const systemUiAccessGuard: CanActivateFn = (route) => {
   if (!enabled) return true;
 
   const router = inject(Router);
-  const deny = () => router.createUrlTree(['/system/dashboard'], {
-    queryParams: { accessDenied: '1' },
-  });
+  const deny = () => router.parseUrl('/system/access-denied');
 
   const key = route.data['uiAccessKey'];
   if (typeof key !== 'string' || !key.startsWith('system.')) return deny();

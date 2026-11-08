@@ -13,10 +13,10 @@
   
 
 <ng-template [gridCellTemplate]="'isActive'" let-value="value" let-row="row">
-    <app-cell-toggle (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
+    <app-cell-toggle *systemCan="'system.groups.action.change-state'" (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
 </ng-template>
  <ng-template #HeaderActions>
-            <button
+            <button *systemCan="'/system/groups/create'"
                     class="add-btn refined-add-btn"
                     type="button"
                     routerLink="create"
@@ -36,10 +36,10 @@
         </button>
 
         <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
-            <button mat-menu-item [routerLink]="row.id+'/permissions'" type="button">مدیریت نقش ها </button>
-            <button mat-menu-item [routerLink]="row.id+'/members'" type="button">مدیریت اعضای گروه </button>
-            <button mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
-            <button mat-menu-item type="button">حذف</button>
+            <!-- Group-role page does not exist yet: no dead-link action. -->
+            <button *systemCan="'/system/groups/:groupId/members'" mat-menu-item [routerLink]="row.id+'/members'" type="button">مدیریت اعضای گروه </button>
+            <button *systemCan="'/system/groups/:groupId/edit'" mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
+            <button *systemCan="'system.groups.action.delete'" mat-menu-item type="button">حذف</button>
         </mat-menu>
     </ng-template>
 </app-grid>

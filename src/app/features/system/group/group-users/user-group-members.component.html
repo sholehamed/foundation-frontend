@@ -4,7 +4,7 @@
       <span>{{ selection.selected.length }} مورد انتخاب شده</span>
       <span class="spacer"></span>
 
-      <button mat-flat-button color="warn" type="button" (click)="removeSelected()" [disabled]="loading()">
+      <button *systemCan="'system.groups.action.manage-members'" mat-flat-button color="warn" type="button" (click)="removeSelected()" [disabled]="loading()">
         <mat-icon>delete</mat-icon>
         حذف انتخاب‌شده‌ها
       </button>
@@ -34,7 +34,7 @@
 </ng-template> -->
 
  <ng-template #HeaderActions>
-                 <button 
+                 <button *systemCan="'system.groups.action.manage-members'"
                         class="add-btn refined-add-btn"
                         type="button"
                         (click)="openBulkAdd()"

@@ -18,10 +18,10 @@
     <app-text-filter [grid]="grid" field="code" label="جستجوی کد"></app-text-filter>
 </ng-template>
 <ng-template [gridCellTemplate]="'isActive'" let-value="value" let-row="row">
-    <app-cell-toggle (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
+    <app-cell-toggle *systemCan="'system.resources.action.change-state'" (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
 </ng-template>
  <ng-template #HeaderActions>
-            <button
+            <button *systemCan="'/system/resources/create'"
                     class="add-btn refined-add-btn"
                     type="button"
                     routerLink="create"
@@ -41,11 +41,11 @@
         </button>
 
         <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
-            <button mat-menu-item [routerLink]="row.id+'/permissions'" type="button">مدیریت مجوزها </button>
-            <button mat-menu-item [routerLink]="row.id+'/uiResources'" type="button">مدیریت ui</button>
-            <button mat-menu-item [routerLink]="row.id+'/apiResources'" type="button">مدیریت api</button>
-            <button mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
-            <button mat-menu-item type="button">حذف</button>
+            <button *systemCan="'/system/resources/:resourceId/permissions'" mat-menu-item [routerLink]="row.id+'/permissions'" type="button">مدیریت مجوزها </button>
+            <button *systemCan="'/system/resources/:resourceId/uiResources'" mat-menu-item [routerLink]="row.id+'/uiResources'" type="button">مدیریت ui</button>
+            <button *systemCan="'/system/resources/:resourceId/apiResources'" mat-menu-item [routerLink]="row.id+'/apiResources'" type="button">مدیریت api</button>
+            <button *systemCan="'/system/resources/:resourceId/edit'" mat-menu-item [routerLink]="row.id+'/edit'" type="button">ویرایش</button>
+            <button *systemCan="'system.resources.action.delete'" mat-menu-item type="button">حذف</button>
         </mat-menu>
     </ng-template>
 </app-grid>

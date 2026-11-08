@@ -18,10 +18,10 @@
     <app-text-filter [grid]="grid" field="slug" label="جستجوی اسم مستعار"></app-text-filter>
 </ng-template>
 <ng-template [gridCellTemplate]="'isActive'" let-value="value" let-row="row">
-    <app-cell-toggle (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
+    <app-cell-toggle *systemCan="'system.tenants.action.change-state'" (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
 </ng-template>
  <ng-template #HeaderActions>
-            <button
+            <button *systemCan="'/system/tenants/create'"
                     class="add-btn refined-add-btn"
                     type="button"
                     routerLink="create"
@@ -45,18 +45,16 @@
 
         <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
           
-             <button [routerLink]="row.id+'/users'" mat-menu-item type="button" >
-                مدیریت کاربران
-            </button>
-            <button [routerLink]="row.id+'/detail'" mat-menu-item type="button" >
+             <!-- Tenant users page is not implemented: link removed. -->
+            <button *systemCan="'/system/tenants/:tenantId/overview'" [routerLink]="row.id+'/overview'" mat-menu-item type="button" >
                 جزئیات
             </button>
 
-            <button mat-menu-item [routerLink]="row.id+'/edit'" type="button" >
+            <button *systemCan="'/system/tenants/:tenantId/edit'" mat-menu-item [routerLink]="row.id+'/edit'" type="button" >
                 ویرایش
             </button>
 
-            <button mat-menu-item type="button" >
+            <button *systemCan="'system.tenants.action.delete'" mat-menu-item type="button" >
                 حذف
             </button>
         </mat-menu>

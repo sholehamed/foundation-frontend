@@ -53,7 +53,7 @@ describe('systemUiAccessGuard first explicit Roles permissions pilot', () => {
     const denied = await guard('system.roles.permissions');
     expect(denied instanceof UrlTree).toBe(true);
     expect(TestBed.inject(Router).serializeUrl(denied as UrlTree))
-      .toContain('/system/dashboard?accessDenied=1');
+      .toContain('/system/access-denied');
     expect(canAccess).toHaveBeenCalledTimes(2);
   });
 

@@ -4,7 +4,7 @@
       <h1>رجیستری قابلیت‌ها</h1>
       <p>مقایسه تعاریف کد با دیتابیس؛ بدون اعطای خودکار دسترسی به کاربران یا نقش‌ها.</p>
     </div>
-    <a mat-stroked-button routerLink="/system/menu-management">
+    <a *systemCan="'/system/menu-management'" mat-stroked-button routerLink="/system/menu-management">
       <mat-icon>arrow_back</mat-icon>
       مدیریت منو
     </a>
@@ -16,7 +16,7 @@
       <mat-icon>refresh</mat-icon>
       بررسی مجدد
     </button>
-    <button mat-flat-button color="primary" type="button" (click)="applyChanges()"
+    <button *systemCan="'system.feature-registry.action.apply'" mat-flat-button color="primary" type="button" (click)="applyChanges()"
       [disabled]="loading() || applying() || !manifestVerified() || manifestProblems().length > 0 || !preview()?.canApply || !preview()?.hasPending">
       <mat-icon>sync</mat-icon>
       ثبت تغییرات تأییدشده

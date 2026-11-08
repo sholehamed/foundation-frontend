@@ -1,3 +1,6 @@
+import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
+import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
+import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges, effect, inject, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -31,7 +34,7 @@ import { GroupsService } from '../groups.service';
 @Component({
   selector: 'app-user-group-members',
   standalone: true,
-    imports: [GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule , AvatarUploadComponent, MatExpansionModule, MatIconModule, PageHeaderComponent, GridComponent
+    imports: [SystemCanDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule , AvatarUploadComponent, MatExpansionModule, MatIconModule, PageHeaderComponent, GridComponent
      
      , MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatChipsModule,
@@ -43,6 +46,13 @@ import { GroupsService } from '../groups.service';
 export class UserGroupMembersComponent implements OnChanges {
   @Input({ required: true }) groupId!: string;
     private readonly dialog = inject(MatDialog);
+    private readonly enabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
+    private readonly access = this.enabled ? inject(SystemUiAccessService) : null;
+    private permitMembershipChange(action: () => void): void {
+      if (!this.enabled) { action(); return; }
+      this.access!.refreshAction('system.groups.action.manage-members')
+        .subscribe(allowed => { if (allowed) action(); });
+    }
   service: GroupsService = inject(GroupsService);
 
   displayedColumns = ['select', 'displayName', 'isActive', 'actions'] as const;
@@ -191,6 +201,7 @@ list = signal<PagedList | null>(null);
   onSelectUserToAdd(user: UserSummaryDto) {
     if (!user?.id) return;
 
+    this.permitMembershipChange(() => {
     this.loading.set(true);
     this.api.addMembers(this.groupId, [user.id]).subscribe({
       next: () => {
@@ -201,10 +212,12 @@ list = signal<PagedList | null>(null);
       error: () => this.snack.open('خطا در افزودن عضو', 'بستن', { duration: 3000 }),
       complete: () => this.loading.set(false),
     });
+    });
   }
 
   // remove one
   removeOne(row: GroupMemberDto) {
+    this.permitMembershipChange(() => {
     this.loading.set(true);
     this.api.removeMembers(this.groupId, [row.userId]).subscribe({
       next: () => {
@@ -214,6 +227,7 @@ list = signal<PagedList | null>(null);
       error: () => this.snack.open('خطا در حذف عضو', 'بستن', { duration: 3000 }),
       complete: () => this.loading.set(false),
     });
+    });
   }
 
   // remove selected
@@ -221,6 +235,7 @@ list = signal<PagedList | null>(null);
     const ids = this.selection.selected.map(x => x.userId);
     if (ids.length === 0) return;
 
+    this.permitMembershipChange(() => {
     this.loading.set(true);
     this.api.removeMembers(this.groupId, ids).subscribe({
       next: () => {
@@ -230,10 +245,12 @@ list = signal<PagedList | null>(null);
       error: () => this.snack.open('خطا در حذف گروهی', 'بستن', { duration: 3000 }),
       complete: () => this.loading.set(false),
     });
+    });
   }
 
   // bulk add (stub)
   openBulkAdd() {
+    this.permitMembershipChange(() => {
    const dialogRef = this.dialog.open(UserListComponent, {
        width: '95vw',
   maxWidth: '95vw',
@@ -246,10 +263,10 @@ list = signal<PagedList | null>(null);
        dialogRef.afterClosed().subscribe((result:string[]) => {
         
          if (result) {
-          this.api.addMembers(this.groupId,result).subscribe(d=>{
-            this.fetch();
-          })
+          this.permitMembershipChange(() =>
+            this.api.addMembers(this.groupId, result).subscribe(() => this.fetch()))
          }
        });
+    });
   }
 }

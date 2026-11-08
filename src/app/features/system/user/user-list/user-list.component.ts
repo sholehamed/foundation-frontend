@@ -1,3 +1,4 @@
+import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +32,7 @@ import { CustomizerSettingsService } from '../../../../shared/services/customize
 
 @Component({
   selector: 'app-user-list.component',
-  imports: [
+  imports: [SystemCanDirective, 
     GridHeaderFilterTemplateDirective,
     GridCellTemplateDirective,
     MatButtonModule,

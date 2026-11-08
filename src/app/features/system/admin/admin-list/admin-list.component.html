@@ -22,14 +22,14 @@
     <app-text-filter [grid]="grid" field="userName" label="جستجوی  نام کاربری"></app-text-filter>
 </ng-template>
 <ng-template [gridCellTemplate]="'isActive'" let-value="value" let-row="row">
-    <app-cell-toggle (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
+    <app-cell-toggle *systemCan="'system.admins.action.change-state'" (toggleChanged)="changeState(row.id)"  [value]="value" ></app-cell-toggle>
 </ng-template>
 <ng-template [gridCellTemplate]="'isLockedOut'" let-value="value" let-row="row">
-    <app-cell-toggle (toggleChanged)="changeLockState(row.id)"  [value]="value" ></app-cell-toggle>
+    <app-cell-toggle *systemCan="'system.admins.action.change-lock'" (toggleChanged)="changeLockState(row.id)"  [value]="value" ></app-cell-toggle>
 </ng-template>
  <ng-template #HeaderActions>
                  @if(dialogData&& dialogData.isModal==false){
-                 <button
+                 <button *systemCan="'/system/admins/create'"
                         class="add-btn refined-add-btn"
                         type="button"
                         routerLink="create"
@@ -66,11 +66,11 @@
 
         <mat-menu #actionMenu="matMenu" class="card-header-menu" xPosition="before">
 
-            <button mat-menu-item [routerLink]="row.id+'/edit'" type="button" >
+            <button *systemCan="'/system/admins/:userId/edit'" mat-menu-item [routerLink]="row.id+'/edit'" type="button" >
                 ویرایش
             </button>
 
-            <button mat-menu-item type="button" >
+            <button *systemCan="'system.admins.action.delete'" mat-menu-item type="button" >
                 حذف
             </button>
         </mat-menu>

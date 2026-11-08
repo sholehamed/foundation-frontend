@@ -77,7 +77,7 @@ export class RolePermissionsPageComponent implements OnInit {
     // Re-read live access at click time, never trust an earlier UI hint.
     // The API itself must still enforce write permissions independently.
     (this.pilotEnabled
-      ? this.uiAccess.canAccess(rolePermissionUiKeys.saveAction)
+      ? this.uiAccess.refreshAction(rolePermissionUiKeys.saveAction)
       : of(true))
       .pipe(
         switchMap(allowed => {

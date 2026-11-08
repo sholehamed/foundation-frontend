@@ -1,3 +1,4 @@
+import { SystemCanDirective } from '../../../../shared/permissions/system-can.directive';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,7 +21,7 @@ import { CustomizerSettingsService } from '../../../../shared/services/customize
 
 @Component({
   selector: 'app-tenant-list.component',
-    imports: [GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, RouterLink, AvatarUploadComponent, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent, GridComponent],
+    imports: [SystemCanDirective, GridHeaderFilterTemplateDirective, GridCellTemplateDirective, MatButtonModule, CommonModule, MatCardModule, MatButtonModule, MatMenuModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, RouterLink, AvatarUploadComponent, MatExpansionModule, TextFilterComponent, CellToggleComponent, MatIconModule, PageHeaderComponent, GridComponent],
   templateUrl: './tenant-list.component.html',
   styleUrl: './tenant-list.component.scss',
 })
