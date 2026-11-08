@@ -1,15 +1,53 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { TokenStorageService } from '../services/token-storage.service';
+import { BffTenantSessionService } from '../services/bff-tenant-session.service';
 
 /** Attach credentials only to Shinera API calls; never leak tokens to arbitrary URLs. */
 export const apiAuthInterceptor: HttpInterceptorFn = (request, next) => {
   const storage = inject(TokenStorageService);
   const router = inject(Router);
   const apiBase = environment.apiUrl.replace(/\/$/, '');
+  // The opt-in BFF client must NEVER attach an OAuth bearer or send the
+  // browser's BFF cookie to a different origin. Backend keeps its native
+  // bearer scheme for other endpoints and for the disabled pilot.
+  if (environment.bffTenantPilotEnabled) {
+    const target = new URL(request.url, window.location.origin);
+    const api = new URL(apiBase, window.location.origin);
+    const workspacePath = api.pathname.replace(/\/$/, '') + '/tenant/workspace';
+    if (target.pathname === workspacePath ||
+        target.pathname.startsWith(workspacePath + '/')) {
+      if (api.origin !== window.location.origin ||
+          target.origin !== window.location.origin ||
+          !request.url.startsWith('/')) {
+        return throwError(() => new Error(
+          'BFF Tenant API pilot requires relative same-origin /api requests.',
+        ));
+      }
+      const bff = inject(BffTenantSessionService);
+      const clean = request.clone({
+        withCredentials: true,
+        headers: request.headers.delete('Authorization'),
+      });
+      const send = (prepared: typeof request) => next(prepared).pipe(
+        catchError(error => {
+          if (error.status === 401) bff.clear();
+          return throwError(() => error);
+        }),
+      );
+      if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method.toUpperCase()))
+        return send(clean);
+      return bff.csrfToken().pipe(
+        switchMap(token => send(clean.clone({
+          setHeaders: { 'X-XSRF-TOKEN': token },
+        }))),
+      );
+    }
+  }
+
   if (!request.url.startsWith(apiBase + '/')) return next(request);
 
   // Login, token refresh, CAPTCHA and revocation are anonymous OAuth endpoints.
