@@ -14,6 +14,7 @@ import { BffTenantSessionService } from '../../../services/bff-tenant-session.se
 import { CustomInputComponent } from '../../../components/input-string.component';
 import { CustomizerSettingsService } from '../../../services/customizer-settings.service';
 import { firstLoginRequestOptions } from '../../../util/tenant-first-login-request';
+import { looksLikeGeneratedInitialPassword, parseTenantLoginDecision } from '../../../util/tenant-login-decision';
 
 
 
@@ -191,7 +192,7 @@ private getRedirectUrl(): string {
     // takes the restricted branch. Conventional logins make no extra
     // request and do not consume the 5/min first-login IP allowance.
     if (this.canResolveFirstLogin &&
-        /^[A-Za-z0-9]{6}(?:-[A-Za-z0-9]{6}){3}$/.test(password)) {
+        looksLikeGeneratedInitialPassword(password)) {
       void this.resolveLoginBeforeAuthentication(username, password, captchaCode);
       return;
     }
@@ -300,11 +301,8 @@ private getRedirectUrl(): string {
         this.resetCaptcha();
         return;
       }
-      const result: {
-        status?: string; challenge?: string; expiresAtUtc?: string;
-      } = await response.json();
-      if (result.status === 'password_change_required' &&
-          /^[A-F0-9]{64}$/.test(result.challenge ?? '')) {
+      const result = parseTenantLoginDecision(await response.json());
+      if (result?.status === 'password_change_required') {
         this.passwordChangeChallenge = result.challenge!;
         this.passwordChangeRequired.set(true);
         this.loginForm.controls.password.reset('');
