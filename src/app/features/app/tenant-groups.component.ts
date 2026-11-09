@@ -1,7 +1,6 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { forkJoin } from 'rxjs';
 import {
@@ -11,7 +10,7 @@ import {
 @Component({
   selector: 'app-tenant-groups',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, MatButtonModule],
+  imports: [ReactiveFormsModule, MatButtonModule],
   templateUrl: './tenant-groups.component.html',
   styleUrl: './tenant-workspace.styles.scss',
 })
@@ -57,7 +56,7 @@ export class TenantGroupsComponent implements OnInit {
             !permissions || typeof permissions.canCreateGroups !== 'boolean' ||
             typeof permissions.canUpdateGroups !== 'boolean' ||
             typeof permissions.canChangeGroupState !== 'boolean') {
-          this.error.set('پاسخ سرویس مدیریت نقش‌ها معتبر نیست.');
+          this.error.set('پاسخ سرویس مدیریت گروه‌ها معتبر نیست.');
         } else {
           this.groups.set(groups);
           this.permissions.set(permissions);
@@ -66,8 +65,8 @@ export class TenantGroupsComponent implements OnInit {
       },
       error: (err: { status?: number }) => {
         this.error.set(err.status === 403
-          ? 'مجوز مشاهده نقش‌های این فضای کاری را ندارید.'
-          : 'دریافت نقش‌های فضای کاری ناموفق بود.');
+          ? 'مجوز مشاهده گروه‌های این فضای کاری را ندارید.'
+          : 'دریافت گروه‌های فضای کاری ناموفق بود.');
         this.loading.set(false);
       },
     });
@@ -126,7 +125,7 @@ export class TenantGroupsComponent implements OnInit {
     const description = raw.description.trim() || null;
     this.form.patchValue({ name, description: description ?? '' });
     if (this.form.invalid || ['OWNER', 'SUPERADMIN', 'SYSTEMADMIN'].includes(name.toUpperCase())) {
-      this.saveError.set('نام نقش باید ۲ تا ۱۰۰ کاراکتر و غیررزرو شده باشد.');
+      this.saveError.set('نام گروه باید ۲ تا ۱۰۰ کاراکتر و غیررزرو شده باشد.');
       return;
     }
     if (target && !target.version) return;
@@ -141,7 +140,7 @@ export class TenantGroupsComponent implements OnInit {
         this.saving.set(false);
         this.cancelEditor();
         if (!target) this.page.set(1);
-        this.notice.set(target ? 'مشخصات نقش به‌روزرسانی شد.' : 'نقش جدید بدون هیچ مجوزی ایجاد شد.');
+        this.notice.set(target ? 'مشخصات گروه به‌روزرسانی شد.' : 'گروه جدید بدون عضو یا نقش ایجاد شد.');
         this.load();
       },
       error: (err: { status?: number }) => this.handleWriteError(err),
@@ -170,8 +169,8 @@ export class TenantGroupsComponent implements OnInit {
         this.saving.set(false);
         this.pendingState.set(null);
         this.notice.set(target.isActive
-          ? 'نقش غیرفعال شد؛ مجوزهای منتسب به آن دیگر مؤثر نیستند.'
-          : 'نقش دوباره فعال شد.');
+          ? 'گروه غیرفعال شد؛ دسترسی‌های حاصل از آن دیگر مؤثر نیستند.'
+          : 'گروه دوباره فعال شد.');
         this.load();
       },
       error: (err: { status?: number }) => this.handleWriteError(err),
@@ -185,16 +184,16 @@ export class TenantGroupsComponent implements OnInit {
       this.pendingState.set(null);
       this.groups.set(null);
       this.permissions.set(null);
-      this.error.set('دسترسی مدیریت نقش لغو شده یا نقش متعلق به این فضای کاری نیست.');
+      this.error.set('دسترسی مدیریت گروه لغو شده یا گروه متعلق به این فضای کاری نیست.');
     } else if (err.status === 409) {
       this.cancelEditor();
       this.pendingState.set(null);
-      this.notice.set('نقش تغییر کرده یا نام تکراری است. اطلاعات تازه دریافت شد؛ مجدداً بررسی کنید.');
+      this.notice.set('گروه تغییر کرده یا نام تکراری است. اطلاعات تازه دریافت شد؛ مجدداً بررسی کنید.');
       this.load();
     } else {
       this.saveError.set(err.status === 400
-        ? 'اطلاعات نقش معتبر نیست؛ مقادیر را بررسی کنید.'
-        : 'ذخیره تغییرات نقش ناموفق بود؛ دوباره تلاش کنید.');
+        ? 'اطلاعات گروه معتبر نیست؛ مقادیر را بررسی کنید.'
+        : 'ذخیره تغییرات گروه ناموفق بود؛ دوباره تلاش کنید.');
     }
   }
 }
