@@ -97,6 +97,29 @@ describe('TenantWorkspaceService current-tenant API', () => {
     expect(audit.request.params.has('actorUserId')).toBe(false);
     audit.flush({ items: [], pageNumber: 2, hasNext: false });
 
+    api.getGroupMembers('group-local', 2).subscribe();
+    const groupMembers = http.expectOne(req => req.url === environment.apiUrl +
+      '/tenant/workspace/groups/group-local/members');
+    expect(groupMembers.request.method).toBe('GET');
+    expect(groupMembers.request.params.keys()).toEqual(['page']);
+    expect(groupMembers.request.params.get('page')).toBe('2');
+    expect(groupMembers.request.params.has('tenantId')).toBe(false);
+    groupMembers.flush({ groupId: 'group-local', groupName: 'Reception',
+      version: 'AQIDBAUGBwg=', groupIsActive: true,
+      canEdit: true, items: [], page: 2, hasNext: false });
+
+    api.changeGroupMember('group-local', 'staff-local', true, 'AQIDBAUGBwg=').subscribe();
+    const memberLink = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/groups/group-local/members/staff-local');
+    expect(memberLink.request.method).toBe('PUT');
+    expect(memberLink.request.body).toEqual({
+      assigned: true, expectedVersion: 'AQIDBAUGBwg=',
+    });
+    expect(memberLink.request.body).not.toHaveProperty('tenantId');
+    expect(memberLink.request.body).not.toHaveProperty('actorUserId');
+    expect(memberLink.request.body).not.toHaveProperty('roleIds');
+    memberLink.flush({ version: 'AgMEBQYHCAk=' });
+
     api.createGroup({ name: 'Reception', description: null }).subscribe();
     const groupCreate = http.expectOne(environment.apiUrl + '/tenant/workspace/groups');
     expect(groupCreate.request.method).toBe('POST');

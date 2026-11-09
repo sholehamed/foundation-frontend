@@ -81,6 +81,9 @@
             <p>{{ group.description || 'بدون توضیحات' }}</p>
           </div>
           <div class="tenant-role-inline-actions">
+            <a mat-stroked-button [routerLink]="['/dashboard/groups', group.id, 'members']">
+              اعضای گروه
+            </a>
             @if (permissions()?.canUpdateGroups && group.version) {
               <button mat-stroked-button type="button" (click)="openEdit(group)"
                 [disabled]="saving() || editorOpen()">ویرایش</button>

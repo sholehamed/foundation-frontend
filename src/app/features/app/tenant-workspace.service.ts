@@ -45,6 +45,7 @@ export const TenantPermissionKeys = {
   members: 'TENANT.MEMBERS.READ',
   roles: 'TENANT.ROLES.READ',
   groups: 'TENANT.GROUPS.READ',
+  groupsAssignMembers: 'TENANT.GROUPS.ASSIGN-MEMBERS',
   groupsCreate: 'TENANT.GROUPS.CREATE',
   groupsUpdate: 'TENANT.GROUPS.UPDATE',
   groupsChangeState: 'TENANT.GROUPS.CHANGE-STATE',
@@ -76,6 +77,7 @@ export interface TenantAdminCapabilities {
   canCreateGroups: boolean;
   canUpdateGroups: boolean;
   canChangeGroupState: boolean;
+  canAssignGroupMembers: boolean;
   canManageBranches: boolean;
   canCreateRoles: boolean;
   canUpdateRoles: boolean;
@@ -171,6 +173,11 @@ export interface TenantRolePermissionMatrix {
   permissions: TenantRolePermissionEntry[];
   version: string;
   canEdit: boolean;
+}
+export interface TenantGroupMemberItem { id: string; userName: string; assigned: boolean; }
+export interface TenantGroupMembersPage {
+  groupId: string; groupName: string; version: string; groupIsActive: boolean; canEdit: boolean;
+  items: TenantGroupMemberItem[]; page: number; hasNext: boolean;
 }
 export interface TenantMemberRoleItem {
   id: string;
@@ -317,6 +324,20 @@ export class TenantWorkspaceService {
   changeGroupState(groupId: string, request: TenantGroupStateRequest): Observable<TenantAdminGroup> {
     return this.http.patch<TenantAdminGroup>(
       this.root + '/groups/' + encodeURIComponent(groupId) + '/state', request);
+  }
+
+  /** Server-bound Tenant/actor. Read only 20 eligible ordinary members at a time. */
+  getGroupMembers(groupId: string, page = 1): Observable<TenantGroupMembersPage> {
+    return this.http.get<TenantGroupMembersPage>(
+      this.root + '/groups/' + encodeURIComponent(groupId) + '/members', { params: { page } });
+  }
+
+  /** One membership mutation, never a bulk replacement of a partial page. */
+  changeGroupMember(groupId: string, userId: string,
+    assigned: boolean, expectedVersion: string): Observable<{ version: string }> {
+    return this.http.put<{ version: string }>(
+      this.root + '/groups/' + encodeURIComponent(groupId) +
+      '/members/' + encodeURIComponent(userId), { assigned, expectedVersion });
   }
 
   createBranch(request: TenantBranchWriteRequest): Observable<TenantWorkspaceBranch> {

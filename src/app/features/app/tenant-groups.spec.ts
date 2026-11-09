@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { TenantGroupsComponent } from './tenant-groups.component';
 import { TenantWorkspaceService } from './tenant-workspace.service';
@@ -29,6 +30,7 @@ describe('Tenant Group lifecycle page', () => {
     await TestBed.configureTestingModule({
       imports: [TenantGroupsComponent],
       providers: [
+        provideRouter([]),
         { provide: TenantWorkspaceService, useValue: {
           getGroups, getAdminCapabilities, createGroup, updateGroup, changeGroupState,
         } },

@@ -2,6 +2,7 @@ import { routes } from '../../app.routes';
 import { tenantSessionGuard } from '../../shared/guards/tenant-session.guard';
 import { tenantOwnerDirectoryGuard } from '../../shared/guards/tenant-owner-directory.guard';
 import { tenantMemberAuditGuard } from '../../shared/guards/tenant-member-audit.guard';
+import { tenantGroupMembersGuard } from '../../shared/guards/tenant-group-members.guard';
 
 describe('Tenant Admin read-only child navigation', () => {
   it('preserves /dashboard after login and protects every child with tenant session guard', () => {
@@ -11,9 +12,11 @@ describe('Tenant Admin read-only child navigation', () => {
     expect(route?.canActivateChild).toContain(tenantSessionGuard);
 
     const pages = route?.children ?? [];
-    expect(pages.map(x => x.path)).toEqual(['', 'business', 'branches', 'member-audit', 'members/:id/roles', 'roles/:id/permissions', 'members', 'roles', 'groups']);
-    expect(pages.filter(x => ['members', 'roles', 'groups', 'member-audit', 'members/:id/roles', 'roles/:id/permissions'].includes(x.path ?? ''))
+    expect(pages.map(x => x.path)).toEqual(['', 'business', 'branches', 'member-audit', 'members/:id/roles', 'groups/:id/members', 'roles/:id/permissions', 'members', 'roles', 'groups']);
+    expect(pages.filter(x => ['members', 'roles', 'groups', 'member-audit', 'members/:id/roles', 'groups/:id/members', 'roles/:id/permissions'].includes(x.path ?? ''))
       .every(x => x.canActivate?.includes(tenantOwnerDirectoryGuard))).toBe(true);
+    expect(pages.find(x => x.path === 'groups/:id/members')?.canActivate)
+      .toContain(tenantGroupMembersGuard);
     expect(pages.find(x => x.path === 'member-audit')?.canActivate)
       .toContain(tenantMemberAuditGuard);
     expect(pages.find(x => x.path === 'member-audit')?.data?.['directoryKind'])

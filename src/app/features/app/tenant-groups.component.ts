@@ -1,6 +1,7 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { forkJoin } from 'rxjs';
 import {
@@ -10,7 +11,7 @@ import {
 @Component({
   selector: 'app-tenant-groups',
   standalone: true,
-  imports: [ReactiveFormsModule, MatButtonModule],
+  imports: [ReactiveFormsModule, MatButtonModule, RouterLink],
   templateUrl: './tenant-groups.component.html',
   styleUrl: './tenant-workspace.styles.scss',
 })
