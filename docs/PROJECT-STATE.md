@@ -1,3 +1,8 @@
+## FR-13C-2B — Tenant Group members (2026-11-09)
+
+- Added `/dashboard/groups/:id/members`, guarded by live Groups+Members PAGE checks, with a paginated list of eligible ordinary members and an explicit per-user add/revoke confirmation. Only server-authorized Owners get write actions; no bulk replacement of a partial page, no TenantId from UI. 403 clears data; 409 reloads version and requires reconfirmation; inactive groups disallow new membership.
+- Companion backend: explicitly registered owner-only `TENANT.GROUPS.ASSIGN-MEMBERS`, Group-version CAS and immutable per-user audit. [UI contract](development/FR-13C2B-TENANT-GROUP-MEMBERS-UI.md). Next: independently audited GroupRole linking. Staging deferred.
+
 ## FR-13C-2A — Tenant Group management UI (2026-11-09)
 
 - Existing `/dashboard/groups` PAGE loads a dedicated Persian Group CRUD/state editor: per-ACTION Owner capabilities, name/description validation, SQL RowVersion, explicit confirmation for status changes, fail closed on 403/404 and refresh on 409. No GroupRole/UserGroup mutation is exposed until secure backend grant intents land. [Frontend contract](development/FR-13C2A-TENANT-GROUP-LIFECYCLE-UI.md). No Staging/Production rollout.
