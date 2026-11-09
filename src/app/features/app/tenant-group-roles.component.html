@@ -1,0 +1,79 @@
+<section class="tenant-page" dir="rtl">
+  <div class="tenant-page-heading">
+    <div>
+      <p class="eyebrow">TENANT ADMIN · GROUP ROLES</p>
+      <h1>نقش‌های گروه{{ matrix()?.groupName ? ' · ' + matrix()?.groupName : '' }}</h1>
+      <p>اتصال هر نقش با تأیید جداگانه ثبت می‌شود؛ تغییر آن ممکن است فوراً دسترسی اعضای گروه را عوض کند.</p>
+    </div>
+    <div class="tenant-role-toolbar">
+      <a mat-stroked-button routerLink="/dashboard/groups">بازگشت به گروه‌ها</a>
+      <button mat-stroked-button type="button" (click)="load()"
+        [disabled]="loading() || saving()">به‌روزرسانی</button>
+    </div>
+  </div>
+  @if (notice()) {
+    <div class="tenant-feedback" role="status">{{ notice() }}</div>
+  }
+  @if (error()) {
+    <div class="tenant-feedback error" role="alert">
+      {{ error() }}
+      <button mat-stroked-button type="button" (click)="load()">تلاش دوباره</button>
+    </div>
+  }
+  @if (saveError()) { <div class="tenant-feedback error" role="alert">{{ saveError() }}</div> }
+  @if (pending(); as role) {
+    <div class="tenant-panel" role="group" aria-label="تأیید تغییر نقش گروه">
+      <h2>{{ role.assigned ? 'لغو نقش از گروه' : 'افزودن نقش به گروه' }}</h2>
+      <p>آیا نقش {{ role.name }} {{ role.assigned ? 'از این گروه لغو شود؟' : 'به این گروه اضافه شود؟' }}
+        این تغییر بر مجوزهای مؤثر همه اعضای گروه تأثیر می‌گذارد.</p>
+      <div class="tenant-role-toolbar">
+        <button mat-flat-button type="button" (click)="confirmChange()" [disabled]="saving()">
+          {{ saving() ? 'در حال ذخیره...' : 'تأیید تغییر نقش' }}
+        </button>
+        <button mat-stroked-button type="button" (click)="cancelChange()" [disabled]="saving()">
+          انصراف
+        </button>
+      </div>
+    </div>
+  }
+  @if (loading()) {
+    <div class="tenant-feedback" role="status">در حال دریافت نقش‌های گروه...</div>
+  } @else if (matrix(); as data) {
+    <div class="tenant-panel tenant-directory-panel">
+      @if (!data.groupIsActive) {
+        <p class="tenant-role-warning">گروه غیرفعال است؛ نقش جدید قابل افزودن نیست. نقش‌های قبلی را می‌توانید لغو کنید.</p>
+      }
+      @if (!data.canEdit) {
+        <p>دسترسی شما به مشاهده نقش‌ها محدود است؛ امکان تغییر ندارید.</p>
+      }
+      @for (role of data.items; track role.id) {
+        <article class="tenant-directory-item">
+          <span class="material-symbols-outlined" aria-hidden="true">shield_person</span>
+          <div class="tenant-directory-detail">
+            <h2>{{ role.name }}</h2>
+            <p>{{ role.isActive ? 'نقش فعال' : 'نقش غیرفعال' }} ·
+              {{ role.assigned ? 'متصل به گروه' : 'متصل نیست' }}</p>
+          </div>
+          @if (data.canEdit && (role.assigned || (data.groupIsActive && role.isActive))) {
+            <button mat-stroked-button type="button" (click)="requestChange(role)"
+              [disabled]="saving() || !!pending()">
+              {{ role.assigned ? 'لغو نقش' : 'افزودن نقش' }}
+            </button>
+          }
+          <span class="tenant-tag" [class.tenant-tag-inactive]="!role.assigned">
+            {{ role.assigned ? 'متصل' : 'متصل نیست' }}
+          </span>
+        </article>
+      } @empty {
+        <p>نقش عادی برای نمایش در این صفحه پیدا نشد.</p>
+      }
+      <div class="tenant-pagination">
+        <span>صفحه {{ data.page }}</span>
+        <button mat-stroked-button type="button" (click)="previous()"
+          [disabled]="loading() || saving() || page() === 1">قبلی</button>
+        <button mat-flat-button type="button" (click)="next()"
+          [disabled]="loading() || saving() || !data.hasNext">بعدی</button>
+      </div>
+    </div>
+  }
+</section>
