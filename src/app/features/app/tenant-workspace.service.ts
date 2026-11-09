@@ -46,6 +46,7 @@ export const TenantPermissionKeys = {
   roles: 'TENANT.ROLES.READ',
   groups: 'TENANT.GROUPS.READ',
   groupsAssignMembers: 'TENANT.GROUPS.ASSIGN-MEMBERS',
+  groupsAssignRoles: 'TENANT.GROUPS.ASSIGN-ROLES',
   groupsCreate: 'TENANT.GROUPS.CREATE',
   groupsUpdate: 'TENANT.GROUPS.UPDATE',
   groupsChangeState: 'TENANT.GROUPS.CHANGE-STATE',
@@ -78,6 +79,7 @@ export interface TenantAdminCapabilities {
   canUpdateGroups: boolean;
   canChangeGroupState: boolean;
   canAssignGroupMembers: boolean;
+  canAssignGroupRoles: boolean;
   canManageBranches: boolean;
   canCreateRoles: boolean;
   canUpdateRoles: boolean;
@@ -175,6 +177,14 @@ export interface TenantRolePermissionMatrix {
   canEdit: boolean;
 }
 export interface TenantGroupMemberItem { id: string; userName: string; assigned: boolean; }
+export interface TenantGroupRoleItem {
+  id: string; name: string; isActive: boolean; assigned: boolean;
+}
+export interface TenantGroupRolesPage {
+  groupId: string; groupName: string; version: string; groupIsActive: boolean;
+  canEdit: boolean; items: TenantGroupRoleItem[]; page: number; hasNext: boolean;
+}
+
 export interface TenantGroupMembersPage {
   groupId: string; groupName: string; version: string; groupIsActive: boolean; canEdit: boolean;
   items: TenantGroupMemberItem[]; page: number; hasNext: boolean;
@@ -324,6 +334,21 @@ export class TenantWorkspaceService {
   changeGroupState(groupId: string, request: TenantGroupStateRequest): Observable<TenantAdminGroup> {
     return this.http.patch<TenantAdminGroup>(
       this.root + '/groups/' + encodeURIComponent(groupId) + '/state', request);
+  }
+
+  /** Read one page of ordinary Tenant roles, never a whole-Group replacement. */
+  getGroupRoles(groupId: string, page = 1): Observable<TenantGroupRolesPage> {
+    return this.http.get<TenantGroupRolesPage>(
+      this.root + '/groups/' + encodeURIComponent(groupId) + '/roles',
+      { params: { page } });
+  }
+
+  /** One GroupRole pair, CASed against the shared Group row version. */
+  changeGroupRole(groupId: string, roleId: string,
+    assigned: boolean, expectedVersion: string): Observable<{ version: string }> {
+    return this.http.put<{ version: string }>(
+      this.root + '/groups/' + encodeURIComponent(groupId) +
+      '/roles/' + encodeURIComponent(roleId), { assigned, expectedVersion });
   }
 
   /** Server-bound Tenant/actor. Read only 20 eligible ordinary members at a time. */
