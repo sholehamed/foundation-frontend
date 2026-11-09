@@ -68,8 +68,8 @@ import {
                 autocomplete="off" [disabled]="saving()" />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>ایمیل</mat-label>
-              <input matInput name="email" type="email" required maxlength="256"
+              <mat-label>ایمیل (اختیاری، فقط برای دعوت ایمیلی)</mat-label>
+              <input matInput name="email" type="email" maxlength="256"
                 [ngModel]="email()" (ngModelChange)="email.set($event)"
                 autocomplete="off" [disabled]="saving()" />
             </mat-form-field>
@@ -138,7 +138,7 @@ import {
                       {{ issuingMemberId() === item.id ? 'در حال صدور...' : 'صدور رمز اولیه' }}
                     </button>
                   }
-                  @if (!item.isActive && canInviteMembers()) {
+                  @if (canInviteMember(item)) {
                     <button mat-flat-button type="button" (click)="inviteMember(item.id)"
                       [disabled]="loading() || saving() || !!invitingMemberId()">
                       {{ invitingMemberId() === item.id ? 'در حال ثبت ارسال...' : 'ارسال دعوت‌نامه' }}
@@ -247,7 +247,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
     if (!environment.tenantFirstLoginEnabled || this.kind() !== 'members' ||
         !this.canIssueTemporaryPassword() || this.saving() || this.loading() ||
         this.issuingMemberId() || this.invitingMemberId() || this.temporarySecret() ||
-        !this.result()?.items.some(row => row.id === memberId && !row.isActive)) return;
+        !this.result()?.items.some(row => row.id === memberId &&
+          !row.isActive)) return;
 
     this.temporaryError.set(null);
     this.issuingMemberId.set(memberId);
@@ -295,7 +296,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
   inviteMember(memberId: string): void {
     if (this.kind() !== 'members' || !this.canInviteMembers() ||
         this.loading() || this.saving() || this.invitingMemberId() ||
-        !this.result()?.items.some(row => row.id === memberId && !row.isActive)) return;
+        !this.result()?.items.some(row => row.id === memberId &&
+          this.canInviteMember(row))) return;
 
     this.inviteError.set(null);
     this.notice.set(null);
@@ -359,15 +361,15 @@ export class TenantAdminDirectoryComponent implements OnInit {
         !this.canCreateMembers() || this.saving()) return;
     const request: TenantPendingMemberCreateRequest = {
       userName: this.userName().trim(),
-      email: this.email().trim(),
+      email: this.email().trim() || null,
       firstName: this.firstName().trim(),
       lastName: this.lastName().trim(),
     };
     if (!/^[a-zA-Z0-9][a-zA-Z0-9._+-]{2,99}$/.test(request.userName) ||
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email) ||
+        (request.email !== null && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email)) ||
         !request.firstName || request.firstName.length > 80 ||
         !request.lastName || request.lastName.length > 80) {
-      this.saveError.set('نام کاربری، ایمیل و مشخصات عضو را بررسی کنید.');
+      this.saveError.set('نام کاربری، ایمیل واردشده و مشخصات عضو را بررسی کنید.');
       return;
     }
     this.saving.set(true);
@@ -457,9 +459,14 @@ export class TenantAdminDirectoryComponent implements OnInit {
       ? [item.firstName, item.lastName].filter(Boolean).join(' ') || item.userName
       : item.name;
   }
+  canInviteMember(item: TenantDirectoryItem): boolean {
+    return 'email' in item && !item.isActive &&
+      typeof item.email === 'string' && item.email.trim().length > 0 &&
+      this.canInviteMembers();
+  }
   itemDescription(item: TenantDirectoryItem): string {
     return 'userName' in item
-      ? item.userName + ' · ' + item.email : item.description || 'بدون توضیحات';
+      ? item.userName + ' · ' + (item.email || 'بدون ایمیل · فعال‌سازی حضوری') : item.description || 'بدون توضیحات';
   }
   previous(): void {
     if (!this.loading() && this.page() > 1) {

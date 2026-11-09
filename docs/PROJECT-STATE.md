@@ -1,3 +1,8 @@
+## FR-13B-3A — staff without an email (2026-11-09)
+
+- Tenant Owner member form and API DTO permit `email:null`, and only show email invitation for staff with an actual email. Missing email uses visible `بدون ایمیل` label; owner may create and issue one-time password atomically, with unchanged permission, CAPTCHA/login, challenge and security gates. Angular unit regression covers this path and prevents phantom email invitations.
+- Requires Backend [Issue #78](https://github.com/sholehamed/foundation-backend/issues/78) SQL nullable email migration, manual reviewed rollout and the existing opt-in first-login Owner grants. No Production or Staging rollout, flag enablement or real SMTP provisioned by code merge. [Detailed contract](development/FR-13B3A-EMAILLESS-STAFF-UI.md).
+
 ## FR-13B-3C — mandatory first-password change on BFF Identity Login (2026-11-09)
 
 - Existing Identity-host Tenant login now distinguishes normal 204 Identity Cookie from a strictly validated 200 `password_change_required` challenge. The same sign-in form displays change-password in place, invokes Identity XSRF-protected change-only completion and requires explicit re-login before validated local OIDC continuation. No duplicate login choice, no token storage or BFF application session for a temporary credential. Existing direct Tenant and System flows remain unchanged.
