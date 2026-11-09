@@ -1,3 +1,8 @@
+## FR-13B-3C — mandatory first-password change on BFF Identity Login (2026-11-09)
+
+- Existing Identity-host Tenant login now distinguishes normal 204 Identity Cookie from a strictly validated 200 `password_change_required` challenge. The same sign-in form displays change-password in place, invokes Identity XSRF-protected change-only completion and requires explicit re-login before validated local OIDC continuation. No duplicate login choice, no token storage or BFF application session for a temporary credential. Existing direct Tenant and System flows remain unchanged.
+- Companion [Backend Issue #81](https://github.com/sholehamed/foundation-backend/issues/81), [implementation/security contract](development/FR-13B3C-IDENTITY-BFF-LOGIN-UI.md). Both feature flags OFF by default; no Staging/Production enablement or hosted end-to-end certification, and employee email still mandatory until #78.
+
 ## FR-13B-3B — standard Tenant Login auto force-password change (2026-11-09)
 
 - Existing Tenant Login now automatically performs server decision for generated-format temporary credentials; ordinary passwords use previous AuthService login unchanged. Verified temporary credential switches same Login UI into forced password change using only transient 10-minute change-only challenge; completion does not create app auth session and returns to fresh Login.
