@@ -63,8 +63,10 @@ export const routes: Routes = [
         canActivate: [tenantOwnerDirectoryGuard],
         loadComponent: () => kind === 'roles'
           ? import('./features/app/tenant-roles.component').then(x => x.TenantRolesComponent)
-          : import('./features/app/tenant-admin-directory.component')
-              .then(x => x.TenantAdminDirectoryComponent),
+          : kind === 'groups'
+            ? import('./features/app/tenant-groups.component').then(x => x.TenantGroupsComponent)
+            : import('./features/app/tenant-admin-directory.component')
+                .then(x => x.TenantAdminDirectoryComponent),
       })),
     ],
   },

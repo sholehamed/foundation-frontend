@@ -1,3 +1,7 @@
+## FR-13C-2A — Tenant Group management UI (2026-11-09)
+
+- Existing `/dashboard/groups` PAGE loads a dedicated Persian Group CRUD/state editor: per-ACTION Owner capabilities, name/description validation, SQL RowVersion, explicit confirmation for status changes, fail closed on 403/404 and refresh on 409. No GroupRole/UserGroup mutation is exposed until secure backend grant intents land. [Frontend contract](development/FR-13C2A-TENANT-GROUP-LIFECYCLE-UI.md). No Staging/Production rollout.
+
 ## FR-13C-1 — Tenant Owner audit page (2026-11-09)
 
 - Added a read-only Persian/Jalali `/dashboard/member-audit` page and optional per-member filter. Entry links appear only when the live server says `canViewMemberAudit`; routing checks both the existing Members PAGE permission and a fresh Owner capability. Backend rechecks permission per GET; 401/403 clears history. Pagination, empty/error/retry states and contract tests included.
