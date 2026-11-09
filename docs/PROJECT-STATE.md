@@ -1,3 +1,9 @@
+## FR-14C — central Menu authority correction (2026-11-10)
+
+- User-confirmed business rule: System Admin owns all Menu/Category/Page/Resource/Action/Endpoint and permission definitions. Tenant Owner can assign permitted capabilities to roles/users, never author menus. Removed FR-14C-2B Tenant menu editor route/form/client/flag and their tests; kept FR-14C-1 read-only server-filtered central Menu navigation (pilot remains OFF).
+- Backend companion removes Tenant menu tables/migrations, owner write APIs, and NAVIGATION.READ/MANAGE definitions. Earlier PRs are **historical, superseded**. Before deployment, inspect database migration history and preserve any local audit data; do not assume sources erase applied migrations.
+- Next: verify central System Admin Registry and Tenant permission/grant bounds; test read-only dynamic sidebar and branch-level RBAC. Staging/Production unchanged.
+
 ## FR-14C-2B — Tenant Owner navigation editor UI (2026-11-09)
 
 - Added disabled-by-default /dashboard/navigation settings page, live PAGE guard and Owner-only CRUD client for Tenant-owned categories and items: ordering, parent changes, soft-disable, exact safe route selection and CAS 409 reload. The separate settings link is shown only with live TENANT.NAVIGATION.READ and pilot flag.
