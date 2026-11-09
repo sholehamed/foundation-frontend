@@ -248,7 +248,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
         !this.canIssueTemporaryPassword() || this.saving() || this.loading() ||
         this.issuingMemberId() || this.invitingMemberId() || this.temporarySecret() ||
         !this.result()?.items.some(row => row.id === memberId &&
-          this.canInviteMember(row))) return;
+          !row.isActive)) return;
 
     this.temporaryError.set(null);
     this.issuingMemberId.set(memberId);
@@ -296,7 +296,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
   inviteMember(memberId: string): void {
     if (this.kind() !== 'members' || !this.canInviteMembers() ||
         this.loading() || this.saving() || this.invitingMemberId() ||
-        !this.result()?.items.some(row => row.id === memberId && !row.isActive)) return;
+        !this.result()?.items.some(row => row.id === memberId &&
+          this.canInviteMember(row))) return;
 
     this.inviteError.set(null);
     this.notice.set(null);
