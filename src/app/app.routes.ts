@@ -3,6 +3,7 @@ import { SignInComponent } from './shared/pages/auth/sign-in/sign-in.component';
 import { tenantSessionGuard } from './shared/guards/tenant-session.guard';
 import { tenantOwnerDirectoryGuard } from './shared/guards/tenant-owner-directory.guard';
 import { tenantMemberAuditGuard } from './shared/guards/tenant-member-audit.guard';
+import { tenantGroupMembersGuard } from './shared/guards/tenant-group-members.guard';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,13 @@ export const routes: Routes = [
         canActivate: [tenantOwnerDirectoryGuard],
         loadComponent: () => import('./features/app/tenant-member-roles.component')
           .then(x => x.TenantMemberRolesComponent),
+      },
+      {
+        path: 'groups/:id/members',
+        data: { directoryKind: 'groups' },
+        canActivate: [tenantOwnerDirectoryGuard, tenantGroupMembersGuard],
+        loadComponent: () => import('./features/app/tenant-group-members.component')
+          .then(x => x.TenantGroupMembersComponent),
       },
       {
         path: 'roles/:id/permissions',
