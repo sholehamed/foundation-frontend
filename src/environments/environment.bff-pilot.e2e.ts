@@ -17,5 +17,7 @@ export const environment = {
   systemAccountLifecycleUiEnabled: false,
   // FR-14C-1: audited dynamic Tenant menu tree; separate rollout, OFF.
   tenantDynamicNavigationPilotEnabled: false,
+  // FR-14C-2B: Tenant Owner-only menu editor. OFF until approved SQL+Catalog rollout.
+  tenantNavigationEditorPilotEnabled: false,
   workspaceBaseDomain: 'shinera.localhost',
 };
