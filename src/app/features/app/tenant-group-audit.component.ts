@@ -13,6 +13,19 @@ import {
   imports: [RouterLink, MatButtonModule],
   templateUrl: './tenant-group-audit.component.html',
   styleUrl: './tenant-workspace.styles.scss',
+  styles: [`
+    .group-audit-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 12px; margin: 16px 0; }
+    .group-audit-stats > div { border: 1px solid #e6dfe5; border-radius: 10px;
+      padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .group-audit-stats strong { font-weight: 800; font-size: 22px; font-variant-numeric: tabular-nums; }
+    .group-audit-stats span { font-size: 13px; }
+    .group-audit-item { padding: 14px 0; border-bottom: 1px solid #e6dfe5;
+      display: flex; justify-content: space-between; gap: 16px; }
+    .group-audit-item p { margin: 5px 0 0; font-size: 13px; overflow-wrap: anywhere; }
+    .group-audit-item time { white-space: nowrap; font-size: 13px; opacity: .8; }
+    @media (max-width: 650px) { .group-audit-item { flex-direction: column; gap: 6px; } }
+  `],
 })
 export class TenantGroupAuditComponent implements OnInit {
   private readonly api = inject(TenantWorkspaceService);
