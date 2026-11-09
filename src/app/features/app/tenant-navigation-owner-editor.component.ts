@@ -69,7 +69,7 @@ import {
 
         <hr />
         <h3>آیتم‌های منو</h3>
-        @if (canManage() && categories().some(c => c.isActive)) {
+        @if (canManage() && hasActiveCategories()) {
           <button mat-flat-button type="button" (click)="newItem()" [disabled]="saving()">
             افزودن آیتم
           </button>
@@ -214,6 +214,8 @@ export class TenantNavigationOwnerEditorComponent implements OnInit {
       value.categories.every(x => !!x.id && !!x.version) &&
       value.items.every(x => !!x.id && !!x.categoryId && !!x.version);
   }
+
+  hasActiveCategories(): boolean { return this.categories().some(c => c.isActive); }
 
   itemsOf(categoryId: string): TenantOwnedMenuItem[] {
     return this.items().filter(x => x.categoryId === categoryId);
