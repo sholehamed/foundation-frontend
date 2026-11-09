@@ -77,6 +77,7 @@ describe('FR-14A executable Angular route security coverage', () => {
       expect(config.bffTenantPilotEnabled).toBe(false);
       expect(config.tenantFirstLoginEnabled).toBe(false);
       expect(config.systemFirstLoginEnabled).toBe(false);
+      expect(config.tenantDynamicNavigationPilotEnabled).toBe(false);
     }
   });
 });
