@@ -1,0 +1,74 @@
+<section class="tenant-page" dir="rtl">
+  <div class="tenant-page-heading">
+    <div>
+      <p class="eyebrow">TENANT ADMIN · GROUP SECURITY REVIEW</p>
+      <h1>تاریخچه امنیتی گروه{{ data()?.groupName ? ' · ' + data()?.groupName : '' }}</h1>
+      <p>تغییرات گروه، اعضا و نقش‌ها به همراه بررسی روابط قدیمی، بدون امکان اصلاح خودکار.</p>
+    </div>
+    <div class="tenant-role-toolbar">
+      <a mat-stroked-button routerLink="/dashboard/groups">بازگشت به گروه‌ها</a>
+      <button mat-stroked-button type="button" (click)="load()"
+        [disabled]="loading() || !canRetry()">به‌روزرسانی</button>
+    </div>
+  </div>
+  @if (loading()) {
+    <div class="tenant-feedback" role="status">در حال دریافت گزارش امنیتی گروه...</div>
+  } @else if (error()) {
+    <div class="tenant-feedback error" role="alert">
+      {{ error() }}
+      @if (canRetry()) {
+        <button mat-stroked-button type="button" (click)="load()">تلاش دوباره</button>
+      }
+    </div>
+  } @else if (data(); as audit) {
+    <section class="tenant-panel" aria-label="بررسی روابط فعلی گروه">
+      <h2>بررسی روابط فعلی گروه</h2>
+      <p>این گزارش فقط وضعیت فعلی و سوابق موجود را بررسی می‌کند؛ هیچ عضویت یا نقشی تغییر نمی‌کند.</p>
+      <div class="group-audit-stats">
+        <div><strong>{{ audit.integrity.memberLinks }}</strong><span>پیوند عضو</span></div>
+        <div><strong>{{ audit.integrity.roleLinks }}</strong><span>پیوند نقش</span></div>
+        <div><strong>{{ audit.integrity.ownerMemberLinks }}</strong><span>اعضای دارای Owner</span></div>
+        <div><strong>{{ audit.integrity.invalidMemberLinks }}</strong><span>پیوند عضو نامعتبر</span></div>
+        <div><strong>{{ audit.integrity.invalidRoleLinks }}</strong><span>پیوند نقش نامعتبر/Owner</span></div>
+        <div><strong>{{ audit.integrity.unattributedMemberLinks }}</strong><span>عضویت با منشأ نامشخص</span></div>
+        <div><strong>{{ audit.integrity.unattributedRoleLinks }}</strong><span>نقش با منشأ نامشخص</span></div>
+      </div>
+      @if (audit.integrity.ownerMemberLinks || audit.integrity.invalidMemberLinks ||
+           audit.integrity.invalidRoleLinks) {
+        <p class="tenant-role-warning" role="status">
+          رابطه نیازمند بررسی امنیتی شناسایی شد. برای اصلاح، ابتدا منشأ داده و تأثیر بر مجوزها باید بررسی شود.
+        </p>
+      }
+      @if (audit.integrity.unattributedMemberLinks || audit.integrity.unattributedRoleLinks) {
+        <p class="tenant-role-warning" role="status">
+          «منشأ نامشخص» لزوماً نشانه دسترسی غیرمجاز نیست. پیوندهای قدیمی ممکن است قبل از ایجاد Audit ثبت شده باشند.
+          این شمارنده فقط به معنی پیدا نشدن رویداد اعطای متناظر در تاریخچه موجود است.
+        </p>
+      }
+    </section>
+    <section class="tenant-panel" aria-label="تاریخچه امنیتی گروه">
+      <h2>تاریخچه تغییرات</h2>
+      @for (event of audit.items; track event.id) {
+        <article class="group-audit-item">
+          <div>
+            <strong>{{ label(event) }}</strong>
+            <p>{{ detail(event) }}</p>
+            <p>انجام‌دهنده: {{ event.actorUserName || event.actorUserId }}</p>
+          </div>
+          <time [attr.datetime]="event.occurredAtUtc">
+            {{ formatOccurredAt(event.occurredAtUtc) }}
+          </time>
+        </article>
+      } @empty {
+        <p>رویدادی برای این گروه در تاریخچه ثبت‌شده پیدا نشد.</p>
+      }
+      <div class="tenant-pagination">
+        <span>صفحه {{ audit.pageNumber }}</span>
+        <button mat-stroked-button type="button" (click)="previous()"
+          [disabled]="loading() || page() === 1">قبلی</button>
+        <button mat-flat-button type="button" (click)="next()"
+          [disabled]="loading() || !audit.hasNext">بعدی</button>
+      </div>
+    </section>
+  }
+</section>
