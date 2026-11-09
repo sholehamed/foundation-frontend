@@ -176,7 +176,7 @@ export interface TenantRolePermissionMatrix {
 }
 export interface TenantGroupMemberItem { id: string; userName: string; assigned: boolean; }
 export interface TenantGroupMembersPage {
-  groupId: string; groupName: string; version: string; canEdit: boolean;
+  groupId: string; groupName: string; version: string; groupIsActive: boolean; canEdit: boolean;
   items: TenantGroupMemberItem[]; page: number; hasNext: boolean;
 }
 export interface TenantMemberRoleItem {
