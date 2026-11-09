@@ -48,6 +48,9 @@ describe('FR-14A executable Angular route security coverage', () => {
     expect(workspace?.canActivateChild).toContain(tenantSessionGuard);
     const children = workspace?.children ?? [];
     expect(children.length).toBeGreaterThanOrEqual(13);
+    // Menu/Category definitions are System-admin-owned; Tenant must not
+    // expose any local authoring route even when other roles are granted.
+    expect(children.some(x => x.path === 'navigation')).toBe(false);
     const basic = new Set(['', 'business', 'branches']);
     const privileged = children.filter(x => !basic.has(x.path ?? ''));
     expect(privileged.length).toBeGreaterThanOrEqual(10);
@@ -78,6 +81,7 @@ describe('FR-14A executable Angular route security coverage', () => {
       expect(config.tenantFirstLoginEnabled).toBe(false);
       expect(config.systemFirstLoginEnabled).toBe(false);
       expect(config.tenantDynamicNavigationPilotEnabled).toBe(false);
+      expect('tenantNavigationEditorPilotEnabled' in config).toBe(false);
     }
   });
 });
