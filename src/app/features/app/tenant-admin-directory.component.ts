@@ -9,7 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
   TenantDirectoryItem, TenantDirectoryKind, TenantDirectoryPage,
-  TenantPendingMemberCreateRequest, TenantWorkspaceService,
+  TenantPendingMemberCreateRequest, TenantPendingMemberCreated,
+  TenantMemberWithInitialPassword, TenantWorkspaceService,
 } from './tenant-workspace.service';
 
 @Component({
@@ -84,10 +85,22 @@ import {
                 [ngModel]="lastName()" (ngModelChange)="lastName.set($event)"
                 [disabled]="saving()" />
             </mat-form-field>
+            @if (canIssueTemporaryPassword()) {
+              <label style="display:flex;align-items:center;gap:9px;grid-column:1 / -1;margin-bottom:12px">
+                <input type="checkbox" [checked]="issuePasswordOnCreate()"
+                  (change)="issuePasswordOnCreate.set($any($event.target).checked)"
+                  [disabled]="saving()" />
+                صدور رمز اولیه هنگام ثبت؛ فقط یک‌بار نمایش داده می‌شود و کارمند هنگام ورود
+                باید رمز خودش را تعیین کند
+              </label>
+            }
             @if (saveError()) { <p role="alert">{{ saveError() }}</p> }
             <div class="tenant-heading-actions">
               <button mat-flat-button type="submit"
-                [disabled]="saving() || !createForm.valid">ثبت حساب غیرفعال</button>
+                [disabled]="saving() || !createForm.valid">{{
+                  canIssueTemporaryPassword() && issuePasswordOnCreate()
+                    ? 'ثبت کارمند و صدور رمز اولیه' : 'ثبت حساب غیرفعال'
+                }}</button>
               <button mat-stroked-button type="button" [disabled]="saving()"
                 (click)="closeCreate()">انصراف</button>
             </div>
@@ -173,6 +186,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
   readonly invitingMemberId = signal<string | null>(null);
   readonly inviteError = signal<string | null>(null);
   readonly createOpen = signal(false);
+  readonly issuePasswordOnCreate = signal(true);
   readonly saving = signal(false);
   readonly saveError = signal<string | null>(null);
   readonly notice = signal<string | null>(null);
@@ -224,6 +238,9 @@ export class TenantAdminDirectoryComponent implements OnInit {
 
   closeTemporarySecret(): void {
     this.temporarySecret.set(null);
+    // A one-time secret is never recoverable, even after a page refresh.
+    // Reload only after the Owner explicitly closes the secret view.
+    if (this.kind() === 'members' && !this.loading()) this.load();
   }
 
   issueTemporaryPassword(memberId: string, userName: string): void {
@@ -363,13 +380,28 @@ export class TenantAdminDirectoryComponent implements OnInit {
           this.creationDenied();
           return;
         }
-        this.api.createPendingMember(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next: created => {
+        const withInitial = environment.tenantFirstLoginEnabled &&
+          this.issuePasswordOnCreate() && this.canIssueTemporaryPassword();
+        if (withInitial && cap?.canIssueTemporaryPassword !== true) {
+          this.saving.set(false);
+          this.canIssueTemporaryPassword.set(false);
+          this.saveError.set('مجوز صدور رمز اولیه لغو شده است. برای ثبت مجدد تلاش کنید.');
+          return;
+        }
+        const operation: Observable<TenantPendingMemberCreated | TenantMemberWithInitialPassword> =
+          withInitial ? this.api.createMemberWithInitialPassword(request)
+            : this.api.createPendingMember(request);
+        operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+          next: payload => {
             this.saving.set(false);
-            if (!created?.id || created.isActive !== false) {
+            const result = 'member' in payload ? payload.member : payload;
+            const issued = 'temporaryPassword' in payload
+              ? payload.temporaryPassword : null;
+            if (!result?.id || result.isActive !== false ||
+                (withInitial && (!issued || issued.length < 24))) {
               this.canCreateMembers.set(false);
               this.createOpen.set(false);
-              this.saveError.set('پاسخ سرور قابل تأیید نیست؛ اطلاعات را دوباره بررسی کنید.');
+              this.saveError.set('پاسخ ثبت عضو قابل تأیید نیست؛ وضعیت حساب را بررسی کنید.');
               return;
             }
             this.createOpen.set(false);
@@ -377,9 +409,15 @@ export class TenantAdminDirectoryComponent implements OnInit {
             this.email.set('');
             this.firstName.set('');
             this.lastName.set('');
-            this.notice.set('حساب غیرفعال ایجاد شد؛ هنوز دعوت‌نامه یا دسترسی ورود ندارد.');
             this.page.set(1);
-            this.load();
+            if (issued) {
+              this.temporarySecret.set({ userName: result.userName, password: issued });
+              this.notice.set(null);
+              // Do not trigger list reload while the one-time secret is shown.
+            } else {
+              this.notice.set('حساب غیرفعال ایجاد شد؛ هنوز دعوت‌نامه یا دسترسی ورود ندارد.');
+              this.load();
+            }
           },
           error: (e: { status?: number }) => {
             this.saving.set(false);
