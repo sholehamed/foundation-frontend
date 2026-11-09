@@ -1,13 +1,13 @@
 <section class="tenant-page">
   <div class="tenant-page-heading">
     <div>
-      <p class="eyebrow">TENANT ADMIN · ROLES</p>
+      <p class="eyebrow">TENANT ADMIN · GROUPS</p>
       <h1>گروه‌های فضای کاری</h1>
       <p>گروه‌های این مستأجر را بسازید، نام و توضیحاتشان را تغییر دهید و فعال یا غیرفعال کنید.</p>
       <p>گروه جدید بدون عضویت کاربر یا نقش ساخته می‌شود؛ مدیریت عضویت و نقش گروه در مرحله مستقل تکمیل می‌شود.</p>
     </div>
-    <div class="tenant-group-toolbar">
-      @if (permissions()?.canCreateRoles) {
+    <div class="tenant-role-toolbar">
+      @if (permissions()?.canCreateGroups) {
         <button mat-flat-button type="button" (click)="openCreate()" [disabled]="saving() || loading()">
           ساخت گروه جدید
         </button>
@@ -18,16 +18,16 @@
     </div>
   </div>
   @if (notice()) {
-    <div class="tenant-feedback" group="status">{{ notice() }}</div>
+    <div class="tenant-feedback" role="status">{{ notice() }}</div>
   }
   @if (error()) {
-    <div class="tenant-feedback error" group="alert">
+    <div class="tenant-feedback error" role="alert">
       {{ error() }}
       <button mat-flat-button type="button" (click)="load()">تلاش مجدد</button>
     </div>
   }
   @if (editorOpen()) {
-    <form class="tenant-panel tenant-group-editor" [formGroup]="form" (ngSubmit)="save()">
+    <form class="tenant-panel tenant-role-editor" [formGroup]="form" (ngSubmit)="save()">
       <h2>{{ editTarget() ? 'ویرایش گروه' : 'ساخت گروه جدید' }}</h2>
       <div class="tenant-form-fields">
         <label>
@@ -39,7 +39,7 @@
           <input formControlName="description" maxlength="500" autocomplete="off" />
         </label>
       </div>
-      @if (saveError()) { <p class="tenant-field-error" group="alert">{{ saveError() }}</p> }
+      @if (saveError()) { <p class="tenant-field-error" role="alert">{{ saveError() }}</p> }
       <div class="tenant-actions tenant-form-actions">
         <button mat-flat-button type="submit" [disabled]="saving() || form.invalid">
           {{ saving() ? 'در حال ذخیره...' : 'ذخیره گروه' }}
@@ -51,14 +51,14 @@
     </form>
   }
   @if (pendingState(); as target) {
-    <div class="tenant-panel" group="group" aria-label="تأیید تغییر وضعیت گروه">
+    <div class="tenant-panel" role="group" aria-label="تأیید تغییر وضعیت گروه">
       <h2>{{ target.isActive ? 'غیرفعال‌کردن گروه' : 'فعال‌کردن گروه' }}</h2>
-      <p class="tenant-group-warning">
+      <p class="tenant-role-warning">
         {{ target.isActive
           ? 'با غیرفعال‌کردن این گروه، دسترسی‌های حاصل از آن فوراً بی‌اثر می‌شوند؛ تخصیص‌های قبلی حذف نمی‌شوند.'
           : 'با فعال‌کردن مجدد، مجوزهای تخصیص‌داده‌شده به این گروه دوباره اثر می‌گذارند.' }}
       </p>
-      @if (saveError()) { <p class="tenant-field-error" group="alert">{{ saveError() }}</p> }
+      @if (saveError()) { <p class="tenant-field-error" role="alert">{{ saveError() }}</p> }
       <div class="tenant-actions tenant-form-actions">
         <button mat-flat-button type="button" (click)="confirmState()" [disabled]="saving()">
           تأیید تغییر وضعیت
@@ -70,22 +70,22 @@
     </div>
   }
   @if (loading()) {
-    <div class="tenant-feedback" group="status">در حال دریافت گروه‌ها...</div>
+    <div class="tenant-feedback" role="status">در حال دریافت گروه‌ها...</div>
   } @else if (groups(); as data) {
     <div class="tenant-panel tenant-directory-panel">
       @for (group of data.items; track group.id) {
         <article class="tenant-directory-item">
-          <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+          <span class="material-symbols-outlined" aria-hidden="true">groups</span>
           <div class="tenant-directory-detail">
             <h2>{{ group.name }}</h2>
             <p>{{ group.description || 'بدون توضیحات' }}</p>
           </div>
-          <div class="tenant-group-inline-actions">
-            @if (permissions()?.canUpdateRoles && group.version) {
+          <div class="tenant-role-inline-actions">
+            @if (permissions()?.canUpdateGroups && group.version) {
               <button mat-stroked-button type="button" (click)="openEdit(group)"
                 [disabled]="saving() || editorOpen()">ویرایش</button>
             }
-            @if (permissions()?.canChangeRoleState && group.version) {
+            @if (permissions()?.canChangeGroupState && group.version) {
               <button mat-stroked-button type="button" (click)="requestStateChange(group)"
                 [disabled]="saving() || editorOpen()">
                 {{ group.isActive ? 'غیرفعال' : 'فعال‌سازی' }}
