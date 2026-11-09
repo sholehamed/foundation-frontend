@@ -85,6 +85,15 @@ describe('TenantWorkspaceService current-tenant API', () => {
       expiresAtUtc: '2026-11-09T12:30:00Z',
     });
 
+    api.getMemberEffectivePermissions('member-local').subscribe();
+    const effective = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/members/member-local/effective-permissions');
+    expect(effective.request.method).toBe('GET');
+    expect(effective.request.params.keys()).toEqual([]);
+    expect(effective.request.body).toBeNull();
+    effective.flush({ userId: 'member-local', userName: 'staff',
+      userActive: true, isOwner: false, items: [] });
+
     api.getMemberAudit(2, '11111111-1111-1111-1111-111111111111').subscribe();
     const audit = http.expectOne(req => req.url === environment.apiUrl +
       '/tenant/workspace/members/audit');

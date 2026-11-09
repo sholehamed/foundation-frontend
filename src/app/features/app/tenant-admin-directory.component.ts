@@ -137,6 +137,11 @@ import {
                   <a mat-stroked-button [routerLink]="['/dashboard/members', item.id, 'roles']">
                     نقش‌های عضو
                   </a>
+                  @if (canViewMemberEffectivePermissions()) {
+                    <a mat-stroked-button [routerLink]="['/dashboard/members', item.id, 'effective-permissions']">
+                      دسترسی‌های مؤثر
+                    </a>
+                  }
                   @if (canViewMemberAudit()) {
                     <a mat-stroked-button routerLink="/dashboard/member-audit"
                       [queryParams]="{ memberId: item.id }">تاریخچه</a>
@@ -188,6 +193,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly canCreateMembers = signal(false);
   readonly canViewMemberAudit = signal(false);
+  readonly canViewMemberEffectivePermissions = signal(false);
   readonly canInviteMembers = signal(false);
   readonly canIssueTemporaryPassword = signal(false);
   readonly issuingMemberId = signal<string | null>(null);
@@ -215,6 +221,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
       this.kind.set(kind);
       this.canCreateMembers.set(false);
       this.canViewMemberAudit.set(false);
+      this.canViewMemberEffectivePermissions.set(false);
       this.canInviteMembers.set(false);
       this.canIssueTemporaryPassword.set(false);
       this.temporarySecret.set(null);
@@ -226,6 +233,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
   private refreshCreateAccess(): void {
     this.canCreateMembers.set(false);
     this.canViewMemberAudit.set(false);
+    this.canViewMemberEffectivePermissions.set(false);
     this.canInviteMembers.set(false);
     this.canIssueTemporaryPassword.set(false);
     this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -235,6 +243,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
         this.canCreateMembers.set(allowed);
         this.canViewMemberAudit.set(value?.canViewMembers === true &&
           value?.canViewMemberAudit === true);
+        this.canViewMemberEffectivePermissions.set(
+          value?.canViewMemberEffectivePermissions === true);
         this.canInviteMembers.set(value?.canViewMembers === true &&
           value?.canInviteMembers === true);
         this.canIssueTemporaryPassword.set(environment.tenantFirstLoginEnabled &&
@@ -244,6 +254,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
       error: () => {
         this.canCreateMembers.set(false);
         this.canViewMemberAudit.set(false);
+        this.canViewMemberEffectivePermissions.set(false);
         this.canInviteMembers.set(false);
         this.canIssueTemporaryPassword.set(false);
         this.createOpen.set(false);
