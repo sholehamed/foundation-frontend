@@ -45,6 +45,9 @@ export const TenantPermissionKeys = {
   members: 'TENANT.MEMBERS.READ',
   roles: 'TENANT.ROLES.READ',
   groups: 'TENANT.GROUPS.READ',
+  groupsCreate: 'TENANT.GROUPS.CREATE',
+  groupsUpdate: 'TENANT.GROUPS.UPDATE',
+  groupsChangeState: 'TENANT.GROUPS.CHANGE-STATE',
   branchesManage: 'TENANT.BRANCHES.MANAGE',
   rolePermissionAssign: 'TENANT.ROLES.ASSIGN-PERMISSIONS',
   rolesCreate: 'TENANT.ROLES.CREATE',
@@ -70,6 +73,9 @@ export interface TenantAdminCapabilities {
   canViewMemberAudit: boolean;
   canViewRoles: boolean;
   canViewGroups: boolean;
+  canCreateGroups: boolean;
+  canUpdateGroups: boolean;
+  canChangeGroupState: boolean;
   canManageBranches: boolean;
   canCreateRoles: boolean;
   canUpdateRoles: boolean;
@@ -121,6 +127,20 @@ export interface TenantMemberAuditPage {
 
 export interface TenantAdminCatalogItem {
   id: string; name: string; description: string | null; isActive: boolean;
+}
+export interface TenantAdminGroup extends TenantAdminCatalogItem {
+  version: string;
+}
+export interface TenantGroupWriteRequest {
+  name: string;
+  description: string | null;
+}
+export interface TenantGroupUpdateRequest extends TenantGroupWriteRequest {
+  expectedVersion: string;
+}
+export interface TenantGroupStateRequest {
+  isActive: boolean;
+  expectedVersion: string;
 }
 export interface TenantAdminRole extends TenantAdminCatalogItem {
   isOwner: boolean;
@@ -280,8 +300,23 @@ export class TenantWorkspaceService {
     );
   }
 
-  getGroups(page = 1): Observable<TenantDirectoryPage<TenantAdminCatalogItem>> {
-    return this.http.get<TenantDirectoryPage<TenantAdminCatalogItem>>(this.root + '/groups', { params: { page } });
+  getGroups(page = 1): Observable<TenantDirectoryPage<TenantAdminGroup>> {
+    return this.http.get<TenantDirectoryPage<TenantAdminGroup>>(
+      this.root + '/groups', { params: { page } });
+  }
+
+  createGroup(request: TenantGroupWriteRequest): Observable<TenantAdminGroup> {
+    return this.http.post<TenantAdminGroup>(this.root + '/groups', request);
+  }
+
+  updateGroup(groupId: string, request: TenantGroupUpdateRequest): Observable<TenantAdminGroup> {
+    return this.http.put<TenantAdminGroup>(
+      this.root + '/groups/' + encodeURIComponent(groupId), request);
+  }
+
+  changeGroupState(groupId: string, request: TenantGroupStateRequest): Observable<TenantAdminGroup> {
+    return this.http.patch<TenantAdminGroup>(
+      this.root + '/groups/' + encodeURIComponent(groupId) + '/state', request);
   }
 
   createBranch(request: TenantBranchWriteRequest): Observable<TenantWorkspaceBranch> {
