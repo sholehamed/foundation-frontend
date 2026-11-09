@@ -44,6 +44,26 @@ describe('Tenant owner directory pages', () => {
     environment.tenantFirstLoginEnabled = false;
   });
 
+  it('shows audit entry points only after the live Owner capability', () => {
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: false, canViewMemberAudit: true,
+    }));
+    const permitted = TestBed.createComponent(TenantAdminDirectoryComponent);
+    permitted.detectChanges();
+    expect(permitted.componentInstance.canViewMemberAudit()).toBe(true);
+    expect(permitted.nativeElement.textContent).toContain('تاریخچه امنیتی اعضا');
+    permitted.destroy();
+
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: false, canViewMemberAudit: false,
+    }));
+    const denied = TestBed.createComponent(TenantAdminDirectoryComponent);
+    denied.detectChanges();
+    expect(denied.componentInstance.canViewMemberAudit()).toBe(false);
+    expect(denied.nativeElement.textContent).not.toContain('تاریخچه امنیتی اعضا');
+    denied.destroy();
+  });
+
   it('renders only the current tenant API fields and supports paging', () => {
     const f = TestBed.createComponent(TenantAdminDirectoryComponent);
     f.detectChanges();
