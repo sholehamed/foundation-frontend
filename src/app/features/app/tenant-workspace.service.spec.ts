@@ -85,6 +85,18 @@ describe('TenantWorkspaceService current-tenant API', () => {
       expiresAtUtc: '2026-11-09T12:30:00Z',
     });
 
+    api.getMemberAudit(2, '11111111-1111-1111-1111-111111111111').subscribe();
+    const audit = http.expectOne(req => req.url === environment.apiUrl +
+      '/tenant/workspace/members/audit');
+    expect(audit.request.method).toBe('GET');
+    expect(audit.request.params.keys().sort()).toEqual(['memberId', 'page']);
+    expect(audit.request.params.get('memberId')).toBe(
+      '11111111-1111-1111-1111-111111111111');
+    expect(audit.request.params.get('page')).toBe('2');
+    expect(audit.request.params.has('tenantId')).toBe(false);
+    expect(audit.request.params.has('actorUserId')).toBe(false);
+    audit.flush({ items: [], pageNumber: 2, hasNext: false });
+
     api.getRolePermissions('owned-role-id').subscribe();
     const matrix = http.expectOne(environment.apiUrl +
       '/tenant/workspace/roles/owned-role-id/permissions');

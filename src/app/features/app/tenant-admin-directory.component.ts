@@ -27,6 +27,11 @@ import {
           <p>این فهرست فقط متعلق به فضای کاری فعلی است؛ مدیریت نقش هر عضو در صفحه اختصاصی انجام می‌شود.</p>
         </div>
         <div class="tenant-heading-actions">
+          @if (kind() === 'members' && canViewMemberAudit()) {
+            <a mat-stroked-button routerLink="/dashboard/member-audit">
+              تاریخچه امنیتی اعضا
+            </a>
+          }
           @if (kind() === 'members' && canCreateMembers()) {
             <button mat-flat-button type="button" (click)="openCreate()"
               [disabled]="loading() || saving()">ثبت عضو غیرفعال</button>
@@ -132,6 +137,10 @@ import {
                   <a mat-stroked-button [routerLink]="['/dashboard/members', item.id, 'roles']">
                     نقش‌های عضو
                   </a>
+                  @if (canViewMemberAudit()) {
+                    <a mat-stroked-button routerLink="/dashboard/member-audit"
+                      [queryParams]="{ memberId: item.id }">تاریخچه</a>
+                  }
                   @if (!item.isActive && canIssueTemporaryPassword()) {
                     <button mat-stroked-button type="button" (click)="issueTemporaryPassword(item.id, itemTitle(item))"
                       [disabled]="loading() || saving() || !!invitingMemberId() || !!issuingMemberId() || !!temporarySecret()">
@@ -178,6 +187,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly canCreateMembers = signal(false);
+  readonly canViewMemberAudit = signal(false);
   readonly canInviteMembers = signal(false);
   readonly canIssueTemporaryPassword = signal(false);
   readonly issuingMemberId = signal<string | null>(null);
@@ -204,6 +214,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
       }
       this.kind.set(kind);
       this.canCreateMembers.set(false);
+      this.canViewMemberAudit.set(false);
       this.canInviteMembers.set(false);
       this.canIssueTemporaryPassword.set(false);
       this.temporarySecret.set(null);
@@ -214,6 +225,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
   }
   private refreshCreateAccess(): void {
     this.canCreateMembers.set(false);
+    this.canViewMemberAudit.set(false);
     this.canInviteMembers.set(false);
     this.canIssueTemporaryPassword.set(false);
     this.api.getAdminCapabilities().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -221,6 +233,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
         const allowed = value?.canViewMembers === true &&
           value?.canCreateMembers === true;
         this.canCreateMembers.set(allowed);
+        this.canViewMemberAudit.set(value?.canViewMembers === true &&
+          value?.canViewMemberAudit === true);
         this.canInviteMembers.set(value?.canViewMembers === true &&
           value?.canInviteMembers === true);
         this.canIssueTemporaryPassword.set(environment.tenantFirstLoginEnabled &&
@@ -229,6 +243,7 @@ export class TenantAdminDirectoryComponent implements OnInit {
       },
       error: () => {
         this.canCreateMembers.set(false);
+        this.canViewMemberAudit.set(false);
         this.canInviteMembers.set(false);
         this.canIssueTemporaryPassword.set(false);
         this.createOpen.set(false);
