@@ -5,12 +5,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../shared/services/auth.service';
 import { BffTenantSessionService } from '../../shared/services/bff-tenant-session.service';
 import { environment } from '../../../environments/environment';
-import { TenantPermissionKeys, TenantWorkspaceService } from './tenant-workspace.service';
+import {
+  TenantNavigationCategory, TenantPermissionKeys, TenantWorkspaceService,
+} from './tenant-workspace.service';
+import { TenantDynamicNavigationComponent } from './tenant-dynamic-navigation.component';
 
 @Component({
   selector: 'app-tenant-workspace-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatButtonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatButtonModule, TenantDynamicNavigationComponent],
   template: `
     <div class="tenant-shell" dir="rtl">
       <header class="tenant-bar">
@@ -19,6 +22,11 @@ import { TenantPermissionKeys, TenantWorkspaceService } from './tenant-workspace
           <span>Foundation <small>فضای کاری</small></span>
         </a>
         <nav aria-label="ناوبری فضای کاری">
+          @if (dynamicNavigationEnabled) {
+            <!-- Never fall back to static privileged links when dynamic
+                 navigation is enabled but the permission API denies/fails. -->
+            <app-tenant-dynamic-navigation [categories]="navigation()" />
+          } @else {
           <a routerLink="/dashboard" [routerLinkActiveOptions]="{ exact: true }"
             routerLinkActive="selected">نمای کلی</a>
           <a routerLink="/dashboard/business" routerLinkActive="selected">اطلاعات کسب‌وکار</a>
@@ -31,6 +39,7 @@ import { TenantPermissionKeys, TenantWorkspaceService } from './tenant-workspace
           }
           @if (allows('TENANT.GROUPS.READ')) {
             <a routerLink="/dashboard/groups" routerLinkActive="selected">گروه‌ها</a>
+          }
           }
         </nav>
         <button mat-stroked-button type="button" (click)="logout()">
@@ -50,12 +59,26 @@ export class TenantWorkspaceLayoutComponent implements OnInit {
   private readonly workspace = inject(TenantWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
   readonly allowedPages = signal<ReadonlySet<string>>(new Set());
+  readonly dynamicNavigationEnabled = environment.tenantDynamicNavigationPilotEnabled;
+  readonly navigation = signal<TenantNavigationCategory[]>([]);
   readonly logoutError = signal('');
   private readonly bff = inject(BffTenantSessionService);
 
   allows(key: string): boolean { return this.allowedPages().has(key); }
 
   ngOnInit(): void {
+    if (this.dynamicNavigationEnabled) {
+      // A failed/missing menu response is an empty navigation, never a
+      // permissionless fallback. /dashboard brand link is always available.
+      this.workspace.getNavigation()
+        .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+          next: categories => this.navigation.set(Array.isArray(categories)
+            ? categories : []),
+          error: () => this.navigation.set([]),
+        });
+      return;
+    }
+
     // Do not infer access from a role name, tenant claim or a static sidebar.
     this.workspace.getUiAccess().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: snapshot => {
