@@ -1,6 +1,7 @@
 import { Component, DestroyRef, inject, Input, signal, ViewChild } from '@angular/core';
 import { Route, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -72,6 +73,9 @@ router:Router=inject(Router)
   private readonly destroyRef = inject(DestroyRef);
   private firstLoginController: AbortController | null = null;
   private passwordChangeChallenge: string | null = null;
+  private passwordChangeOrigin: 'tenant' | 'identity' | null = null;
+  private identityChangeTenant: string | null = null;
+  private identityChangeContinuation: string | null = null;
 
   readonly passwordChangeRequired = signal(false);
   readonly resolvingLogin = signal(false);
@@ -167,6 +171,9 @@ private getRedirectUrl(): string {
     this.destroyRef.onDestroy(() => {
       this.firstLoginController?.abort();
       this.passwordChangeChallenge = null;
+      this.passwordChangeOrigin = null;
+      this.identityChangeTenant = null;
+      this.identityChangeContinuation = null;
       this.loginForm.controls.password.reset('');
       this.forcedPasswordForm.reset({ newPassword: '', confirm: '' });
     });
@@ -223,7 +230,40 @@ private getRedirectUrl(): string {
         this.login_context,
         this.tenant ?? null,
       ).subscribe({
-        next: () => window.location.assign(continuation),
+        next: outcome => {
+          if (outcome.status === 'password_change_required') {
+            // This identity-origin login is still anonymous. Server has
+            // already signed out any stale Identity cookie and returned ONLY
+            // a SQL-backed change-password challenge, not an OAuth session.
+            const host = window.location.hostname.toLowerCase();
+            const base = environment.workspaceBaseDomain.toLowerCase();
+            const allowedIdentity = host === 'identity.' + base ||
+              host === 'auth.' + base;
+            if (!environment.tenantFirstLoginEnabled ||
+                this.login_context !== 'tenant' ||
+                !allowedIdentity || window.location.protocol !== 'https:' ||
+                !this.tenant) {
+              this.loginError = 'امکان تأیید ورود اولیه روی این میزبان وجود ندارد.';
+              this.resetCaptcha();
+              return;
+            }
+            this.passwordChangeChallenge = outcome.challenge;
+            this.passwordChangeOrigin = 'identity';
+            this.identityChangeTenant = this.tenant;
+            this.identityChangeContinuation = continuation;
+            this.passwordChangeRequired.set(true);
+            this.loginForm.controls.password.reset('');
+            this.resetCaptcha();
+            this.loginError = '';
+            return;
+          }
+          if (outcome.status === 'authenticated') {
+            window.location.assign(continuation);
+            return;
+          }
+          this.loginError = 'پاسخ ورود معتبر نیست.';
+          this.resetCaptcha();
+        },
         error: () => this.resetCaptcha(),
       });
       return;
@@ -304,6 +344,7 @@ private getRedirectUrl(): string {
       const result = parseTenantLoginDecision(await response.json());
       if (result?.status === 'password_change_required') {
         this.passwordChangeChallenge = result.challenge!;
+        this.passwordChangeOrigin = 'tenant';
         this.passwordChangeRequired.set(true);
         this.loginForm.controls.password.reset('');
         this.resetCaptcha();
@@ -332,7 +373,9 @@ private getRedirectUrl(): string {
 
   async completeRequiredPasswordChange(): Promise<void> {
     if (!this.passwordChangeRequired() || !this.passwordChangeChallenge ||
-        this.changingPassword() || !this.canResolveFirstLogin) return;
+        this.changingPassword() ||
+        (this.passwordChangeOrigin !== 'identity' && !this.canResolveFirstLogin))
+      return;
     this.forcedPasswordForm.markAllAsTouched();
     const newPassword = this.forcedPasswordForm.controls.newPassword.value;
     const confirmation = this.forcedPasswordForm.controls.confirm.value;
@@ -342,6 +385,10 @@ private getRedirectUrl(): string {
       return;
     }
     this.loginError = '';
+    if (this.passwordChangeOrigin === 'identity') {
+      await this.completeIdentityHostPasswordChange(newPassword);
+      return;
+    }
     this.changingPassword.set(true);
     const controller = new AbortController();
     this.firstLoginController = controller;
@@ -376,6 +423,7 @@ private getRedirectUrl(): string {
       }
 
       this.passwordChangeChallenge = null;
+      this.passwordChangeOrigin = null;
       this.passwordChangeRequired.set(false);
       this.loginForm.reset({ username: '', password: '', captchaCode: '' });
       this.resetCaptcha();
@@ -390,6 +438,61 @@ private getRedirectUrl(): string {
       this.forcedPasswordForm.reset({ newPassword: '', confirm: '' });
       this.changingPassword.set(false);
       if (this.firstLoginController === controller) this.firstLoginController = null;
+    }
+  }
+
+  private async completeIdentityHostPasswordChange(newPassword: string): Promise<void> {
+    const challenge = this.passwordChangeChallenge;
+    const tenant = this.identityChangeTenant;
+    const continuation = this.identityChangeContinuation;
+    if (!challenge || !tenant || !continuation) {
+      this.loginError = 'مجوز تغییر رمز معتبر نیست. فرایند ورود را دوباره آغاز کنید.';
+      return;
+    }
+    this.changingPassword.set(true);
+    try {
+      // Uses the current Identity host's protected anti-forgery cookie and
+      // XSRF request header. Does NOT establish a sign-in session.
+      const result = await firstValueFrom(
+        this.authService.completeInteractiveFirstLogin(tenant, challenge, newPassword),
+      );
+      if (result?.passwordChanged !== true || result?.requiresRelogin !== true) {
+        this.loginError = 'نتیجه تغییر رمز قابل تأیید نیست.';
+        return;
+      }
+
+      this.passwordChangeChallenge = null;
+      this.passwordChangeOrigin = null;
+      this.identityChangeTenant = null;
+      this.identityChangeContinuation = null;
+      this.passwordChangeRequired.set(false);
+      this.loginForm.reset({ username: '', password: '', captchaCode: '' });
+      this.resetCaptcha();
+
+      // The BFF OIDC continuation is only preserved as a validated LOCAL
+      // returnUrl; it must not run until the user explicitly authenticates
+      // a second time using the new permanent password.
+      await this.router.navigate(['/auth/login'], {
+        queryParams: {
+          passwordChanged: '1', tenant, returnUrl: continuation,
+        },
+        replaceUrl: true,
+      });
+    } catch (err: unknown) {
+      const status = (err as { status?: number })?.status;
+      if ([400, 401, 404, 409].includes(status ?? 0)) {
+        this.passwordChangeChallenge = null;
+        this.passwordChangeOrigin = null;
+        this.identityChangeTenant = null;
+        this.identityChangeContinuation = null;
+        this.passwordChangeRequired.set(false);
+        this.loginError = 'مجوز تغییر رمز نامعتبر یا منقضی شده است. دوباره وارد شوید.';
+      } else {
+        this.loginError = 'اتصال امن برای تغییر رمز برقرار نشد؛ دوباره تلاش کنید.';
+      }
+    } finally {
+      this.forcedPasswordForm.reset({ newPassword: '', confirm: '' });
+      this.changingPassword.set(false);
     }
   }
 
