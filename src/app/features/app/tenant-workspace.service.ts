@@ -67,6 +67,7 @@ export interface TenantUiAccessSnapshot { entries: TenantUiAccessItem[]; }
 export interface TenantAdminCapabilities {
   canViewAdministration: boolean;
   canViewMembers: boolean;
+  canViewMemberAudit: boolean;
   canViewRoles: boolean;
   canViewGroups: boolean;
   canManageBranches: boolean;
@@ -98,6 +99,24 @@ export interface TenantMemberWithInitialPassword {
   member: TenantPendingMemberCreated;
   temporaryPassword: string;
   expiresAtUtc: string;
+}
+
+/** Read-only security ledger: backend never sends credentials or email addresses. */
+export interface TenantMemberAuditEntry {
+  id: string;
+  category: 'member' | 'member_role';
+  action: string;
+  occurredAtUtc: string;
+  actorUserId: string;
+  actorUserName: string | null;
+  targetUserId: string;
+  targetUserName: string | null;
+  roleName: string | null;
+}
+export interface TenantMemberAuditPage {
+  items: TenantMemberAuditEntry[];
+  pageNumber: number;
+  hasNext: boolean;
 }
 
 export interface TenantAdminCatalogItem {
@@ -171,6 +190,13 @@ export class TenantWorkspaceService {
   }
   getMembers(page = 1): Observable<TenantDirectoryPage<TenantAdminMember>> {
     return this.http.get<TenantDirectoryPage<TenantAdminMember>>(this.root + '/members', { params: { page } });
+  }
+
+  /** Page and optional target member only; TenantId and actor are server-derived. */
+  getMemberAudit(page = 1, memberId?: string | null): Observable<TenantMemberAuditPage> {
+    const params: Record<string, string> = { page: String(page) };
+    if (memberId) params['memberId'] = memberId;
+    return this.http.get<TenantMemberAuditPage>(this.root + '/members/audit', { params });
   }
   /** No TenantId, IsActive, password, Owner flag or roles accepted by this API. */
   createPendingMember(request: TenantPendingMemberCreateRequest): Observable<TenantPendingMemberCreated> {
