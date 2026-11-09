@@ -1,0 +1,85 @@
+<section class="tenant-page" dir="rtl">
+  <div class="tenant-page-heading">
+    <div>
+      <p class="eyebrow">TENANT ADMIN · EFFECTIVE PERMISSIONS</p>
+      <h1>دسترسی‌های مؤثر عضو{{ report()?.userName ? ' · ' + report()?.userName : '' }}</h1>
+      <p>نتیجه زنده مجوزهای Tenant همراه با مسیرهای دسترسی از نقش مستقیم، گروه و تنظیم مستقیم کاربر.</p>
+    </div>
+    <div class="tenant-heading-actions">
+      <a mat-stroked-button routerLink="/dashboard/members">بازگشت به اعضا</a>
+      <button mat-stroked-button type="button" (click)="load()"
+        [disabled]="loading() || !canRetry()">به‌روزرسانی</button>
+    </div>
+  </div>
+  <div class="tenant-panel">
+    <p class="tenant-role-warning">
+      این گزارش نتیجه واقعی ارزیابی مجوزهای PAGE و ACTION مربوط به Tenant است؛ اما مجوز
+      یک ACTION به‌تنهایی به معنی مجاز بودن اجرای عملیات حساس نیست. بسیاری از عملیات
+      همچنان به مالک بودن، دسترسی نوشتن، فعال بودن قابلیت و اعتبار هدف نیاز دارند.
+      مسیرهای زیر شواهد احتمالی اعطای دسترسی‌اند؛ ممنوعیت مستقیم می‌تواند همه آن‌ها را خنثی کند.
+    </p>
+  </div>
+  @if (loading()) {
+    <div class="tenant-feedback" role="status">در حال بررسی دسترسی‌های زنده...</div>
+  } @else if (error()) {
+    <div class="tenant-feedback error" role="alert">
+      {{ error() }}
+      @if (canRetry()) {
+        <button mat-stroked-button type="button" (click)="load()">تلاش دوباره</button>
+      }
+    </div>
+  } @else if (report(); as data) {
+    <div class="tenant-panel">
+      <div class="effective-summary">
+        <span>وضعیت عضو: <strong>{{ data.userActive ? 'فعال' : 'غیرفعال' }}</strong></span>
+        <span>Owner: <strong>{{ data.isOwner ? 'بله' : 'خیر' }}</strong></span>
+        <span>مجوزهای مجاز: <strong>{{ allowedCount() }}</strong> از {{ data.items.length }}</span>
+      </div>
+      <div class="effective-filter" role="group" aria-label="فیلتر مجوزها">
+        <button mat-stroked-button type="button" (click)="setFilter('all')"
+          [attr.aria-pressed]="filter() === 'all'">همه</button>
+        <button mat-stroked-button type="button" (click)="setFilter('allowed')"
+          [attr.aria-pressed]="filter() === 'allowed'">مجاز</button>
+        <button mat-stroked-button type="button" (click)="setFilter('denied')"
+          [attr.aria-pressed]="filter() === 'denied'">غیرمجاز</button>
+      </div>
+      <div class="effective-permissions">
+        @for (item of visible(); track item.code) {
+          <article class="effective-item">
+            <div class="effective-item-header">
+              <div>
+                <h2>{{ item.name }}</h2>
+                <code class="effective-code">{{ item.code }}</code>
+                <p>{{ item.kind === 'PAGE' ? 'صفحه' : 'عملیات' }} · {{ item.route }}</p>
+              </div>
+              <span class="effective-status" [class.effective-status-denied]="!item.allowed">
+                {{ item.allowed ? 'مجاز' : 'غیرمجاز' }}
+              </span>
+            </div>
+            <p>علت تصمیم: <strong>{{ decisionLabel(item) }}</strong></p>
+            @if (!item.registered) {
+              <p class="tenant-role-warning">
+                تعریف فعال و یکتای مجوز موجود نیست؛ وضعیت سازگاری Owner را جدا بررسی کنید.
+              </p>
+            }
+            @if (item.sources.length) {
+              <p>مسیرهای ثبت‌شده (ممکن است با Deny خنثی شده باشند):</p>
+              <ul class="effective-sources">
+                @for (source of item.sources; track $index) {
+                  <li>{{ sourceLabel(source) }}</li>
+                }
+              </ul>
+            } @else {
+              <p>هیچ مسیر اعطای فعالی برای این مجوز ثبت نشده است.</p>
+            }
+            @if (item.moreSources) {
+              <p>مسیرهای بیشتری وجود دارد؛ فقط ۲۰ مورد نخست نمایش داده می‌شود.</p>
+            }
+          </article>
+        } @empty {
+          <p>موردی برای فیلتر انتخابی وجود ندارد.</p>
+        }
+      </div>
+    </div>
+  }
+</section>
