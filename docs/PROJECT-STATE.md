@@ -1,3 +1,8 @@
+## FR-14B-2B — System Login initial-password challenge (2026-11-09)
+
+- Existing System sign-in form now supports default-OFF, exact-root HTTPS System initial credentials and forced password change. Server response is a one-time restricted SQL challenge, never an authenticated session; the browser stores no proof outside component memory and redirects to **fresh** System login after the password is set.
+- System login normal path and Tenant first-login remain unchanged when pilot is OFF. No admin issuance/edit UI is enabled; backend companion PR #97 adds the restricted API and unapplied SQL migration. [Security, tests and rollout boundaries](development/FR-14B2B-SYSTEM-FIRST-LOGIN-UI.md).
+
 ## FR-14A — authorization security inventory and route guards (2026-11-09)
 
 - Added `src/app/security/fr14a-route-coverage.spec.ts`: all 13 System root features must remain under `systemSessionGuard` and shared opt-in `systemAllUiAccessGuard`, with no unauthorized root route; Tenant Admin routes must retain tenant-session and live PAGE guards, sensitive audit/member effective permissions/group pages retain independent Owner/dual-PAGE guards. Default-OFF BFF, System UI granular pilot and first-login flags asserted in both build profiles.
