@@ -1,3 +1,8 @@
+## FR-13C-2C — Group Role assignments (2026-11-09)
+
+- Added `/dashboard/groups/:id/roles` with separate Groups+Roles live PAGE checks, 20-row ordinary role list and Owner-only single GroupRole confirmation. No bulk replacement, no Owner/System roles, inactive target additions prohibited. 409 reloads and requires re-confirmation; 403 clears stale state.
+- Companion backend uses explicit `TENANT.GROUPS.ASSIGN-ROLES` ACTION, CASed SQL group version, target-bound intent and append-only audit. [UI contract](development/FR-13C2C-TENANT-GROUP-ROLE-UI.md). No Staging; release migrations/catalog are independent.
+
 ## FR-13C-2B — Tenant Group members (2026-11-09)
 
 - Added `/dashboard/groups/:id/members`, guarded by live Groups+Members PAGE checks, with a paginated list of eligible ordinary members and an explicit per-user add/revoke confirmation. Only server-authorized Owners get write actions; no bulk replacement of a partial page, no TenantId from UI. 403 clears data; 409 reloads version and requires reconfirmation; inactive groups disallow new membership.
