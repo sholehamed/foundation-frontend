@@ -1,3 +1,9 @@
+## FR-14A — authorization security inventory and route guards (2026-11-09)
+
+- Added `src/app/security/fr14a-route-coverage.spec.ts`: all 13 System root features must remain under `systemSessionGuard` and shared opt-in `systemAllUiAccessGuard`, with no unauthorized root route; Tenant Admin routes must retain tenant-session and live PAGE guards, sensitive audit/member effective permissions/group pages retain independent Owner/dual-PAGE guards. Default-OFF BFF, System UI granular pilot and first-login flags asserted in both build profiles.
+- Companion backend PR #94 adds an actual opt-in per-feature endpoint live grant requirement and an offline self-checking API registration inventory with CI artifact; no new grants, SQL migrations, Staging operations or feature flag enablement. Existing System Administrator and Tenant Owner policies remain authoritative.
+- [FR-14A scope, report and explicit debt](development/FR-14A-ANGULAR-AUTHORIZATION-BOUNDARIES.md). Remaining unsafe System User/Admin mutations, distributed BFF, endpoint-specific Tenant policies and operational rollout belong to separately gated FR-14B/14C and BFF-05/06.
+
 ## FR-13C-2E — effective Tenant member permission explanations (2026-11-09)
 
 - Added Owner-only guarded route `/dashboard/members/:id/effective-permissions`, conditional directory link, RTL Persian source-chain display and all/allowed/denied filter. It displays the authoritative live Tenant permission result and source evidence (direct allow/deny, UserRole, GroupRole, legacy Owner). No grant edits, credentials or TenantId requests.
