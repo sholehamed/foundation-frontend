@@ -16,6 +16,7 @@ describe('Tenant Group lifecycle page', () => {
   };
   const caps = {
     canViewGroups: true,
+    canViewGroupAudit: true,
     canCreateGroups: true, canUpdateGroups: true, canChangeGroupState: true,
   };
 
@@ -36,6 +37,19 @@ describe('Tenant Group lifecycle page', () => {
         } },
       ],
     }).compileComponents();
+  });
+
+  it('shows Group audit entry only when server explicitly allows Owner review', () => {
+    const allowed = TestBed.createComponent(TenantGroupsComponent);
+    allowed.detectChanges();
+    expect(allowed.nativeElement.textContent).toContain('تاریخچه امنیتی');
+    allowed.destroy();
+
+    getAdminCapabilities.mockReturnValueOnce(of({ ...caps, canViewGroupAudit: false }));
+    const denied = TestBed.createComponent(TenantGroupsComponent);
+    denied.detectChanges();
+    expect(denied.nativeElement.textContent).not.toContain('تاریخچه امنیتی');
+    denied.destroy();
   });
 
   it('creates an empty Group with trimmed values, not grants or memberships', () => {

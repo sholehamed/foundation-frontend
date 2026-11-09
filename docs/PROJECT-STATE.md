@@ -1,3 +1,9 @@
+## FR-13C-2D — Tenant Group security history (2026-11-09)
+
+- Read-only `/dashboard/groups/:id/audit` displays append-only Group lifecycle, membership and role changes with Jalali dates and bounded paging, plus historical link integrity counters. Owner can navigate only when live `canViewGroupAudit` capability is true; endpoint rechecks Owner + Groups/Members/Roles reads.
+- Unattributed legacy link means **no matching grant entry found**, not proof of abuse; UI does not edit/delete historical data. 401/403/404 clears state, 20-row pagination and strict response validation. [UI contract](development/FR-13C2D-GROUP-SECURITY-REVIEW-UI.md). Next: human-reviewed reconciliation design.
+- Staging/Production deployment and DB/Registry Apply remain deferred.
+
 ## FR-13C-2C — Group Role assignments (2026-11-09)
 
 - Added `/dashboard/groups/:id/roles` with separate Groups+Roles live PAGE checks, 20-row ordinary role list and Owner-only single GroupRole confirmation. No bulk replacement, no Owner/System roles, inactive target additions prohibited. 409 reloads and requires re-confirmation; 403 clears stale state.

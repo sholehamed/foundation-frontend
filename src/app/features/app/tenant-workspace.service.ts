@@ -73,6 +73,7 @@ export interface TenantAdminCapabilities {
   canViewAdministration: boolean;
   canViewMembers: boolean;
   canViewMemberAudit: boolean;
+  canViewGroupAudit: boolean;
   canViewRoles: boolean;
   canViewGroups: boolean;
   canCreateGroups: boolean;
@@ -127,6 +128,29 @@ export interface TenantMemberAuditPage {
   items: TenantMemberAuditEntry[];
   pageNumber: number;
   hasNext: boolean;
+}
+
+/** Append-only Group lifecycle, membership and role grant history. */
+export interface TenantGroupSecurityAuditEntry {
+  id: string;
+  category: 'group' | 'group_member' | 'group_role';
+  action: string; occurredAtUtc: string;
+  actorUserId: string; actorUserName: string | null;
+  targetUserId: string | null; targetUserName: string | null;
+  roleId: string | null; roleName: string | null;
+  previousName: string | null; currentName: string | null;
+  previousActive: boolean | null; currentActive: boolean | null;
+}
+/** Counters are read-only. Unattributed does not mean unauthorized. */
+export interface TenantGroupIntegrity {
+  memberLinks: number; roleLinks: number;
+  ownerMemberLinks: number; invalidMemberLinks: number; invalidRoleLinks: number;
+  unattributedMemberLinks: number; unattributedRoleLinks: number;
+}
+export interface TenantGroupSecurityAuditPage {
+  groupId: string; groupName: string;
+  items: TenantGroupSecurityAuditEntry[]; pageNumber: number; hasNext: boolean;
+  integrity: TenantGroupIntegrity;
 }
 
 export interface TenantAdminCatalogItem {
@@ -320,6 +344,13 @@ export class TenantWorkspaceService {
   getGroups(page = 1): Observable<TenantDirectoryPage<TenantAdminGroup>> {
     return this.http.get<TenantDirectoryPage<TenantAdminGroup>>(
       this.root + '/groups', { params: { page } });
+  }
+
+  /** Owner-only history and historical link indicators; no repair endpoint. */
+  getGroupSecurityAudit(groupId: string, page = 1): Observable<TenantGroupSecurityAuditPage> {
+    return this.http.get<TenantGroupSecurityAuditPage>(
+      this.root + '/groups/' + encodeURIComponent(groupId) + '/audit',
+      { params: { page } });
   }
 
   createGroup(request: TenantGroupWriteRequest): Observable<TenantAdminGroup> {

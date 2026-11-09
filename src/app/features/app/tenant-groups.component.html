@@ -81,6 +81,11 @@
             <p>{{ group.description || 'بدون توضیحات' }}</p>
           </div>
           <div class="tenant-role-inline-actions">
+            @if (permissions()?.canViewGroupAudit === true) {
+              <a mat-stroked-button [routerLink]="['/dashboard/groups', group.id, 'audit']">
+                تاریخچه امنیتی
+              </a>
+            }
             <a mat-stroked-button [routerLink]="['/dashboard/groups', group.id, 'members']">
               اعضای گروه
             </a>

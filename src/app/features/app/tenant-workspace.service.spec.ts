@@ -97,6 +97,23 @@ describe('TenantWorkspaceService current-tenant API', () => {
     expect(audit.request.params.has('actorUserId')).toBe(false);
     audit.flush({ items: [], pageNumber: 2, hasNext: false });
 
+    api.getGroupSecurityAudit('group-local', 2).subscribe();
+    const groupAudit = http.expectOne(req => req.url === environment.apiUrl +
+      '/tenant/workspace/groups/group-local/audit');
+    expect(groupAudit.request.method).toBe('GET');
+    expect(groupAudit.request.params.keys()).toEqual(['page']);
+    expect(groupAudit.request.params.get('page')).toBe('2');
+    expect(groupAudit.request.params.has('tenantId')).toBe(false);
+    expect(groupAudit.request.params.has('actorId')).toBe(false);
+    groupAudit.flush({
+      groupId: 'group-local', groupName: 'Reception', items: [],
+      pageNumber: 2, hasNext: false, integrity: {
+        memberLinks: 0, roleLinks: 0, ownerMemberLinks: 0,
+        invalidMemberLinks: 0, invalidRoleLinks: 0,
+        unattributedMemberLinks: 0, unattributedRoleLinks: 0,
+      },
+    });
+
     api.getGroupRoles('group-local', 2).subscribe();
     const groupRoles = http.expectOne(req => req.url === environment.apiUrl +
       '/tenant/workspace/groups/group-local/roles');
