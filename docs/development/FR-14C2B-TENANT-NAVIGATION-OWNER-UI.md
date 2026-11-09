@@ -1,3 +1,5 @@
+> **SUPERSEDED (2026-11-10).** Tenant menu editing was removed from active routes because **System Admin owns all Menu definitions**. Tenant Owner only assigns centrally authorized permissions to local roles. This previous UI plan is not valid for rollout; retained as history.
+
 # FR-14C-2B — Tenant Owner navigation editor (UI pilot OFF)
 
 Checkpoint: 2026-11-09. Angular companion to Backend PR #101.
