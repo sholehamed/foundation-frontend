@@ -11,5 +11,7 @@ export const environment = {
   bffTenantPilotEnabled: true,
   // FR-13B-3: restricted initial-login pilot remains OFF in this build.
   tenantFirstLoginEnabled: false,
+  // System proof also remains off in the isolated Tenant BFF browser pilot.
+  systemFirstLoginEnabled: false,
   workspaceBaseDomain: 'shinera.localhost',
 };

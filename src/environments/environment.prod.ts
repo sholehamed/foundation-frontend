@@ -13,5 +13,7 @@ export const environment = {
   bffTenantPilotEnabled: false,
   // FR-13B-3: restricted initial-login pilot remains OFF in this build.
   tenantFirstLoginEnabled: false,
+  // FR-14B-2B: root-System first-login proof, independently default OFF.
+  systemFirstLoginEnabled: false,
   workspaceBaseDomain: 'shinera.ir',
 };

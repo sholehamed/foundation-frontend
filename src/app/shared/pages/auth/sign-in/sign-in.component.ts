@@ -16,6 +16,7 @@ import { CustomInputComponent } from '../../../components/input-string.component
 import { CustomizerSettingsService } from '../../../services/customizer-settings.service';
 import { firstLoginRequestOptions } from '../../../util/tenant-first-login-request';
 import { looksLikeGeneratedInitialPassword, parseTenantLoginDecision } from '../../../util/tenant-login-decision';
+import { canResolveSystemFirstLogin } from '../../../util/system-first-login-host';
 
 
 
@@ -56,8 +57,19 @@ router:Router=inject(Router)
   }
 
   get hasJustChangedPassword(): boolean {
-    return this.login_context === 'tenant' &&
-      this.router.parseUrl(this.router.url).queryParams['passwordChanged'] === '1';
+    return this.router.parseUrl(this.router.url).queryParams['passwordChanged'] === '1';
+  }
+
+  private get canResolveSystemFirstLogin(): boolean {
+    // Root System sign-in only. Identity/BFF redirector requires its own
+    // reviewed session/cookie transport, not this anonymous root-host proof.
+    return !this.returnUrl?.startsWith('/api/connect/authorize') &&
+      canResolveSystemFirstLogin(
+        environment.systemFirstLoginEnabled, this.login_context,
+        window.location.hostname, window.location.protocol,
+        environment.workspaceBaseDomain, environment.apiUrl,
+        window.location.origin,
+      );
   }
 
   get hasJustRegistered(): boolean {
@@ -73,7 +85,7 @@ router:Router=inject(Router)
   private readonly destroyRef = inject(DestroyRef);
   private firstLoginController: AbortController | null = null;
   private passwordChangeChallenge: string | null = null;
-  private passwordChangeOrigin: 'tenant' | 'identity' | null = null;
+  private passwordChangeOrigin: 'tenant' | 'identity' | 'system' | null = null;
   private identityChangeTenant: string | null = null;
   private identityChangeContinuation: string | null = null;
 
@@ -198,6 +210,10 @@ private getRedirectUrl(): string {
     // Only the unique server-generated 4x6 initial credential format
     // takes the restricted branch. Conventional logins make no extra
     // request and do not consume the 5/min first-login IP allowance.
+    if (looksLikeGeneratedInitialPassword(password) && this.canResolveSystemFirstLogin) {
+      void this.resolveSystemLoginBeforeAuthentication(username, password, captchaCode);
+      return;
+    }
     if (this.canResolveFirstLogin &&
         looksLikeGeneratedInitialPassword(password)) {
       void this.resolveLoginBeforeAuthentication(username, password, captchaCode);
@@ -374,7 +390,8 @@ private getRedirectUrl(): string {
   async completeRequiredPasswordChange(): Promise<void> {
     if (!this.passwordChangeRequired() || !this.passwordChangeChallenge ||
         this.changingPassword() ||
-        (this.passwordChangeOrigin !== 'identity' && !this.canResolveFirstLogin))
+        (this.passwordChangeOrigin !== 'identity' &&
+         this.passwordChangeOrigin !== 'system' && !this.canResolveFirstLogin))
       return;
     this.forcedPasswordForm.markAllAsTouched();
     const newPassword = this.forcedPasswordForm.controls.newPassword.value;
@@ -387,6 +404,10 @@ private getRedirectUrl(): string {
     this.loginError = '';
     if (this.passwordChangeOrigin === 'identity') {
       await this.completeIdentityHostPasswordChange(newPassword);
+      return;
+    }
+    if (this.passwordChangeOrigin === 'system') {
+      await this.completeSystemPasswordChange(newPassword);
       return;
     }
     this.changingPassword.set(true);
@@ -493,6 +514,122 @@ private getRedirectUrl(): string {
     } finally {
       this.forcedPasswordForm.reset({ newPassword: '', confirm: '' });
       this.changingPassword.set(false);
+    }
+  }
+
+  /**
+   * The normal System Login UI detects the generated initial-password shape,
+   * then asks only this same-origin root API for a SQL verified change-only
+   * challenge. Unknown/expired secrets go through the existing normal login.
+   */
+  private async resolveSystemLoginBeforeAuthentication(
+    username: string, password: string, captchaCode: string,
+  ): Promise<void> {
+    if (this.resolvingLogin() || this.passwordChangeRequired() ||
+        !this.canResolveSystemFirstLogin) return;
+
+    this.resolvingLogin.set(true);
+    const controller = new AbortController();
+    this.firstLoginController = controller;
+    try {
+      const response = await fetch(
+        environment.apiUrl + '/system/Auth/system-first-login/resolve',
+        firstLoginRequestOptions({
+          userName: username, temporaryPassword: password,
+        }, controller.signal),
+      );
+      if (controller.signal.aborted) return;
+      if (!response.ok) {
+        this.loginError = response.status === 429
+          ? 'تعداد درخواست‌ها بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.'
+          : 'امکان بررسی امن رمز اولیه وجود ندارد.';
+        this.loginForm.controls.password.reset('');
+        this.resetCaptcha();
+        return;
+      }
+      const result = parseTenantLoginDecision(await response.json());
+      if (result?.status === 'password_change_required') {
+        // No token, cookie or authenticated principal is returned.
+        this.passwordChangeChallenge = result.challenge;
+        this.passwordChangeOrigin = 'system';
+        this.passwordChangeRequired.set(true);
+        this.loginForm.controls.password.reset('');
+        this.resetCaptcha();
+        this.loginError = '';
+        return;
+      }
+      if (result?.status !== 'continue_login') {
+        this.loginError = 'پاسخ بررسی ورود اولیه معتبر نیست.';
+        this.loginForm.controls.password.reset('');
+        this.resetCaptcha();
+        return;
+      }
+      this.continueNormalLogin(username, password, captchaCode);
+    } catch {
+      if (!controller.signal.aborted) {
+        this.loginError = 'ارتباط امن با سرویس ورود اولیه برقرار نشد.';
+        this.loginForm.controls.password.reset('');
+        this.resetCaptcha();
+      }
+    } finally {
+      this.resolvingLogin.set(false);
+      if (this.firstLoginController === controller) this.firstLoginController = null;
+    }
+  }
+
+  /** Password rotation cannot create a logged-in session. */
+  private async completeSystemPasswordChange(newPassword: string): Promise<void> {
+    if (!this.canResolveSystemFirstLogin || !this.passwordChangeChallenge) {
+      this.loginError = 'مجوز تغییر رمز معتبر نیست. ورود را دوباره آغاز کنید.';
+      return;
+    }
+    this.changingPassword.set(true);
+    const controller = new AbortController();
+    this.firstLoginController = controller;
+    try {
+      const response = await fetch(
+        environment.apiUrl + '/system/Auth/system-first-login/complete',
+        firstLoginRequestOptions({
+          challenge: this.passwordChangeChallenge, newPassword,
+        }, controller.signal),
+      );
+      if (controller.signal.aborted) return;
+      if (!response.ok) {
+        if ([400, 401, 404, 409].includes(response.status)) {
+          this.passwordChangeChallenge = null;
+          this.passwordChangeOrigin = null;
+          this.passwordChangeRequired.set(false);
+          this.loginError = 'رمز اولیه یا چالش منقضی شده است. دوباره وارد شوید.';
+        } else {
+          this.loginError = response.status === 429
+            ? 'تعداد درخواست‌ها بیش از حد مجاز است.'
+            : 'تغییر رمز تأیید نشد؛ دوباره تلاش کنید.';
+        }
+        return;
+      }
+      const outcome: { passwordChanged?: boolean; requiresRelogin?: boolean } =
+        await response.json();
+      if (outcome.passwordChanged !== true || outcome.requiresRelogin !== true) {
+        this.loginError = 'پاسخ تغییر رمز قابل تأیید نیست.';
+        return;
+      }
+
+      this.passwordChangeChallenge = null;
+      this.passwordChangeOrigin = null;
+      this.passwordChangeRequired.set(false);
+      this.loginForm.reset({ username: '', password: '', captchaCode: '' });
+      this.resetCaptcha();
+      // No automatic OAuth/BFF continuation; user must log in from scratch.
+      await this.router.navigate(['/system/auth/login'], {
+        queryParams: { passwordChanged: '1' }, replaceUrl: true,
+      });
+    } catch {
+      if (!controller.signal.aborted)
+        this.loginError = 'ارتباط امن با سرویس تغییر رمز برقرار نشد.';
+    } finally {
+      this.forcedPasswordForm.reset({ newPassword: '', confirm: '' });
+      this.changingPassword.set(false);
+      if (this.firstLoginController === controller) this.firstLoginController = null;
     }
   }
 
