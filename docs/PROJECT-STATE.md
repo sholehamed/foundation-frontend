@@ -1,3 +1,9 @@
+## FR-14C-2B — Tenant Owner navigation editor UI (2026-11-09)
+
+- Added disabled-by-default /dashboard/navigation settings page, live PAGE guard and Owner-only CRUD client for Tenant-owned categories and items: ordering, parent changes, soft-disable, exact safe route selection and CAS 409 reload. The separate settings link is shown only with live TENANT.NAVIGATION.READ and pilot flag.
+- Development, production and Chromium profiles keep tenantNavigationEditorPilotEnabled OFF. Backend PR #101 adds Owner-authorized audit/CAS API and pending audit migration. Unit requests test absence of TenantId, grants and unsafe fields. [UX/rollout contract](development/FR-14C2B-TENANT-NAVIGATION-OWNER-UI.md).
+- Still open: new-editor positive browser E2E, approved Migration+Permission Catalog Apply, legacy import, non-Owner delegation and branch-scoped RBAC. Staging/Production deferred.
+
 ## FR-14C-1 — Tenant dynamic navigation pilot (2026-11-09)
 
 - Typed read-only `/tenant/workspace/navigation/me` client and recursive Tenant menu renderer added. The workspace layout uses the server-only tree when independent `tenantDynamicNavigationPilotEnabled` is ON and never falls back to privileged static links when the request fails. All dev/prod/Chromium environments keep it **OFF**.
