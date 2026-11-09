@@ -1,3 +1,9 @@
+## FR-14B-3 — System lifecycle UI (2026-11-09)
+
+- New CAS-versioned System Admin profile/state/lock editor, behind BOTH default-OFF systemAccountLifecycleUiEnabled and systemUiAccessPilotEnabled. Requests carry only allowed fields and expectedVersion, and 409 requires explicit reload. No password, TenantId, role or permission edit UI.
+- Legacy Admin create route is explicitly denied, legacy blind state/lock toggles removed from the list, and backend-only reserved SuperAdmin protections remain authoritative. Companion backend PR #98 adds guarded SQL/Audit APIs and a **not deployed** migration.
+- CI covers strict client request contracts, guards, Angular validation and Chromium BFF regression. [Security/rollout contract](development/FR-14B3-SYSTEM-ACCOUNT-LIFECYCLE-UI.md). Staging/Production still deferred.
+
 ## FR-14B-2B — System Login initial-password challenge (2026-11-09)
 
 - Existing System sign-in form now supports default-OFF, exact-root HTTPS System initial credentials and forced password change. Server response is a one-time restricted SQL challenge, never an authenticated session; the browser stores no proof outside component memory and redirects to **fresh** System login after the password is set.
