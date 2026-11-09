@@ -77,6 +77,7 @@ describe('Tenant Group lifecycle page', () => {
     const f = TestBed.createComponent(TenantGroupsComponent);
     f.detectChanges();
     f.componentInstance.requestStateChange(group);
+    f.detectChanges();
     expect(f.nativeElement.textContent).toContain('تأیید تغییر وضعیت گروه');
     expect(changeGroupState).not.toHaveBeenCalled();
     f.componentInstance.confirmState();
@@ -114,6 +115,7 @@ describe('Tenant Group lifecycle page', () => {
     expect(updateGroup).toHaveBeenCalledTimes(1);
     expect(getGroups).toHaveBeenCalledTimes(2);
     expect(f.componentInstance.editorOpen()).toBe(false);
+    f.detectChanges();
     expect(f.nativeElement.textContent).toContain('نام تکراری');
     f.destroy();
   });
