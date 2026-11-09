@@ -13,5 +13,7 @@ export const environment = {
   tenantFirstLoginEnabled: false,
   // System proof also remains off in the isolated Tenant BFF browser pilot.
   systemFirstLoginEnabled: false,
+  // FR-14B-3: reviewed System account editor, OFF until catalog + SQL rollout.
+  systemAccountLifecycleUiEnabled: false,
   workspaceBaseDomain: 'shinera.localhost',
 };
