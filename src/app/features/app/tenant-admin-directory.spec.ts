@@ -281,4 +281,102 @@ describe('Tenant owner directory pages', () => {
     fixture.destroy();
   });
 
+  it('allows creation with no email and stores null instead of a fake email', () => {
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: true, canIssueTemporaryPassword: false,
+    }));
+    createPendingMember.mockReturnValue(of({
+      id: 'email-less', userName: 'staff.without.email', email: null,
+      firstName: 'No', lastName: 'Email', isActive: false,
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.openCreate();
+    component.userName.set('staff.without.email');
+    component.firstName.set('No');
+    component.lastName.set('Email');
+    component.email.set('');
+    fixture.detectChanges();
+    const emailInput = fixture.nativeElement.querySelector('input[name="email"]') as HTMLInputElement;
+    expect(emailInput.required).toBe(false);
+    expect(emailInput.validity.valid).toBe(true);
+    component.create();
+    expect(createPendingMember).toHaveBeenCalledOnce();
+    expect(createPendingMember).toHaveBeenCalledWith({
+      userName: 'staff.without.email', email: null,
+      firstName: 'No', lastName: 'Email',
+    });
+    expect(component.createOpen()).toBe(false);
+    fixture.destroy();
+  });
+
+  it('creates email-less member with one atomic initial password and clears it on close', () => {
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: true, canIssueTemporaryPassword: true,
+    }));
+    createMemberWithInitialPassword.mockReturnValue(of({
+      member: {
+        id: 'new-without-email', userName: 'staff.local', email: null,
+        firstName: 'Local', lastName: 'Staff', isActive: false,
+      },
+      temporaryPassword: 'ABCDEF-ghijkl-MNOPQR-stuvwx',
+      expiresAtUtc: '2026-11-09T12:30:00Z',
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.openCreate();
+    component.userName.set('staff.local');
+    component.firstName.set('Local');
+    component.lastName.set('Staff');
+    component.email.set(' ');
+    component.create();
+    expect(createMemberWithInitialPassword).toHaveBeenCalledWith({
+      userName: 'staff.local', email: null,
+      firstName: 'Local', lastName: 'Staff',
+    });
+    expect(component.temporarySecret()?.password).toContain('ABCDEF');
+    component.closeTemporarySecret();
+    expect(component.temporarySecret()).toBeNull();
+    fixture.destroy();
+  });
+
+  it('never offers or calls email invitation for staff without a recipient', () => {
+    getMembers.mockReturnValue(of({
+      items: [{
+        id: 'no-email', userName: 'local.staff', email: null,
+        firstName: 'Local', lastName: 'Staff', isActive: false,
+      }], page: 1, hasNext: false,
+    }));
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: false,
+      canInviteMembers: true, canIssueTemporaryPassword: true,
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('بدون ایمیل');
+    expect(fixture.nativeElement.textContent).not.toContain('ارسال دعوت‌نامه');
+    fixture.componentInstance.inviteMember('no-email');
+    expect(invitePendingMember).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.result()).not.toBeNull();
+    fixture.destroy();
+  });
+
+  it('still shows email invite for inactive staff with a genuine email', () => {
+    getMembers.mockReturnValue(of({
+      items: [{
+        id: 'mail-staff', userName: 'mail.staff', email: 'mail.staff@company.test',
+        firstName: 'Mail', lastName: 'Staff', isActive: false,
+      }], page: 1, hasNext: false,
+    }));
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: false, canInviteMembers: true,
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('ارسال دعوت‌نامه');
+    fixture.destroy();
+  });
+
 });
