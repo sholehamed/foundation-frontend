@@ -93,6 +93,12 @@ export interface TenantPendingMemberCreateRequest {
 export interface TenantPendingMemberCreated extends TenantAdminMember {
   isActive: false;
 }
+/** Returned only once by the explicit Owner 2-permission onboarding write. */
+export interface TenantMemberWithInitialPassword {
+  member: TenantPendingMemberCreated;
+  temporaryPassword: string;
+  expiresAtUtc: string;
+}
 
 export interface TenantAdminCatalogItem {
   id: string; name: string; description: string | null; isActive: boolean;
@@ -186,6 +192,15 @@ export class TenantWorkspaceService {
   }> {
     return this.http.post<{ temporaryPassword: string; expiresAtUtc: string }>(
       this.root + '/members/' + encodeURIComponent(memberId) + '/temporary-password', {},
+    );
+  }
+
+  /** Atomic inactive User + one-time password, both audited inside one SQL transaction. */
+  createMemberWithInitialPassword(
+    request: TenantPendingMemberCreateRequest,
+  ): Observable<TenantMemberWithInitialPassword> {
+    return this.http.post<TenantMemberWithInitialPassword>(
+      this.root + '/members/with-initial-password', request,
     );
   }
 
