@@ -1,3 +1,8 @@
+## FR-13C-1 — Tenant Owner audit page (2026-11-09)
+
+- Added a read-only Persian/Jalali `/dashboard/member-audit` page and optional per-member filter. Entry links appear only when the live server says `canViewMemberAudit`; routing checks both the existing Members PAGE permission and a fresh Owner capability. Backend rechecks permission per GET; 401/403 clears history. Pagination, empty/error/retry states and contract tests included.
+- No extra sidebar item, new catalog permission, secrets, staging rollout or production flag changes. [UI contract](development/FR-13C1-TENANT-MEMBER-AUDIT-UI.md); backend SQL implementation/release approval remains independently required.
+
 ## FR-13B-3A — staff without an email (2026-11-09)
 
 - Tenant Owner member form and API DTO permit `email:null`, and only show email invitation for staff with an actual email. Missing email uses visible `بدون ایمیل` label; owner may create and issue one-time password atomically, with unchanged permission, CAPTCHA/login, challenge and security gates. Angular unit regression covers this path and prevents phantom email invitations.
