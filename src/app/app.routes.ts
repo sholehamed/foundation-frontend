@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { SignInComponent } from './shared/pages/auth/sign-in/sign-in.component';
 import { tenantSessionGuard } from './shared/guards/tenant-session.guard';
 import { tenantOwnerDirectoryGuard } from './shared/guards/tenant-owner-directory.guard';
+import { tenantNavigationOwnerEditorGuard } from './features/app/tenant-navigation-owner-editor.guard';
 import { tenantMemberAuditGuard } from './shared/guards/tenant-member-audit.guard';
 import { tenantGroupMembersGuard } from './shared/guards/tenant-group-members.guard';
 import { tenantGroupRolesGuard } from './shared/guards/tenant-group-roles.guard';
@@ -39,6 +40,12 @@ export const routes: Routes = [
         path: 'branches',
         loadComponent: () => import('./features/app/tenant-branches.component')
           .then(x => x.TenantBranchesComponent),
+      },
+      {
+        path: 'navigation',
+        canActivate: [tenantNavigationOwnerEditorGuard],
+        loadComponent: () => import('./features/app/tenant-navigation-owner-editor.component')
+          .then(x => x.TenantNavigationOwnerEditorComponent),
       },
       {
         path: 'member-audit',
