@@ -45,11 +45,13 @@
                     <div class="title">
 
                         <h1>
-                            ورود به حساب کاربری
+                            {{ passwordChangeRequired() ? 'تغییر اجباری رمز عبور' : 'ورود به حساب کاربری' }}
                         </h1>
 
                         <p>
-                            اطلاعات حساب خود را برای ادامه وارد کنید.
+                            {{ passwordChangeRequired()
+                              ? 'رمز اولیه تأیید شد. برای فعال‌سازی حساب، رمز شخصی خود را تعیین کنید.'
+                              : 'اطلاعات حساب خود را برای ادامه وارد کنید.' }}
                         </p>
 
                     </div>
@@ -61,10 +63,13 @@
                         </p>
                     }
 
-                    @if (canUseFirstLogin) {
+                    <!-- Legacy BFF Identity-host sign-in still needs the
+                         reviewed cross-origin/PKCE cutover. The ordinary
+                         Tenant login handles initial credentials automatically. -->
+                    @if (canUseFirstLogin && bffTenantPilotLogin) {
                         <p style="margin:8px 0 18px">
-                            برای اولین ورود با رمز اولیه‌ای که مدیر به شما داده است،
-                            <a routerLink="/auth/first-login">از اینجا رمز شخصی خود را تعیین کنید</a>.
+                            برای حساب کارمندی که رمز اولیه دریافت کرده است،
+                            <a routerLink="/auth/first-login">تعیین رمز شخصی</a> را انتخاب کنید.
                         </p>
                     }
 
@@ -78,7 +83,34 @@
                         <p role="alert" class="login-error">{{ loginError }}</p>
                     }
 
-                    @if (bffTenantPilotLogin) {
+                    @if (passwordChangeRequired()) {
+                        <form [formGroup]="forcedPasswordForm"
+                              (ngSubmit)="completeRequiredPasswordChange()">
+                            <div class="field-wrapper">
+                                <mat-form-field appearance="outline" style="width:100%">
+                                    <mat-label>رمز عبور جدید</mat-label>
+                                    <input matInput type="password"
+                                           formControlName="newPassword"
+                                           autocomplete="new-password"
+                                           [disabled]="changingPassword()" />
+                                </mat-form-field>
+                            </div>
+                            <div class="field-wrapper">
+                                <mat-form-field appearance="outline" style="width:100%">
+                                    <mat-label>تکرار رمز جدید</mat-label>
+                                    <input matInput type="password"
+                                           formControlName="confirm"
+                                           autocomplete="new-password"
+                                           [disabled]="changingPassword()" />
+                                </mat-form-field>
+                            </div>
+                            <p>رمز جدید حداقل ۱۵ کاراکتر و متفاوت از رمز اولیه و نام کاربری باشد.</p>
+                            <button type="submit" mat-button class="login-button"
+                                    [disabled]="changingPassword() || forcedPasswordForm.invalid">
+                                {{ changingPassword() ? 'در حال ثبت رمز...' : 'ثبت رمز جدید و ورود مجدد' }}
+                            </button>
+                        </form>
+                    } @else if (bffTenantPilotLogin) {
                         <button type="button" mat-button class="login-button"
                                 (click)="beginBffLogin()">
                             ورود امن از طریق سرویس هویت
@@ -150,6 +182,7 @@
                             type="submit"
                             mat-button
                             class="login-button"
+                            [disabled]="resolvingLogin()"
                         >
 
                             <span>

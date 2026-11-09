@@ -70,6 +70,21 @@ describe('TenantWorkspaceService current-tenant API', () => {
     expect(createMember.request.body).not.toHaveProperty('roleIds');
     createMember.flush({ id: 'new-id', ...pending, isActive: false });
 
+    api.createMemberWithInitialPassword(pending).subscribe();
+    const oneStep = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/members/with-initial-password');
+    expect(oneStep.request.method).toBe('POST');
+    expect(oneStep.request.body).toEqual(pending);
+    expect(oneStep.request.body).not.toHaveProperty('tenantId');
+    expect(oneStep.request.body).not.toHaveProperty('password');
+    expect(oneStep.request.body).not.toHaveProperty('isActive');
+    expect(oneStep.request.body).not.toHaveProperty('roleIds');
+    oneStep.flush({
+      member: { id: 'new-staff-id', ...pending, isActive: false },
+      temporaryPassword: 'ABCDEF-ghijkl-MNOPQR-stuvwx',
+      expiresAtUtc: '2026-11-09T12:30:00Z',
+    });
+
     api.getRolePermissions('owned-role-id').subscribe();
     const matrix = http.expectOne(environment.apiUrl +
       '/tenant/workspace/roles/owned-role-id/permissions');

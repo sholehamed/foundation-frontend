@@ -1,3 +1,9 @@
+## FR-13B-3B — standard Tenant Login auto force-password change (2026-11-09)
+
+- Existing Tenant Login now automatically performs server decision for generated-format temporary credentials; ordinary passwords use previous AuthService login unchanged. Verified temporary credential switches same Login UI into forced password change using only transient 10-minute change-only challenge; completion does not create app auth session and returns to fresh Login.
+- Owner member creation can atomically request initial password in same write when both live permissions and default-OFF `tenantFirstLoginEnabled` allow it; one-time reveal existing panel. No auto grants, no email/SMTP requirements for initial credential delivery, though User.Email remains mandatory at creation (#78).
+- [Frontend contract](development/FR-13B3B-UNIFIED-LOGIN-UX.md), backend [Issue #79](https://github.com/sholehamed/foundation-backend/issues/79). Legacy external Identity-host BFF pilot still needs explicit cross-origin/OIDC design; do not assume parity. No Staging/deployment or feature toggles are enabled by merge.
+
 ## FR-13B-3 — first-login / compulsory password change (2026-11-09)
 
 - Backend companion [PR #77](https://github.com/sholehamed/foundation-backend/pull/77), [Issue #76](https://github.com/sholehamed/foundation-backend/issues/76). Default-OFF Angular `tenantFirstLoginEnabled` gates a one-time Owner temporary-password issuance/reveal in Tenant directory and a new public `/auth/first-login` restricted proof/change form, separate from native OAuth/BFF and SMTP invitation flows.
