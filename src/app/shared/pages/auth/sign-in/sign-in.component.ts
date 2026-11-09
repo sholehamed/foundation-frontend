@@ -187,7 +187,11 @@ private getRedirectUrl(): string {
     const username = this.loginForm.controls.username.value;
     const password = this.loginForm.controls.password.value;
     const captchaCode = this.loginForm.controls.captchaCode.value;
-    if (this.canResolveFirstLogin) {
+    // Only the unique server-generated 4x6 initial credential format
+    // takes the restricted branch. Conventional logins make no extra
+    // request and do not consume the 5/min first-login IP allowance.
+    if (this.canResolveFirstLogin &&
+        /^[A-Za-z0-9]{6}(?:-[A-Za-z0-9]{6}){3}$/.test(password)) {
       void this.resolveLoginBeforeAuthentication(username, password, captchaCode);
       return;
     }
@@ -335,7 +339,7 @@ private getRedirectUrl(): string {
     const newPassword = this.forcedPasswordForm.controls.newPassword.value;
     const confirmation = this.forcedPasswordForm.controls.confirm.value;
     if (this.forcedPasswordForm.invalid || newPassword !== confirmation ||
-        /[\\x00-\\x1F\\x7F]/.test(newPassword)) {
+        /[\x00-\x1F\x7F]/.test(newPassword)) {
       this.loginError = 'رمز جدید و تکرار آن را بررسی کنید.';
       return;
     }
