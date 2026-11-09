@@ -80,13 +80,13 @@ export interface TenantAdminCapabilities {
 }
 export interface TenantDirectoryPage<T> { items: T[]; page: number; hasNext: boolean; }
 export interface TenantAdminMember {
-  id: string; userName: string; email: string;
+  id: string; userName: string; email: string | null;
   firstName: string | null; lastName: string | null; isActive: boolean;
 }
 /** Owner can create only an inactive local account. No invitation is sent. */
 export interface TenantPendingMemberCreateRequest {
   userName: string;
-  email: string;
+  email: string | null;
   firstName: string;
   lastName: string;
 }
