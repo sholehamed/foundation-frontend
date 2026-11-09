@@ -310,7 +310,7 @@ private getRedirectUrl(): string {
         this.loginError = '';
         return;
       }
-      if (result.status !== 'continue_login') {
+      if (result?.status !== 'continue_login') {
         this.loginError = 'پاسخ بررسی ورود معتبر نیست.';
         this.loginForm.controls.password.reset('');
         this.resetCaptcha();
