@@ -41,11 +41,6 @@ import { TenantDynamicNavigationComponent } from './tenant-dynamic-navigation.co
             <a routerLink="/dashboard/groups" routerLinkActive="selected">گروه‌ها</a>
           }
           }
-          @if (navigationEditorAllowed()) {
-            <a routerLink="/dashboard/navigation" routerLinkActive="selected">
-              تنظیم منو
-            </a>
-          }
         </nav>
         <button mat-stroked-button type="button" (click)="logout()">
           <span class="material-symbols-outlined" aria-hidden="true">logout</span>
@@ -66,26 +61,14 @@ export class TenantWorkspaceLayoutComponent implements OnInit {
   readonly allowedPages = signal<ReadonlySet<string>>(new Set());
   readonly dynamicNavigationEnabled = environment.tenantDynamicNavigationPilotEnabled;
   readonly navigation = signal<TenantNavigationCategory[]>([]);
-  readonly navigationEditorAllowed = signal(false);
   readonly logoutError = signal('');
   private readonly bff = inject(BffTenantSessionService);
 
   allows(key: string): boolean { return this.allowedPages().has(key); }
 
   ngOnInit(): void {
-    // Management PAGE is separate from the menu tree and must be checked
-    // live even when the dynamic sidebar is selected. No role-name shortcut.
-    if (environment.tenantNavigationEditorPilotEnabled) {
-      this.workspace.getUiAccess().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: snapshot => this.navigationEditorAllowed.set(
-          Array.isArray(snapshot?.entries) && snapshot.entries.some(x =>
-            x.key === TenantPermissionKeys.navigationRead &&
-            x.kind === 'PAGE' && x.route === '/dashboard/navigation' &&
-            x.allowed === true)),
-        error: () => this.navigationEditorAllowed.set(false),
-      });
-    }
-
+    // Only System Admin authors the central Menu catalog. Tenant views it
+    // through live permission filtering, never through a Tenant editor.
     if (this.dynamicNavigationEnabled) {
       // A failed/missing menu response is an empty navigation, never a
       // permissionless fallback. /dashboard brand link is always available.

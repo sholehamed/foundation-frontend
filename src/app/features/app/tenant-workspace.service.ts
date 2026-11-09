@@ -59,8 +59,6 @@ export const TenantPermissionKeys = {
   membersCreate: 'TENANT.MEMBERS.CREATE',
   membersInvite: 'TENANT.MEMBERS.INVITE',
   membersIssueTempPassword: 'TENANT.MEMBERS.ISSUE-TEMP-PASSWORD',
-  navigationRead: 'TENANT.NAVIGATION.READ',
-  navigationManage: 'TENANT.NAVIGATION.MANAGE',
 } as const;
 
 export interface TenantUiAccessItem {
