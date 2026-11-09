@@ -15,5 +15,7 @@ export const environment = {
   tenantFirstLoginEnabled: false,
   // FR-14B-2B: root-System first-login proof, independently default OFF.
   systemFirstLoginEnabled: false,
+  // FR-14B-3: reviewed System account editor, OFF until catalog + SQL rollout.
+  systemAccountLifecycleUiEnabled: false,
   workspaceBaseDomain: 'shinera.ir',
 };
