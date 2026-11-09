@@ -138,7 +138,7 @@ import {
                       {{ issuingMemberId() === item.id ? 'در حال صدور...' : 'صدور رمز اولیه' }}
                     </button>
                   }
-                  @if (!item.isActive && item.email && canInviteMembers()) {
+                  @if (canInviteMember(item)) {
                     <button mat-flat-button type="button" (click)="inviteMember(item.id)"
                       [disabled]="loading() || saving() || !!invitingMemberId()">
                       {{ invitingMemberId() === item.id ? 'در حال ثبت ارسال...' : 'ارسال دعوت‌نامه' }}
@@ -247,7 +247,8 @@ export class TenantAdminDirectoryComponent implements OnInit {
     if (!environment.tenantFirstLoginEnabled || this.kind() !== 'members' ||
         !this.canIssueTemporaryPassword() || this.saving() || this.loading() ||
         this.issuingMemberId() || this.invitingMemberId() || this.temporarySecret() ||
-        !this.result()?.items.some(row => row.id === memberId && !row.isActive)) return;
+        !this.result()?.items.some(row => row.id === memberId &&
+          this.canInviteMember(row))) return;
 
     this.temporaryError.set(null);
     this.issuingMemberId.set(memberId);
@@ -456,6 +457,11 @@ export class TenantAdminDirectoryComponent implements OnInit {
     return 'userName' in item
       ? [item.firstName, item.lastName].filter(Boolean).join(' ') || item.userName
       : item.name;
+  }
+  canInviteMember(item: TenantDirectoryItem): boolean {
+    return 'email' in item && !item.isActive &&
+      typeof item.email === 'string' && item.email.trim().length > 0 &&
+      this.canInviteMembers();
   }
   itemDescription(item: TenantDirectoryItem): string {
     return 'userName' in item
