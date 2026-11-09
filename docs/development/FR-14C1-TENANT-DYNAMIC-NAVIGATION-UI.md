@@ -1,3 +1,5 @@
+> **Architecture clarification (2026-11-10).** The read-only Tenant dynamic menu remains valid: it displays only entries from the **System Admin-owned central Menu Registry**, filtered by effective Tenant PAGE permissions. References below to Tenant-owned menu customization were superseded.
+
 # FR-14C-1 — Tenant dynamic navigation pilot (disabled)
 
 Date: 2026-11-09. Companion to backend FR-14C-1.
