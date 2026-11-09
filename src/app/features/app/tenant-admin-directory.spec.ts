@@ -13,6 +13,7 @@ describe('Tenant owner directory pages', () => {
   const createPendingMember = vi.fn();
   const invitePendingMember = vi.fn();
   const issueTemporaryPassword = vi.fn();
+  const createMemberWithInitialPassword = vi.fn();
 
   beforeEach(async () => {
     getMembers.mockReset().mockReturnValue(of({ items: [{
@@ -25,6 +26,7 @@ describe('Tenant owner directory pages', () => {
     createPendingMember.mockReset();
     invitePendingMember.mockReset();
     issueTemporaryPassword.mockReset();
+    createMemberWithInitialPassword.mockReset();
     environment.tenantFirstLoginEnabled = true;
     await TestBed.configureTestingModule({
       imports: [TenantAdminDirectoryComponent],
@@ -32,7 +34,7 @@ describe('Tenant owner directory pages', () => {
         { provide: ActivatedRoute, useValue: { data: of({ directoryKind: 'members' }) } },
         { provide: TenantWorkspaceService, useValue: {
           getMembers, getRoles, getGroups, getAdminCapabilities, createPendingMember, invitePendingMember,
-          issueTemporaryPassword,
+          issueTemporaryPassword, createMemberWithInitialPassword,
         } },
       ],
     }).compileComponents();
@@ -218,6 +220,64 @@ describe('Tenant owner directory pages', () => {
     fixture.detectChanges();
     fixture.componentInstance.issueTemporaryPassword('owned', 'owner');
     expect(issueTemporaryPassword).not.toHaveBeenCalled();
+    fixture.destroy();
+  });
+
+  it('creates inactive employee and issues one-time initial password with one atomic call', () => {
+    getAdminCapabilities.mockReturnValue(of({
+      canViewMembers: true, canCreateMembers: true, canIssueTemporaryPassword: true,
+    }));
+    createMemberWithInitialPassword.mockReturnValue(of({
+      member: {
+        id: 'created-id', userName: 'new.staff', email: 'new@local.test',
+        firstName: 'New', lastName: 'Staff', isActive: false,
+      },
+      temporaryPassword: 'ABCDEF-ghijkl-MNOPQR-stuvwx',
+      expiresAtUtc: '2026-11-09T12:30:00Z',
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    expect(component.canIssueTemporaryPassword()).toBe(true);
+    component.openCreate();
+    component.userName.set('new.staff');
+    component.email.set('new@local.test');
+    component.firstName.set('New');
+    component.lastName.set('Staff');
+    component.create();
+    expect(createMemberWithInitialPassword).toHaveBeenCalledWith({
+      userName: 'new.staff', email: 'new@local.test',
+      firstName: 'New', lastName: 'Staff',
+    });
+    expect(createPendingMember).not.toHaveBeenCalled();
+    expect(issueTemporaryPassword).not.toHaveBeenCalled();
+    expect(component.temporarySecret()?.password)
+      .toBe('ABCDEF-ghijkl-MNOPQR-stuvwx');
+    expect(component.createOpen()).toBe(false);
+    component.closeTemporarySecret();
+    expect(component.temporarySecret()).toBeNull();
+    expect(getMembers).toHaveBeenCalledTimes(2);
+    fixture.destroy();
+  });
+
+  it('blocks atomic creation when temporary-password permission was revoked', () => {
+    getAdminCapabilities.mockReturnValueOnce(of({
+      canViewMembers: true, canCreateMembers: true, canIssueTemporaryPassword: true,
+    })).mockReturnValueOnce(of({
+      canViewMembers: true, canCreateMembers: true, canIssueTemporaryPassword: false,
+    }));
+    const fixture = TestBed.createComponent(TenantAdminDirectoryComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.openCreate();
+    component.userName.set('new.staff');
+    component.email.set('new@local.test');
+    component.firstName.set('New');
+    component.lastName.set('Staff');
+    component.create();
+    expect(createMemberWithInitialPassword).not.toHaveBeenCalled();
+    expect(createPendingMember).not.toHaveBeenCalled();
+    expect(component.saveError()).toContain('لغو شده');
     fixture.destroy();
   });
 
