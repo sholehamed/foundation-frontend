@@ -69,6 +69,20 @@ export interface TenantUiAccessItem {
 }
 export interface TenantUiAccessSnapshot { entries: TenantUiAccessItem[]; }
 
+/** Backend /tenant/workspace/navigation/me is the sole source of these links.
+ * This DTO is a view, NOT a replacement for a PAGE/API authorization guard. */
+export interface TenantNavigationItem {
+  title: string;
+  icon: string | null;
+  route: string | null;
+  externalUrl: string | null;
+  childs: TenantNavigationItem[];
+}
+export interface TenantNavigationCategory {
+  title: string;
+  items: TenantNavigationItem[];
+}
+
 export interface TenantAdminCapabilities {
   canViewAdministration: boolean;
   canViewMembers: boolean;
@@ -262,6 +276,11 @@ export class TenantWorkspaceService {
   /** UI is a hint; backend rechecks the same live permission per protected operation. */
   getUiAccess(): Observable<TenantUiAccessSnapshot> {
     return this.http.get<TenantUiAccessSnapshot>(this.root + '/ui-access/me');
+  }
+
+  /** FR-14C-1: read-only Tenant scoped, live permission-filtered Menu tree. */
+  getNavigation(): Observable<TenantNavigationCategory[]> {
+    return this.http.get<TenantNavigationCategory[]>(this.root + '/navigation/me');
   }
 
   getAdminCapabilities(): Observable<TenantAdminCapabilities> {
