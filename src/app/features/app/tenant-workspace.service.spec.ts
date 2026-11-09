@@ -97,6 +97,40 @@ describe('TenantWorkspaceService current-tenant API', () => {
     expect(audit.request.params.has('actorUserId')).toBe(false);
     audit.flush({ items: [], pageNumber: 2, hasNext: false });
 
+    api.createGroup({ name: 'Reception', description: null }).subscribe();
+    const groupCreate = http.expectOne(environment.apiUrl + '/tenant/workspace/groups');
+    expect(groupCreate.request.method).toBe('POST');
+    expect(groupCreate.request.body).toEqual({ name: 'Reception', description: null });
+    expect(groupCreate.request.body).not.toHaveProperty('tenantId');
+    expect(groupCreate.request.body).not.toHaveProperty('userIds');
+    expect(groupCreate.request.body).not.toHaveProperty('roleIds');
+    groupCreate.flush({ id: 'group-1', name: 'Reception', description: null,
+      isActive: true, version: 'AQIDBAUGBwg=' });
+
+    api.updateGroup('group-1', {
+      name: 'Reception 2', description: null, expectedVersion: 'AQIDBAUGBwg=',
+    }).subscribe();
+    const groupUpdate = http.expectOne(environment.apiUrl + '/tenant/workspace/groups/group-1');
+    expect(groupUpdate.request.method).toBe('PUT');
+    expect(groupUpdate.request.body).toEqual({
+      name: 'Reception 2', description: null, expectedVersion: 'AQIDBAUGBwg=',
+    });
+    expect(groupUpdate.request.body).not.toHaveProperty('tenantId');
+    groupUpdate.flush({ id: 'group-1', name: 'Reception 2', description: null,
+      isActive: true, version: 'AgIDBAUGBwg=' });
+
+    api.changeGroupState('group-1', {
+      isActive: false, expectedVersion: 'AgIDBAUGBwg=',
+    }).subscribe();
+    const groupState = http.expectOne(environment.apiUrl +
+      '/tenant/workspace/groups/group-1/state');
+    expect(groupState.request.method).toBe('PATCH');
+    expect(groupState.request.body).toEqual({
+      isActive: false, expectedVersion: 'AgIDBAUGBwg=',
+    });
+    groupState.flush({ id: 'group-1', name: 'Reception 2', description: null,
+      isActive: false, version: 'AwIDBAUGBwg=' });
+
     api.getRolePermissions('owned-role-id').subscribe();
     const matrix = http.expectOne(environment.apiUrl +
       '/tenant/workspace/roles/owned-role-id/permissions');
