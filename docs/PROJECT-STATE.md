@@ -1,3 +1,9 @@
+## FR-13C-2E — effective Tenant member permission explanations (2026-11-09)
+
+- Added Owner-only guarded route `/dashboard/members/:id/effective-permissions`, conditional directory link, RTL Persian source-chain display and all/allowed/denied filter. It displays the authoritative live Tenant permission result and source evidence (direct allow/deny, UserRole, GroupRole, legacy Owner). No grant edits, credentials or TenantId requests.
+- Read-only catalog report explicitly warns that an effective ACTION permission is not sufficient for privileged API operations with Owner/writable/target-specific gates. 403 clears stale report and disables reload. [Contract](development/FR-13C2E-TENANT-MEMBER-EFFECTIVE-PERMISSIONS-UI.md).
+- Companion backend PR #93; no staging or production deployment. Next: separately reviewed endpoint-eligibility explanation, not inferred from catalog grants.
+
 ## FR-13C-2D — Tenant Group security history (2026-11-09)
 
 - Read-only `/dashboard/groups/:id/audit` displays append-only Group lifecycle, membership and role changes with Jalali dates and bounded paging, plus historical link integrity counters. Owner can navigate only when live `canViewGroupAudit` capability is true; endpoint rechecks Owner + Groups/Members/Roles reads.
