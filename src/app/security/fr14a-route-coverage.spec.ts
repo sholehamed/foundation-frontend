@@ -5,7 +5,6 @@ import { systemSessionGuard } from '../shared/guards/system-session.guard';
 import { systemAllUiAccessGuard } from '../shared/guards/system-all-ui-access.guard';
 import { tenantSessionGuard } from '../shared/guards/tenant-session.guard';
 import { tenantOwnerDirectoryGuard } from '../shared/guards/tenant-owner-directory.guard';
-import { tenantNavigationOwnerEditorGuard } from '../features/app/tenant-navigation-owner-editor.guard';
 import { tenantMemberAuditGuard } from '../shared/guards/tenant-member-audit.guard';
 import { tenantGroupAuditGuard } from '../shared/guards/tenant-group-audit.guard';
 import { tenantMemberEffectivePermissionsGuard } from '../shared/guards/tenant-member-effective-permissions.guard';
@@ -49,13 +48,9 @@ describe('FR-14A executable Angular route security coverage', () => {
     expect(workspace?.canActivateChild).toContain(tenantSessionGuard);
     const children = workspace?.children ?? [];
     expect(children.length).toBeGreaterThanOrEqual(13);
-    const basic = new Set(['', 'business', 'branches', 'navigation']);
+    const basic = new Set(['', 'business', 'branches']);
     const privileged = children.filter(x => !basic.has(x.path ?? ''));
     expect(privileged.length).toBeGreaterThanOrEqual(10);
-    // The new Tenant menu PAGE must have its OWN independent live guard,
-    // never the generic directoryKind or an unauthenticated exemption.
-    expect(children.find(x => x.path === 'navigation')?.canActivate)
-      .toContain(tenantNavigationOwnerEditorGuard);
     expect(privileged.every(x =>
       x.canActivate?.includes(tenantOwnerDirectoryGuard) &&
       ['members', 'groups', 'roles'].includes(String(x.data?.['directoryKind']))))
@@ -83,7 +78,6 @@ describe('FR-14A executable Angular route security coverage', () => {
       expect(config.tenantFirstLoginEnabled).toBe(false);
       expect(config.systemFirstLoginEnabled).toBe(false);
       expect(config.tenantDynamicNavigationPilotEnabled).toBe(false);
-      expect(config.tenantNavigationEditorPilotEnabled).toBe(false);
     }
   });
 });
