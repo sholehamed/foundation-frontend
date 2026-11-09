@@ -73,6 +73,7 @@ export interface TenantAdminCapabilities {
   canViewAdministration: boolean;
   canViewMembers: boolean;
   canViewMemberAudit: boolean;
+  canViewMemberEffectivePermissions: boolean;
   canViewGroupAudit: boolean;
   canViewRoles: boolean;
   canViewGroups: boolean;
@@ -151,6 +152,23 @@ export interface TenantGroupSecurityAuditPage {
   groupId: string; groupName: string;
   items: TenantGroupSecurityAuditEntry[]; pageNumber: number; hasNext: boolean;
   integrity: TenantGroupIntegrity;
+}
+
+/** Candidate grant path. Direct deny takes precedence over inherited grants. */
+export interface TenantMemberPermissionSource {
+  kind: 'direct_allow' | 'direct_deny' | 'direct_conflict' | 'role' |
+    'group_role' | 'owner_fallback';
+  roleId: string | null; roleName: string | null;
+  groupId: string | null; groupName: string | null;
+}
+export interface TenantMemberEffectivePermissionEntry {
+  code: string; name: string; kind: 'PAGE' | 'ACTION'; route: string;
+  registered: boolean; allowed: boolean; decision: string;
+  sources: TenantMemberPermissionSource[]; moreSources: boolean;
+}
+export interface TenantMemberEffectivePermissionReport {
+  userId: string; userName: string; userActive: boolean; isOwner: boolean;
+  items: TenantMemberEffectivePermissionEntry[];
 }
 
 export interface TenantAdminCatalogItem {
@@ -259,6 +277,13 @@ export class TenantWorkspaceService {
     if (memberId) params['memberId'] = memberId;
     return this.http.get<TenantMemberAuditPage>(this.root + '/members/audit', { params });
   }
+  /** Read-only live Tenant permission decisions for one member; server binds Tenant. */
+  getMemberEffectivePermissions(memberId: string):
+    Observable<TenantMemberEffectivePermissionReport> {
+    return this.http.get<TenantMemberEffectivePermissionReport>(
+      this.root + '/members/' + encodeURIComponent(memberId) + '/effective-permissions');
+  }
+
   /** No TenantId, IsActive, password, Owner flag or roles accepted by this API. */
   createPendingMember(request: TenantPendingMemberCreateRequest): Observable<TenantPendingMemberCreated> {
     return this.http.post<TenantPendingMemberCreated>(this.root + '/members', request);
