@@ -1,5 +1,4 @@
-import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../../shared/permissions/system-ui-access-pilot.token';
-import { SystemUiAccessService } from '../../../../shared/permissions/system-ui-access.service';
+import { environment } from '../../../../../environments/environment';
 import { CommonModule } from '@angular/common'
 import { Component, inject, signal } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -14,7 +13,6 @@ import { MatMenuModule } from '@angular/material/menu'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table'
 import { RouterLink } from '@angular/router'
-import { CellToggleComponent } from '../../../../shared/components/cell-toggle.component'
 import { AvatarUploadComponent } from '../../../../shared/components/form-components'
 import {
   TextFilterComponent,
@@ -51,7 +49,6 @@ import { AdminsService } from '../admins.service'
     AvatarUploadComponent,
     MatExpansionModule,
     TextFilterComponent,
-    CellToggleComponent,
     MatIconModule,
     PageHeaderComponent,
     GridComponent,
@@ -60,14 +57,10 @@ import { AdminsService } from '../admins.service'
   styleUrl: './admin-list.component.scss',
 })
 export class AdminListComponent {
-  private readonly uiActionPilotEnabled = inject(SYSTEM_UI_ACCESS_PILOT_ENABLED);
-  private readonly uiActionAccess = this.uiActionPilotEnabled ? inject(SystemUiAccessService) : null;
-  private runUiAction(key: string, action: () => void): void {
-    if (!this.uiActionPilotEnabled) { action(); return; }
-    this.uiActionAccess!.refreshAction(key).subscribe(allowed => {
-      if (allowed) action();
-    });
-  }
+  // Old one-click toggles used the unsafe generic PATCH endpoints.
+  // Only the separate, versioned lifecycle editor may change these fields.
+  readonly lifecycleUiEnabled = environment.systemAccountLifecycleUiEnabled &&
+    environment.systemUiAccessPilotEnabled;
 
   themeService: CustomizerSettingsService = inject(CustomizerSettingsService)
   service: AdminsService = inject(AdminsService)
@@ -126,20 +119,6 @@ export class AdminListComponent {
       sortable: true,
     },
   ]
-  changeState(id: string) {
-    this.runUiAction('system.admins.action.change-state', () => {
-    this.service.changeState(id).subscribe({
-      next: (v) => {},
-    })
-      });
-}
-  changeLockState(id: string) {
-    this.runUiAction('system.admins.action.change-lock', () => {
-    this.service.changeLockState(id).subscribe({
-      next: (v) => {},
-    })
-      });
-}
   loadUsers(query: GridQuery): void {
     this.service.pagedList(query).subscribe({
       next: (res) => {
