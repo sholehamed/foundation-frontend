@@ -63,15 +63,9 @@
                         </p>
                     }
 
-                    <!-- Legacy BFF Identity-host sign-in still needs the
-                         reviewed cross-origin/PKCE cutover. The ordinary
-                         Tenant login handles initial credentials automatically. -->
-                    @if (canUseFirstLogin && bffTenantPilotLogin) {
-                        <p style="margin:8px 0 18px">
-                            برای حساب کارمندی که رمز اولیه دریافت کرده است،
-                            <a routerLink="/auth/first-login">تعیین رمز شخصی</a> را انتخاب کنید.
-                        </p>
-                    }
+                    <!-- First-password change is detected by the existing
+                         Login form on Tenant and BFF Identity origins. A
+                         separate first-login route remains only for old links. -->
 
                     @if (hasJustRegistered) {
                         <p role="status" style="padding: 12px 16px; border: 1px solid #2e8b57; border-radius: 10px; color: #2e8b57">
