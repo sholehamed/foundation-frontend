@@ -1,3 +1,9 @@
+## FR-14C-1 — Tenant dynamic navigation pilot (2026-11-09)
+
+- Typed read-only `/tenant/workspace/navigation/me` client and recursive Tenant menu renderer added. The workspace layout uses the server-only tree when independent `tenantDynamicNavigationPilotEnabled` is ON and never falls back to privileged static links when the request fails. All dev/prod/Chromium environments keep it **OFF**.
+- Backend companion requires live Tenant PAGE permissions for privileged Admin roots, rejects foreign/synthetic RoleScope and unknown routes. Tests cover response contract, recursion, external-link safety and disabled rollout; no Tenant/menu ownership migration or branches/delegation is claimed. [Scope and acceptance](development/FR-14C1-TENANT-DYNAMIC-NAVIGATION-UI.md).
+- **Next:** explicitly Tenant-owned Menu definitions and branch membership/delegation, plus browser certification after approved migration/grants. Staging deferred.
+
 ## FR-14B-3 — System lifecycle UI (2026-11-09)
 
 - New CAS-versioned System Admin profile/state/lock editor, behind BOTH default-OFF systemAccountLifecycleUiEnabled and systemUiAccessPilotEnabled. Requests carry only allowed fields and expectedVersion, and 409 requires explicit reload. No password, TenantId, role or permission edit UI.

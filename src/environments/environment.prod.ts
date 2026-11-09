@@ -17,5 +17,7 @@ export const environment = {
   systemFirstLoginEnabled: false,
   // FR-14B-3: reviewed System account editor, OFF until catalog + SQL rollout.
   systemAccountLifecycleUiEnabled: false,
+  // FR-14C-1: audited dynamic Tenant menu tree; separate rollout, OFF.
+  tenantDynamicNavigationPilotEnabled: false,
   workspaceBaseDomain: 'shinera.ir',
 };

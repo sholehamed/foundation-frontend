@@ -29,6 +29,22 @@ describe('TenantWorkspaceService current-tenant API', () => {
     branches.flush([]);
 
 
+    // The dynamic menu uses a server-derived home Tenant scope; the browser
+    // must never send RoleId, active TenantId or a branch selection.
+    api.getNavigation().subscribe(items => {
+      expect(items[0]?.items[0]?.route).toBe('/dashboard');
+    });
+    const navigation = http.expectOne(
+      environment.apiUrl + '/tenant/workspace/navigation/me');
+    expect(navigation.request.method).toBe('GET');
+    expect(navigation.request.params.keys()).toEqual([]);
+    expect(navigation.request.body).toBeNull();
+    navigation.flush([{
+      title: 'Workspace',
+      items: [{ title: 'Home', icon: 'home', route: '/dashboard',
+                externalUrl: null, childs: [] }],
+    }]);
+
     api.getUiAccess().subscribe();
     const ui = http.expectOne(environment.apiUrl + '/tenant/workspace/ui-access/me');
     expect(ui.request.method).toBe('GET');
