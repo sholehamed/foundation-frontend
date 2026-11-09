@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router'
-import { unsavedChangesGuard } from '../../../shared/guards/can-deactivate.guard'
+import { legacySystemAccountCreateDenied, systemAccountLifecycleGuard } from './system-account-lifecycle.guard'
 
-// System user creation/update are intentionally unavailable pending a safe
-// backend System-only identity contract. Existing handler currently forces
-// an invalid Master TenantId and always resets the password on update.
+// Legacy form's generic User CRUD is unsafe. Create stays denied; the new
+// edit route uses a narrow CAS/permission-gated lifecycle editor.
 export default [
   {
     path: '',
@@ -13,17 +12,17 @@ export default [
   },
   {
     path: 'create',
-    canDeactivate: [unsavedChangesGuard],
+    canActivate: [legacySystemAccountCreateDenied],
     loadComponent: () =>
       import('./admin-form/admin-form.component').then((x) => x.AdminFormComponent),
-    data: { breadcrumb: 'مدیر جدید' },
+    data: { breadcrumb: 'مدیر جدید (غیرفعال)' },
   },
   {
     path: ':userId/edit',
-    canDeactivate: [unsavedChangesGuard],
+    canActivate: [systemAccountLifecycleGuard],
     loadComponent: () =>
-      import('./admin-form/admin-form.component').then((x) => x.AdminFormComponent),
-    data: { breadcrumb: 'ویرایش مدیر' },
+      import('./system-account-lifecycle.component').then((x) => x.SystemAccountLifecycleComponent),
+    data: { breadcrumb: 'مدیریت امن حساب مدیر' },
   },
   { path: '**', redirectTo: '' },
 ] as Routes
