@@ -78,7 +78,8 @@ describe('Tenant Group lifecycle page', () => {
     f.detectChanges();
     f.componentInstance.requestStateChange(group);
     f.detectChanges();
-    expect(f.nativeElement.textContent).toContain('تأیید تغییر وضعیت گروه');
+    expect(f.nativeElement.textContent).toContain('غیرفعال‌کردن گروه');
+    expect(f.nativeElement.textContent).toContain('تأیید تغییر وضعیت');
     expect(changeGroupState).not.toHaveBeenCalled();
     f.componentInstance.confirmState();
     expect(changeGroupState).toHaveBeenCalledExactlyOnceWith(group.id, {
