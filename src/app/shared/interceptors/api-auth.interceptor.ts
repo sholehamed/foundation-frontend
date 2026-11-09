@@ -68,7 +68,7 @@ export const apiAuthInterceptor: HttpInterceptorFn = (request, next) => {
 
   // Login, token refresh, CAPTCHA and revocation are anonymous OAuth endpoints.
   // Attaching a stale access token here could poison reauthentication.
-  const anonymous = /\/system\/Auth\/(login|interactive-login|csrf|captcha\/new|captcha\/image|revoke)(?:[/?]|$)/i
+  const anonymous = /\/system\/Auth\/(login|interactive-login|interactive-first-login\/complete|csrf|captcha\/new|captcha\/image|revoke)(?:[/?]|$)/i
     .test(request.url);
   const token = anonymous ? null : storage.getAccessToken();
   const authorized = token

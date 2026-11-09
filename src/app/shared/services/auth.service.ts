@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { catchError, Observable, switchMap, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, switchMap, tap, throwError } from 'rxjs';
+import { parseTenantLoginDecision } from '../util/tenant-login-decision';
 import { environment } from '../../../environments/environment';
 import { TenantContextService } from './tenant-context.service';
 import { TokenStorageService } from './token-storage.service';
@@ -14,6 +15,11 @@ export interface AuthTokens {
   scope?: string;
 }
 export type LoginContext = 'system' | 'tenant';
+
+export type InteractiveLoginOutcome =
+  | { status: 'authenticated' }
+  | { status: 'password_change_required'; challenge: string; expiresAtUtc: string };
+
 
 export interface UserInfo {
   sub: string;
@@ -40,7 +46,7 @@ export class AuthService {
     captchaId: string,
     loginContext: LoginContext,
     tenant: string | null,
-  ): Observable<void> {
+  ): Observable<InteractiveLoginOutcome> {
     // The Identity login UI and Authorization Server must share an origin:
     // XSRF-TOKEN is JS-readable only on the host that issued it.
     // Never use cross-origin credentialed CORS as an authentication workaround.
@@ -61,7 +67,7 @@ export class AuthService {
           return throwError(() => new Error('Anti-forgery token was not issued.'));
         }
 
-        return this._http.post<void>(
+        return this._http.post<unknown>(
           environment.apiUrl + '/system/Auth/interactive-login',
           {
             username,
@@ -73,10 +79,53 @@ export class AuthService {
           },
           {
             withCredentials: true,
+            observe: 'response',
             headers: new HttpHeaders({
               'X-XSRF-TOKEN': requestToken,
             }),
           },
+        );
+      }),
+      map(response => {
+        // 204 is the ONLY permitted normal Identity-cookie login result.
+        // A verified initial credential instead returns 200 containing a
+        // change-only challenge. Never resume OIDC on an unexpected body.
+        if (response.status === 204 && response.body === null)
+          return { status: 'authenticated' } as const;
+
+        const decision = response.status === 200
+          ? parseTenantLoginDecision(response.body) : null;
+        if (decision?.status === 'password_change_required')
+          return decision;
+
+        throw new Error('Unexpected interactive login result.');
+      }),
+    );
+  }
+
+  /**
+   * Complete a temporary credential proof on the SAME Identity origin.
+   * Only ASP.NET Identity antiforgery cookies are sent; no application
+   * BFF cookie or OAuth tokens are ever issued by this endpoint.
+   */
+  completeInteractiveFirstLogin(
+    tenantSlug: string, challenge: string, newPassword: string,
+  ): Observable<{ passwordChanged: boolean; requiresRelogin: boolean }> {
+    const apiOrigin = new URL(environment.apiUrl, window.location.origin).origin;
+    if (apiOrigin !== window.location.origin || window.location.protocol !== 'https:')
+      return throwError(() => new Error('Secure same-origin Identity host required.'));
+
+    return this._http.get<void>(
+      environment.apiUrl + '/system/Auth/csrf',
+      { withCredentials: true },
+    ).pipe(
+      switchMap(() => {
+        const token = this.readCookie('XSRF-TOKEN');
+        if (!token) return throwError(() => new Error('Anti-forgery token was not issued.'));
+        return this._http.post<{ passwordChanged: boolean; requiresRelogin: boolean }>(
+          environment.apiUrl + '/system/Auth/interactive-first-login/complete',
+          { tenantSlug, challenge, newPassword },
+          { withCredentials: true, headers: new HttpHeaders({ 'X-XSRF-TOKEN': token }) },
         );
       }),
     );

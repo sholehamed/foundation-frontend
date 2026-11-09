@@ -38,3 +38,5 @@ Primary architectural authority: [Backend ADR-0001](https://github.com/sholehame
 - [FR-13B-3 — Tenant first login with temporary password](development/FR-13B3-FIRST-LOGIN-UI.md)
 
 - [FR-13B-3B — unified Tenant Login and automatic password change UX](development/FR-13B3B-UNIFIED-LOGIN-UX.md)
+
+- [FR-13B-3C — Identity-host BFF mandatory password change](development/FR-13B3C-IDENTITY-BFF-LOGIN-UI.md)
