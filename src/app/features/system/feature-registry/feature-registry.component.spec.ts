@@ -8,7 +8,7 @@ import { mockManifestForRoutes } from './registry-manifest.test-fixture';
 
 describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   const pending: FeatureRegistryPreview = {
-    canApply: true, hasPending: true,
+    fingerprint: 'A'.repeat(64), canApply: true, hasPending: true,
     changes: [{ type: 'UiResource', key: 'system.roles.create', state: 'Create', detail: null }],
   };
   let contract: BackendFeatureManifest;
@@ -25,7 +25,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     contract = mockManifestForRoutes(await discoverExecutableSystemChildRoutes());
     preview = vi.fn(() => of(pending));
     manifest = vi.fn(() => of(contract));
-    apply = vi.fn(() => of({ canApply: true, hasPending: false, changes: [] }));
+    apply = vi.fn(() => of({ fingerprint: 'A'.repeat(64), canApply: true, hasPending: false, changes: [] }));
     tenantPermissionApply = vi.fn(() => of({
       fingerprint: 'A'.repeat(64), canApply: true, hasPending: false, changes: [],
     }));
@@ -80,8 +80,22 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     confirm.mockReturnValue(true);
     fixture.componentInstance.applyChanges();
     expect(apply).toHaveBeenCalledOnce();
+    expect(apply).toHaveBeenCalledWith('A'.repeat(64));
     await vi.waitFor(() => expect(preview).toHaveBeenCalledTimes(2));
     expect(manifest).toHaveBeenCalledTimes(2);
+  });
+
+  it('refuses missing or malformed System preview fingerprint before any POST', async () => {
+    preview.mockReturnValue(of({
+      fingerprint: '', canApply: true, hasPending: true,
+      changes: [{ type: 'Resource', key: 'roles', state: 'Create', detail: null }],
+    }));
+    fixture.detectChanges();
+    await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    fixture.componentInstance.applyChanges();
+    expect(confirm).not.toHaveBeenCalled();
+    expect(apply).not.toHaveBeenCalled();
   });
 
   it('blocks Apply when one declared nested page is absent from Backend', async () => {
@@ -98,7 +112,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   });
 
   it('blocks Apply on preview conflict and clears stale state on 403', async () => {
-    preview.mockReturnValueOnce(of({ canApply: false, hasPending: true,
+    preview.mockReturnValueOnce(of({ fingerprint: 'C'.repeat(64), canApply: false, hasPending: true,
       changes: [{ type: 'UiResource', key: 'system.roles.edit', state: 'Conflict', detail: null }] }));
     fixture.detectChanges();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
@@ -184,7 +198,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     expect(fixture.componentInstance.centralCatalogReady()).toBe(false); // System Preview still pending
     await vi.waitFor(() => expect(fixture.componentInstance.loading()).toBe(false));
-    preview.mockReturnValue(of({ canApply: true, hasPending: false, changes: [] }));
+    preview.mockReturnValue(of({ fingerprint: 'D'.repeat(64), canApply: true, hasPending: false, changes: [] }));
     fixture.componentInstance.loadPreview();
     await vi.waitFor(() => expect(fixture.componentInstance.centralCatalogReady()).toBe(true));
     tenantNavigationReadiness.mockReturnValue(of({
