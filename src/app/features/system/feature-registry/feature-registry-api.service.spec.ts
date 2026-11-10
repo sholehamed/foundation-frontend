@@ -52,6 +52,23 @@ describe('FeatureRegistryApiService admin-only contract', () => {
       readyFeatureEndpoints: 0, endpoints: [], uncatalogedSystemAdminRoutes: [],
       unreviewedActiveSystemApiKeys: [], reviewedInternalSystemRoutes: 0, outOfScopeRouteCount: 0 });
 
+    api.centralAccessReadiness().subscribe();
+    const aggregate = http.expectOne(
+      environment.apiUrl + '/system/FeatureRegistry/central-access/readiness');
+    expect(aggregate.request.method).toBe('GET');
+    expect(aggregate.request.params.keys()).toEqual([]);
+    expect(aggregate.request.body).toBeNull();
+    aggregate.flush({ centralCatalogConsistent: false,
+      blockingChecks: ['tenant_navigation_not_ready'],
+      systemRegistry: { ready: true, conflicts: 0, pending: 0, observed: 81,
+        fingerprint: 'A'.repeat(64) },
+      tenantPermissionCatalog: { ready: true, conflicts: 0, pending: 0, observed: 53,
+        fingerprint: 'A'.repeat(64) },
+      tenantNavigation: { ready: false, conflicts: 6, pending: 6, observed: 6,
+        fingerprint: null },
+      systemEndpoints: { ready: false, conflicts: 1, pending: 1, observed: 1,
+        fingerprint: null } });
+
     api.apply('B'.repeat(64)).subscribe();
     const apply = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/apply');
     expect(apply.request.method).toBe('POST');
