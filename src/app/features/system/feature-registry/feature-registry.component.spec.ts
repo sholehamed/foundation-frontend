@@ -123,27 +123,30 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     expect(fixture.componentInstance.error()).toContain('متوقف');
   });
 
-  it('requires explicit human confirmation and exact fingerprint for Tenant catalog Apply', () => {
+  it('requires explicit human confirmation and exact fingerprint for Tenant catalog Apply', async () => {
     tenantPermissionPreview.mockReturnValue(of({
       fingerprint: 'B'.repeat(64), canApply: true, hasPending: true,
       changes: [{ type: 'Permission', key: 'TENANT.MEMBERS.READ', state: 'Create', detail: null }],
     }));
     fixture.detectChanges();
+    await vi.waitFor(() => expect(fixture.componentInstance.loading()).toBe(false));
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
     fixture.componentInstance.applyTenantCatalog();
     expect(tenantPermissionApply).not.toHaveBeenCalled();
     confirm.mockReturnValue(true);
     fixture.componentInstance.applyTenantCatalog();
-    expect(tenantPermissionApply).toHaveBeenCalledExactlyOnceWith('B'.repeat(64));
+    expect(tenantPermissionApply).toHaveBeenCalledOnce();
+    expect(tenantPermissionApply).toHaveBeenCalledWith('B'.repeat(64));
     expect(tenantPermissionPreview).toHaveBeenCalledTimes(2);
   });
 
-  it('fails closed on Tenant Catalog Apply 409 and requires a new GET preview', () => {
+  it('fails closed on Tenant Catalog Apply 409 and requires a new GET preview', async () => {
     tenantPermissionPreview.mockReturnValue(of({
       fingerprint: 'C'.repeat(64), canApply: true, hasPending: true, changes: [],
     }));
     tenantPermissionApply.mockReturnValue(throwError(() => ({ status: 409 })));
     fixture.detectChanges();
+    await vi.waitFor(() => expect(fixture.componentInstance.loading()).toBe(false));
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     fixture.componentInstance.applyTenantCatalog();
     expect(tenantPermissionApply).toHaveBeenCalledOnce();
