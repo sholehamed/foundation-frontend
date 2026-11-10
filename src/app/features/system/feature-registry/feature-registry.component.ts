@@ -138,7 +138,8 @@ export class FeatureRegistryPageComponent implements OnInit {
   applyChanges(): void {
     const current = this.preview();
     if (this.applying() || this.tenantApplying() || this.loading() || !this.manifestVerified() ||
-        this.manifestProblems().length > 0 || !current?.canApply || !current.hasPending)
+        this.manifestProblems().length > 0 || !current?.canApply || !current.hasPending ||
+        !/^[A-Fa-f0-9]{64}$/.test(current.fingerprint))
       return;
 
     // Explicit human approval. Do not automatically apply on navigation,
@@ -159,7 +160,7 @@ export class FeatureRegistryPageComponent implements OnInit {
           this.error.set('مجوز اعمال رجیستری معتبر نیست یا لغو شده است.');
           return;
         }
-        this.runApprovedApply();
+        this.runApprovedApply(current.fingerprint);
       });
   }
 
@@ -213,8 +214,8 @@ export class FeatureRegistryPageComponent implements OnInit {
       });
   }
 
-  private runApprovedApply(): void {
-    this.api.apply()
+  private runApprovedApply(fingerprint: string): void {
+    this.api.apply(fingerprint)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
