@@ -1,3 +1,9 @@
+## FR-14C — System Registry fingerprint-approved Apply UI (2026-11-10)
+
+- Updated System Admin Feature Registry client to require a valid 64-hex Backend Preview fingerprint and explicitly confirmed POST `{ fingerprint }`. Missing/malformed token or Angular Manifest mismatch cannot submit; server 403/409 invalidates stale preview and success reloads central reports.
+- Companion Backend PR #113 enforces live SuperAdmin + serializable SQL recheck. Defaults OFF; no automatic definitions/grants/flags, no Staging or Production action. [UI contract](development/FR-14C-SYSTEM-REGISTRY-REVIEWED-APPLY-UI.md).
+- Next: verify both repos on green main, review central operator catalog/menu/endpoint readiness on an approved target before enabling dynamic Tenant navigation.
+
 ## FR-14C — manual System Admin Tenant catalog Apply (2026-11-10)
 
 - The read-only central readiness screen now exposes an **explicit confirm-only** Tenant Permission Catalog Apply for the exact 64-character SQL preview fingerprint. It uses the code-owned System feature ACTION check where enabled, while the API always enforces live System SuperAdmin, default-OFF server Apply gate, serializable fingerprint and no automatic grants. Invalid/stale 403/409 responses clear the preview and require a new GET.

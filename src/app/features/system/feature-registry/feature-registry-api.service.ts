@@ -14,6 +14,7 @@ export interface FeatureRegistryChange {
 }
 
 export interface FeatureRegistryPreview {
+  fingerprint: string;
   canApply: boolean;
   hasPending: boolean;
   changes: FeatureRegistryChange[];
@@ -94,8 +95,8 @@ export class FeatureRegistryApiService {
     return this.http.get<SystemEndpointIntegrity>(this.root + '/system-endpoints/integrity');
   }
 
-  /** The backend requires SystemAdministrator + an explicit deployment flag. */
-  apply(): Observable<FeatureRegistryPreview> {
-    return this.http.post<FeatureRegistryPreview>(this.root + '/apply', {});
+  /** Explicit, reviewed System SuperAdmin Apply; server rechecks fingerprint in SQL. */
+  apply(fingerprint: string): Observable<FeatureRegistryPreview> {
+    return this.http.post<FeatureRegistryPreview>(this.root + '/apply', { fingerprint });
   }
 }

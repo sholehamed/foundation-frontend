@@ -22,7 +22,7 @@ describe('FeatureRegistryApiService admin-only contract', () => {
     const preview = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/preview');
     expect(preview.request.method).toBe('GET');
     expect(preview.request.params.keys()).toEqual([]);
-    preview.flush({ canApply: true, hasPending: false, changes: [] });
+    preview.flush({ fingerprint: 'A'.repeat(64), canApply: true, hasPending: false, changes: [] });
 
     api.tenantPermissionPreview().subscribe();
     const tenant = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/tenant-permissions/preview');
@@ -52,12 +52,12 @@ describe('FeatureRegistryApiService admin-only contract', () => {
       readyFeatureEndpoints: 0, endpoints: [], uncatalogedSystemAdminRoutes: [],
       unreviewedActiveSystemApiKeys: [], reviewedInternalSystemRoutes: 0, outOfScopeRouteCount: 0 });
 
-    api.apply().subscribe();
+    api.apply('B'.repeat(64)).subscribe();
     const apply = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/apply');
     expect(apply.request.method).toBe('POST');
     expect(apply.request.params.keys()).toEqual([]);
-    expect(apply.request.body).toEqual({});
-    apply.flush({ canApply: true, hasPending: false, changes: [] });
+    expect(apply.request.body).toEqual({ fingerprint: 'B'.repeat(64) });
+    apply.flush({ fingerprint: 'B'.repeat(64), canApply: true, hasPending: false, changes: [] });
     http.verify();
   });
 });
