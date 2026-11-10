@@ -1,3 +1,9 @@
+## FR-14C — System Admin consolidated central access operator gate (2026-11-10)
+
+- Feature Registry cockpit now calls read-only System-owned `GET /system/FeatureRegistry/central-access/readiness` alongside the existing System Registry/manifest, Tenant Catalog, six Tenant routes and runtime Endpoint integrity diagnostics. Renders the four checks, blocker IDs and explicit warning when independently sampled fingerprints differ.
+- `centralCatalogReady()` now requires a **consistent backend four-way aggregate** and matching live System/Tenant Preview fingerprints plus current executable Angular manifest verification. Any 401/403/network error, stale fingerprint or individual read failure clears aggregate and fails closed; no automatic Apply or sidebar enablement was introduced.
+- Backend companion: `FR-14C consolidated central access gate`. Tests cover read-only GET without caller-selected tenant IDs, all-four/fingerprint state, and denial and refresh scenarios. **Not a Staging/Production approval**; global Menu definitions remain System Admin-only and Angular Tenant dynamic sidebar remains default OFF.
+
 ## FR-14C — System Registry fingerprint-approved Apply UI (2026-11-10)
 
 - Updated System Admin Feature Registry client to require a valid 64-hex Backend Preview fingerprint and explicitly confirmed POST `{ fingerprint }`. Missing/malformed token or Angular Manifest mismatch cannot submit; server 403/409 invalidates stale preview and success reloads central reports.
