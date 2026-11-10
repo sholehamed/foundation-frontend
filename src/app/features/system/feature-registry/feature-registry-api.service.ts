@@ -19,6 +19,48 @@ export interface FeatureRegistryPreview {
   changes: FeatureRegistryChange[];
 }
 
+/** Read-only, System-owned registry diagnostics. No Tenant or role identifiers. */
+export interface TenantPermissionCatalogPreview extends FeatureRegistryPreview {
+  fingerprint: string;
+}
+
+export interface TenantNavigationRouteStatus {
+  route: string;
+  requiredPermission: string | null;
+  status: 'ready' | 'missing' | 'conflict';
+  issues: string[];
+}
+
+export interface TenantNavigationReadiness {
+  readyForDynamicPilot: boolean;
+  requiredRoutes: number;
+  readyRoutes: number;
+  routes: TenantNavigationRouteStatus[];
+  unregisteredTenantRoutes: string[];
+  ungatedExternalMenuCount: number;
+}
+
+export interface SystemEndpointIntegrityStatus {
+  key: string;
+  httpMethod: string;
+  route: string;
+  resourceCode: string;
+  permissionCode: string;
+  status: 'ready' | 'conflict';
+  issues: string[];
+}
+
+export interface SystemEndpointIntegrity {
+  readyForGranularEnforcement: boolean;
+  discoveredFeatureEndpoints: number;
+  readyFeatureEndpoints: number;
+  endpoints: SystemEndpointIntegrityStatus[];
+  uncatalogedSystemAdminRoutes: string[];
+  unreviewedActiveSystemApiKeys: string[];
+  reviewedInternalSystemRoutes: number;
+  outOfScopeRouteCount: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class FeatureRegistryApiService {
   private readonly http = inject(HttpClient);
@@ -31,6 +73,19 @@ export class FeatureRegistryApiService {
 
   preview(): Observable<FeatureRegistryPreview> {
     return this.http.get<FeatureRegistryPreview>(this.root + '/preview');
+  }
+
+  /** Extra live SuperAdmin check on the backend; strictly read-only. */
+  tenantPermissionPreview(): Observable<TenantPermissionCatalogPreview> {
+    return this.http.get<TenantPermissionCatalogPreview>(this.root + '/tenant-permissions/preview');
+  }
+
+  tenantNavigationReadiness(): Observable<TenantNavigationReadiness> {
+    return this.http.get<TenantNavigationReadiness>(this.root + '/tenant-navigation/readiness');
+  }
+
+  systemEndpointIntegrity(): Observable<SystemEndpointIntegrity> {
+    return this.http.get<SystemEndpointIntegrity>(this.root + '/system-endpoints/integrity');
   }
 
   /** The backend requires SystemAdministrator + an explicit deployment flag. */
