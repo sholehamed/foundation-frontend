@@ -189,6 +189,14 @@ export class SignupCheckoutComponent {
       : this.selectedOffer?.currency ?? ''
   }
 
+  offerFor(plan: CheckoutPlan) {
+    return plan.prices.find(x => x.billingCycle === this.billingCycle) ?? null
+  }
+
+  hasCycle(cycle: BillingCycle): boolean {
+    return this.selectedPlan?.prices.some(x => x.billingCycle === cycle) ?? true
+  }
+
   get hasBranch(): boolean {
     return this.form.controls.branch.controls.enabled.value
   }
