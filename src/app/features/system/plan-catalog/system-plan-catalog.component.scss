@@ -1,0 +1,270 @@
+:host {
+  display: block;
+  padding: 24px;
+}
+
+.catalog-page {
+  color: var(--headingColor);
+  max-width: 1460px;
+  margin-inline: auto;
+
+  .catalog-head,
+  .panel-title,
+  .section-row,
+  .editor-footer,
+  .plan-row,
+  .module-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .catalog-head {
+    align-items: start;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-size: clamp(24px, 2.8vw, 33px);
+    font-weight: 700;
+    margin: 5px 0 10px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 14px;
+  }
+
+  p,
+  small {
+    color: var(--bodyColor);
+    line-height: 1.85;
+  }
+
+  .eyebrow {
+    color: var(--primaryColor);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .catalog-grid,
+  .editor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .catalog-panel {
+    padding: 25px;
+    border: 1px solid var(--borderColor);
+    border-radius: 18px;
+    background: var(--cardBgColor);
+    min-width: 0;
+    margin-bottom: 22px;
+  }
+
+  .panel-title {
+    margin-bottom: 22px;
+  }
+
+  .count {
+    background: color-mix(in srgb, var(--primaryColor) 12%, transparent);
+    color: var(--primaryColor);
+    border-radius: 12px;
+    padding: 4px 12px;
+    font-weight: 700;
+  }
+
+  .fields {
+    display: grid;
+    gap: 16px;
+  }
+
+  label {
+    color: var(--headingColor);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  input:not([type='checkbox']),
+  select {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    background: var(--cardBgColor);
+    color: var(--headingColor);
+    border: 1px solid var(--borderColor);
+    font-size: 14px;
+    min-width: 0;
+    outline-offset: 2px;
+  }
+
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--primaryColor);
+  }
+
+  .plan-rows {
+    display: grid;
+    gap: 12px;
+  }
+
+  .plan-row {
+    padding: 13px 15px;
+    align-items: center;
+    border: 1px solid var(--borderColor);
+    border-radius: 12px;
+  }
+
+  .plan-row-main {
+    display: grid;
+    gap: 5px;
+
+    strong {
+      font-size: 15px;
+    }
+  }
+
+  code {
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-size: 12px;
+    color: var(--primaryColor);
+    overflow-wrap: anywhere;
+  }
+
+  .muted {
+    margin-top: -4px;
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+
+  .editor-block {
+    min-width: 0;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid var(--borderColor);
+  }
+
+  .module-option {
+    justify-content: flex-start;
+    min-height: 40px;
+
+    input {
+      accent-color: var(--primaryColor);
+      flex: 0 0 auto;
+    }
+
+    code {
+      margin-inline-start: auto;
+    }
+  }
+
+  .checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    input {
+      accent-color: var(--primaryColor);
+    }
+  }
+
+  .inline-edit,
+  .display-edit {
+    display: grid;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 14px;
+    grid-template-columns: 110px minmax(0, 1fr) auto;
+  }
+
+  .display-edit {
+    grid-template-columns: 75px minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .editor-footer {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: 22px;
+    padding-top: 24px;
+    border-top: 1px solid var(--borderColor);
+  }
+
+  .empty {
+    text-align: center;
+    background: var(--surfaceColor);
+    border-radius: 12px;
+    padding: 28px 18px;
+
+    &.inline {
+      padding: 18px 14px;
+      text-align: start;
+    }
+  }
+
+  .feedback,
+  .publication-review {
+    padding: 16px 20px;
+    margin: 14px 0 22px;
+    border: 1px solid var(--borderColor);
+    border-radius: 12px;
+    background: var(--surfaceColor);
+    overflow-wrap: anywhere;
+  }
+
+  .feedback.error,
+  .publication-review.blocked {
+    border-inline-start: 4px solid #b04f53;
+  }
+
+  .feedback.success {
+    border-inline-start: 4px solid var(--primaryColor);
+  }
+}
+
+@media (max-width: 1120px) {
+  .catalog-page {
+    .catalog-grid,
+    .editor-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  :host {
+    padding: 12px;
+  }
+
+  .catalog-page {
+    .catalog-panel {
+      padding: 16px;
+    }
+
+    .plan-row {
+      flex-wrap: wrap;
+    }
+
+    .display-edit,
+    .inline-edit {
+      grid-template-columns: 1fr;
+    }
+
+    .editor-footer {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  }
+}
