@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { PublicPlanPrice } from '../shared/public-plans.service';
 
 export type BillingCycle = 'monthly' | 'yearly';
 
@@ -9,11 +10,11 @@ export interface CheckoutPlan {
     key: string;
     title: string;
     subtitle: string;
-    monthlyPrice: number;
-    yearlyPrice: number;
     badge: string | null;
-    branchLimit: number;
+    prices: PublicPlanPrice[];
     features: string[];
+    // Not inferred from marketing copy; must be supplied by a future typed Limit API.
+    branchLimit: number | null;
 }
 
 /** Public signup request: no client-provided TenantId, OwnerId or role IDs. */
