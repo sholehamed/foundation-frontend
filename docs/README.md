@@ -1,3 +1,4 @@
+- [FR-17B-2A — DB-published plan cards and signup selection](development/FR-17B2A-DYNAMIC-PUBLIC-PLANS-UI.md)
 # Foundation Frontend Documentation
 
 - [Frontend project continuity and current BFF status](PROJECT-STATE.md)
