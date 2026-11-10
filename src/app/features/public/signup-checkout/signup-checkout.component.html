@@ -47,6 +47,7 @@
                   <div class="billing-toggle">
                     <button
                       type="button"
+                      [disabled]="!hasCycle('monthly')"
                       [class.active]="billingCycle === 'monthly'"
                       (click)="setBillingCycle('monthly')"
                     >
@@ -54,6 +55,7 @@
                     </button>
                     <button
                       type="button"
+                      [disabled]="!hasCycle('yearly')"
                       [class.active]="billingCycle === 'yearly'"
                       (click)="setBillingCycle('yearly')"
                     >
@@ -63,55 +65,59 @@
                   </div>
                 </div>
 
-                <div class="plans-grid">
-                  @for (plan of plans; track plan.key) {
-                    <button
-                      type="button"
-                      class="plan-card"
-                      [class.selected]="
-                        form.controls.subscription.controls.planKey.value === plan.key
-                      "
-                      (click)="selectPlan(plan)"
-                    >
-                      @if (plan.badge) {
-                        <span class="plan-badge">{{ plan.badge }}</span>
-                      }
-
-                      <div class="plan-check">
-                        <span class="material-symbols-outlined">
-                          {{
-                            form.controls.subscription.controls.planKey.value === plan.key
-                              ? 'radio_button_checked'
-                              : 'radio_button_unchecked'
-                          }}
-                        </span>
-                      </div>
-
-                      <h3>{{ plan.title }}</h3>
-                      <p>{{ plan.subtitle }}</p>
-
-                      <div class="price">
-                        <strong>
-                          {{
-                            formatMoney(
-                              billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice
-                            )
-                          }}
-                        </strong>
-                        <span>تومان / {{ billingCycle === 'yearly' ? 'سال' : 'ماه' }}</span>
-                      </div>
-
-                      <ul>
-                        @for (feature of plan.features; track feature) {
-                          <li>
-                            <span class="material-symbols-outlined">check</span>
-                            {{ feature }}
-                          </li>
+                @if (plansLoading()) {
+                  <p role="status" class="soft-note">در حال دریافت پلن‌های منتشرشده…</p>
+                } @else if (plansFailed()) {
+                  <p role="alert" class="form-error">
+                    دریافت پلن‌ها انجام نشد.
+                    <button type="button" mat-button (click)="reloadPlans()">تلاش دوباره</button>
+                  </p>
+                } @else if (plans().length === 0) {
+                  <p class="soft-note">
+                    هنوز پلنی برای خرید منتشر نشده است. می‌توانید فضای کاری را
+                    بدون اشتراک پولی ایجاد کنید و بعداً پلن انتخاب کنید.
+                  </p>
+                }
+                @if (!plansLoading()) {
+                  <div class="plans-grid">
+                    @for (plan of plans(); track plan.key) {
+                      <button type="button" class="plan-card"
+                        [class.selected]="selectedPlan?.key === plan.key"
+                        (click)="selectPlan(plan)">
+                        @if (plan.badge) { <span class="plan-badge">{{ plan.badge }}</span> }
+                        <div class="plan-check">
+                          <span class="material-symbols-outlined">
+                            {{ selectedPlan?.key === plan.key ? 'radio_button_checked' : 'radio_button_unchecked' }}
+                          </span>
+                        </div>
+                        <h3>{{ plan.title }}</h3>
+                        <p>{{ plan.subtitle }}</p>
+                        @if (offerFor(plan); as offer) {
+                          <div class="price">
+                            <strong>{{ formatMoney(offer.amount) }}</strong>
+                            <span>{{ offer.currency === 'IRR' ? 'ریال' : offer.currency }} /
+                              {{ billingCycle === 'yearly' ? 'سال' : 'ماه' }}</span>
+                          </div>
+                        } @else {
+                          <div class="price"><strong>—</strong><span>این دوره ارائه نمی‌شود</span></div>
                         }
-                      </ul>
+                        <ul>
+                          @for (feature of plan.features; track $index) {
+                            <li><span class="material-symbols-outlined">check</span>{{ feature }}</li>
+                          }
+                        </ul>
+                      </button>
+                    }
+                  </div>
+                  <div class="soft-note">
+                    <button type="button" mat-button (click)="chooseWithoutPlan()">
+                      ثبت‌نام اولیه بدون خرید پلن
                     </button>
-                  }
-                </div>
+                    @if (choosingWithoutPlan()) {
+                      <span>انتخاب شد؛ هیچ اشتراک پولی یا مبلغی فعال نمی‌شود.</span>
+                    }
+                  </div>
+                }
 
                 <div class="inline-field">
                   <mat-form-field appearance="outline">
@@ -413,7 +419,7 @@
                     </div>
                     <div>
                       <span>پلن</span>
-                      <strong>{{ selectedPlan.title }}</strong>
+                      <strong>{{ selectedPlan?.title ?? 'بدون پلن پولی' }}</strong>
                       <small>
                         {{ billingCycle === 'yearly' ? 'پرداخت سالانه' : 'پرداخت ماهانه' }}
                       </small>
@@ -454,8 +460,12 @@
                     <div>
                       <span class="section-kicker">برآورد هزینه پلن (غیرقطعی)</span>
                       <h3>
-                        {{ formatMoney(selectedPrice) }}
-                        <small>تومان</small>
+                        @if (selectedPrice !== null) {
+                          {{ formatMoney(selectedPrice) }}
+                          <small>{{ selectedCurrency }}</small>
+                        } @else {
+                          <small>بدون انتخاب پلن پولی</small>
+                        }
                       </h3>
                     </div>
 
@@ -540,24 +550,24 @@
         <div class="selected-plan">
           <div>
             <span>پلن انتخابی</span>
-            <h3>{{ selectedPlan.title }}</h3>
-            <p>{{ selectedPlan.subtitle }}</p>
+            <h3>{{ selectedPlan?.title ?? 'بدون پلن پولی' }}</h3>
+            <p>{{ selectedPlan?.subtitle ?? 'ایجاد فضای کاری بدون اشتراک فعال' }}</p>
           </div>
 
-          @if (selectedPlan.badge) {
-            <span class="mini-badge">{{ selectedPlan.badge }}</span>
+          @if (selectedPlan?.badge) {
+            <span class="mini-badge">{{ selectedPlan?.badge }}</span>
           }
         </div>
 
         <div class="summary-lines">
           <div>
             <span>دوره پرداخت</span>
-            <strong>{{ billingCycle === 'yearly' ? 'سالانه' : 'ماهانه' }}</strong>
+            <strong>{{ selectedPlan ? (billingCycle === 'yearly' ? 'سالانه' : 'ماهانه') : 'انتخاب نشده' }}</strong>
           </div>
 
           <div>
             <span>تعداد شعبه در پلن</span>
-            <strong>تا {{ selectedPlan.branchLimit }} شعبه</strong>
+            <strong>{{ selectedPlan?.branchLimit == null ? 'طبق محدودیت‌های ثبت‌شده پلن' : 'تا ' + selectedPlan?.branchLimit + ' شعبه' }}</strong>
           </div>
 
           <div>
@@ -569,8 +579,13 @@
         <div class="summary-total">
           <span>هزینه نمایشی پلن</span>
           <div>
-            <strong>{{ formatMoney(selectedPrice) }}</strong>
-            <small>تومان</small>
+            @if (selectedPrice !== null) {
+              <strong>{{ formatMoney(selectedPrice) }}</strong>
+              <small>{{ selectedCurrency }}</small>
+            } @else {
+              <strong>—</strong>
+              <small>بدون خرید پلن</small>
+            }
           </div>
         </div>
 
