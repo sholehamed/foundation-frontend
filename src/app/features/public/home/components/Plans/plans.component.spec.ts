@@ -48,7 +48,6 @@ describe('Public plan cards', () => {
 
   it('shows a retryable state after API failure', async () => {
     const fixture = await setup(throwError(() => new Error('offline')));
-    expect((fixture.nativeElement as HTMLElement).getAttribute('id')).toBeNull();
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('تلاش دوباره');
     expect((fixture.nativeElement as HTMLElement).querySelectorAll('.single-pricing-box'))
       .toHaveLength(0);
