@@ -86,3 +86,23 @@ th, td {
 code {
   overflow-wrap: anywhere;
 }
+
+.central-diagnostics {
+  margin-top: 32px;
+  border-top: 1px solid var(--borderColor, #e7e9ee);
+  padding-top: 20px;
+}
+
+.central-diagnostics h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.central-diagnostics h3 {
+  margin-top: 20px;
+}
+
+.central-diagnostics li {
+  margin-block: 6px;
+  overflow-wrap: anywhere;
+}
