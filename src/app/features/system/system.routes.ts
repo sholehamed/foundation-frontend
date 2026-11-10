@@ -83,6 +83,14 @@ export default [
         data: { breadcrumb: 'رجیستری قابلیت‌ها' },
       },
       {
+        path: systemFeatureRouteSegments.planCatalog,
+        loadComponent: () =>
+          import('./plan-catalog/system-plan-catalog.component').then(
+            x => x.SystemPlanCatalogComponent
+          ),
+        data: { breadcrumb: 'مدیریت پلن‌ها' },
+      },
+      {
         path: systemFeatureRouteSegments.menuManagement,
         loadComponent: () =>
           import('./menu-management/menu-management.component').then(
