@@ -122,6 +122,17 @@
       <p>تغییرات نیازمند بررسی: {{ tenantPendingCount() }} |
         تعارض: {{ catalog.canApply ? 'ندارد' : 'دارد' }} |
         نیازمند Apply: {{ catalog.hasPending ? 'بله' : 'خیر' }}</p>
+      @if (catalog.canApply && catalog.hasPending) {
+        <button *systemCan="'system.feature-registry.action.apply'"
+          mat-stroked-button type="button" (click)="applyTenantCatalog()"
+          [disabled]="loading() || applying() || tenantApplying() || diagnosticsLoading()">
+          <mat-icon>verified_user</mat-icon>
+          ثبت تعاریف مرکزی Tenant با تأیید
+        </button>
+      }
+      @if (tenantApplying()) {
+        <p role="status">در حال بررسی Fingerprint و ثبت تأییدشده...</p>
+      }
       @if (tenantPendingCount() > 0) {
         <ul>
           @for (change of catalog.changes; track $index) {
