@@ -1,0 +1,224 @@
+<div class="catalog-page" dir="rtl">
+  <header class="catalog-head">
+    <div>
+      <span class="eyebrow">مدیریت مرکزی امکانات</span>
+      <h1>پلن‌ها و نسخه‌های انتشار</h1>
+      <p>پلن‌ها فقط توسط مدیر سیستم تعریف می‌شوند. ذخیره پیش‌نویس، اشتراکی را برای کسب‌وکار فعال نمی‌کند.</p>
+    </div>
+    <button type="button" mat-stroked-button (click)="refresh()" [disabled]="loading()">
+      <span class="material-symbols-outlined">refresh</span> تازه‌سازی
+    </button>
+  </header>
+
+  @if (error()) {
+    <p role="alert" class="feedback error">{{ error() }}</p>
+  }
+  @if (notice()) {
+    <p role="status" class="feedback success">{{ notice() }}</p>
+  }
+
+  <div class="catalog-grid">
+    <section class="catalog-panel">
+      <div class="panel-title">
+        <div><h2>فهرست پلن‌ها</h2><small>داده‌های کاتالوگ سیستم</small></div>
+        <span class="count">{{ plans().length }}</span>
+      </div>
+      @if (loading()) {
+        <p role="status" class="empty">در حال دریافت اطلاعات…</p>
+      } @else if (!plans().length) {
+        <p class="empty">هنوز پلنی تعریف نشده است. می‌توانید نخستین پیش‌نویس را ایجاد کنید.</p>
+      } @else {
+        <div class="plan-rows">
+          @for (plan of plans(); track plan.id) {
+            <article class="plan-row">
+              <div class="plan-row-main">
+                <strong>{{ plan.name }}</strong>
+                <code dir="ltr">{{ plan.code }}</code>
+                <small>
+                  {{ plan.latestVersionNumber ? 'نسخه ' + plan.latestVersionNumber : 'بدون نسخه' }}
+                  · {{ plan.latestVersionStatus === 'Published' ? 'منتشرشده' : 'پیش‌نویس' }}
+                </small>
+              </div>
+              <div class="plan-actions">
+                @if (plan.draftVersionId) {
+                  <button type="button" mat-stroked-button
+                    (click)="openDraft(plan.draftVersionId!)">ویرایش پیش‌نویس</button>
+                } @else if (plan.latestPublishedVersionId) {
+                  <button type="button" mat-stroked-button [disabled]="busy()"
+                    (click)="createRevision(plan)">نسخه جدید</button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="catalog-panel">
+      <div class="panel-title">
+        <div><h2>تعریف پلن جدید</h2><small>ابتدا یک نسخه Draft ساخته می‌شود</small></div>
+      </div>
+      <div class="fields">
+        <label>کد پایدار (حداکثر ۲۰ حرف)
+          <input dir="ltr" type="text" autocomplete="off" maxlength="20"
+            placeholder="starter" [(ngModel)]="newPlan.code" />
+        </label>
+        <label>نام پلن
+          <input type="text" maxlength="200" placeholder="انفرادی" [(ngModel)]="newPlan.name" />
+        </label>
+        <label>عنوان کارت
+          <input type="text" maxlength="200" placeholder="پلن انفرادی"
+            [(ngModel)]="newPlan.displayTitle" />
+        </label>
+        <label>توضیح کوتاه
+          <input type="text" maxlength="1000" [(ngModel)]="newPlan.displaySubtitle" />
+        </label>
+        <label>نسخه پلن والد (اختیاری)
+          <select [(ngModel)]="newPlan.parentPlanVersionId">
+            <option [ngValue]="null">بدون والد</option>
+            @for (plan of plans(); track plan.id) {
+              @if (plan.latestPublishedVersionId) {
+                <option [ngValue]="plan.latestPublishedVersionId">
+                  {{ plan.name }} — نسخه منتشرشده {{ plan.latestVersionNumber }}
+                </option>
+              }
+            }
+          </select>
+        </label>
+        <button type="button" mat-flat-button [disabled]="busy() || loading()"
+          (click)="createPlan()">ایجاد نسخه پیش‌نویس</button>
+      </div>
+    </section>
+  </div>
+
+  @if (selectedDraft(); as draft) {
+    @if (editor; as model) {
+      <section class="catalog-panel draft-editor">
+        <div class="panel-title">
+          <div>
+            <span class="eyebrow">نسخه {{ draft.versionNumber }} · {{ draft.planCode }}</span>
+            <h2>ویرایش پیش‌نویس</h2>
+          </div>
+          <button mat-stroked-button type="button" (click)="clearDraft()">بستن ویرایش</button>
+        </div>
+
+        <div class="editor-grid">
+          <div class="editor-block">
+            <h3>اطلاعات کارت</h3>
+            <div class="fields">
+              <label>عنوان
+                <input type="text" maxlength="200" [(ngModel)]="model.displayTitle"
+                  (ngModelChange)="invalidatePreview()" />
+              </label>
+              <label>توضیحات
+                <input type="text" maxlength="1000" [(ngModel)]="model.displaySubtitle"
+                  (ngModelChange)="invalidatePreview()" />
+              </label>
+              <label>نشان بالای کارت
+                <input type="text" maxlength="80" [(ngModel)]="model.badgeText"
+                  (ngModelChange)="invalidatePreview()" />
+              </label>
+              <label>ترتیب نمایش
+                <input type="number" min="0" max="10000" [(ngModel)]="model.displayOrder"
+                  (ngModelChange)="invalidatePreview()" />
+              </label>
+              <label class="checkbox-field">
+                <input type="checkbox" [(ngModel)]="model.isRecommended"
+                  (ngModelChange)="invalidatePreview()" />
+                پلن پیشنهادی
+              </label>
+            </div>
+          </div>
+
+          <div class="editor-block">
+            <h3>ماژول‌های قابل ارائه</h3>
+            <p class="muted">فقط ماژول‌هایی قابل انتخاب‌اند که واقعاً در کد و رجیستری به‌عنوان تجاری تعریف شده‌اند.</p>
+            @if (eligibleModules().length === 0) {
+              <p class="empty inline">هنوز هیچ ماژول تجاری تاییدشده‌ای ثبت نشده؛ انتشار پلن ممکن نیست.</p>
+            } @else {
+              @for (module of eligibleModules(); track module.code) {
+                <label class="module-option">
+                  <input type="checkbox" [checked]="hasModule(module.code)"
+                    (change)="toggleModule(module)" />
+                  <span>{{ module.title }}</span>
+                  <code>{{ module.code }}</code>
+                </label>
+              }
+            }
+          </div>
+
+          <div class="editor-block">
+            <div class="section-row">
+              <h3>قیمت‌های نسخه</h3>
+              <button type="button" mat-stroked-button
+                [disabled]="model.prices.length >= 2" (click)="addPrice()">افزودن دوره</button>
+            </div>
+            <p class="muted">مبلغ‌ها با واحد <strong>ریال (IRR)</strong> هستند و فعلاً پرداختی دریافت نمی‌شود.</p>
+            @for (offer of model.prices; track $index; let i = $index) {
+              <div class="inline-edit">
+                <select [(ngModel)]="offer.billingCycle" (ngModelChange)="invalidatePreview()">
+                  <option value="monthly">ماهانه</option>
+                  <option value="yearly">سالانه</option>
+                </select>
+                <input type="number" min="0" step="1" [(ngModel)]="offer.amount"
+                  (ngModelChange)="invalidatePreview()" aria-label="مبلغ به ریال"/>
+                <button type="button" mat-button (click)="removePrice(i)">حذف</button>
+              </div>
+            }
+            @if (!model.prices.length) {
+              <p class="empty inline">برای انتشار باید حداقل یک قیمت معتبر داشته باشید.</p>
+            }
+          </div>
+
+          <div class="editor-block">
+            <div class="section-row">
+              <h3>امکانات نمایشی کارت</h3>
+              <button type="button" mat-stroked-button (click)="addBenefit()">افزودن مزیت</button>
+            </div>
+            <p class="muted">مزیت نمایشی صرفاً متن است؛ هیچ ماژول یا Permission جدیدی ایجاد نمی‌کند.</p>
+            @for (item of model.displayItems; track $index; let i = $index) {
+              <div class="display-edit">
+                <small>{{ item.kind === 'Module' ? 'ماژول' : item.kind === 'Capability' ? 'قابلیت' : 'مزیت نمایشی' }}</small>
+                <input type="text" maxlength="200" placeholder="عنوان نمایش"
+                  [(ngModel)]="item.title" (ngModelChange)="invalidatePreview()" />
+                <input type="text" maxlength="1000" placeholder="توضیحات اختیاری"
+                  [(ngModel)]="item.description" (ngModelChange)="invalidatePreview()" />
+                <button type="button" mat-button (click)="removeDisplay(i)">حذف</button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="editor-footer">
+          <button type="button" mat-flat-button [disabled]="busy()" (click)="save()">
+            ذخیره پیش‌نویس
+          </button>
+          <button type="button" mat-stroked-button [disabled]="busy()" (click)="review()">
+            پیش‌نمایش و اعتبارسنجی انتشار
+          </button>
+          <button type="button" mat-flat-button [disabled]="busy() || !latestPreview()?.canPublish"
+            (click)="publish()">
+            انتشار نسخه تأییدشده
+          </button>
+        </div>
+
+        @if (latestPreview(); as review) {
+          <div class="publication-review" [class.blocked]="!review.canPublish" role="status">
+            <strong>
+              {{ review.canPublish ? 'قابل انتشار پس از تأیید مدیر سیستم' : 'انتشار این نسخه فعلاً مسدود است' }}
+            </strong>
+            <p>ماژول‌های معتبر نهایی: {{ review.effectiveModuleCodes.join('، ') || 'هیچ' }}</p>
+            @if (review.issues.length) {
+              <ul>
+                @for (problem of review.issues; track problem) {
+                  <li>{{ problem }}</li>
+                }
+              </ul>
+            }
+            <small>Fingerprint: <code dir="ltr">{{ review.fingerprint }}</code></small>
+          </div>
+        }
+      </section>
+    }
+  }
+</div>
