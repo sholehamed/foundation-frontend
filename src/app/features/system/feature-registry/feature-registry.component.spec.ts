@@ -16,17 +16,33 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   let preview: ReturnType<typeof vi.fn>;
   let manifest: ReturnType<typeof vi.fn>;
   let apply: ReturnType<typeof vi.fn>;
+  let tenantPermissionPreview: ReturnType<typeof vi.fn>;
+  let tenantNavigationReadiness: ReturnType<typeof vi.fn>;
+  let systemEndpointIntegrity: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     contract = mockManifestForRoutes(await discoverExecutableSystemChildRoutes());
     preview = vi.fn(() => of(pending));
     manifest = vi.fn(() => of(contract));
     apply = vi.fn(() => of({ canApply: true, hasPending: false, changes: [] }));
+    tenantPermissionPreview = vi.fn(() => of({
+      fingerprint: 'A'.repeat(64), canApply: true, hasPending: false, changes: [],
+    }));
+    tenantNavigationReadiness = vi.fn(() => of({
+      readyForDynamicPilot: true, requiredRoutes: 6, readyRoutes: 6,
+      routes: [], unregisteredTenantRoutes: [], ungatedExternalMenuCount: 0,
+    }));
+    systemEndpointIntegrity = vi.fn(() => of({
+      readyForGranularEnforcement: true, discoveredFeatureEndpoints: 1,
+      readyFeatureEndpoints: 1, endpoints: [], uncatalogedSystemAdminRoutes: [],
+      unreviewedActiveSystemApiKeys: [], reviewedInternalSystemRoutes: 0, outOfScopeRouteCount: 0,
+    }));
 
     await TestBed.configureTestingModule({
       imports: [FeatureRegistryPageComponent],
       providers: [
-        { provide: FeatureRegistryApiService, useValue: { preview, manifest, apply } },
+        { provide: FeatureRegistryApiService, useValue: { preview, manifest, apply,
+            tenantPermissionPreview, tenantNavigationReadiness, systemEndpointIntegrity } },
       ],
     }).overrideComponent(FeatureRegistryPageComponent, {
       set: { template: '' },
@@ -100,6 +116,44 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     fixture.componentInstance.applyChanges();
     expect(fixture.componentInstance.preview()).toBeNull();
     expect(fixture.componentInstance.error()).toContain('متوقف');
+  });
+
+  it('never treats incomplete central catalogs as ready', async () => {
+    tenantPermissionPreview.mockReturnValue(of({
+      fingerprint: 'B'.repeat(64), canApply: true, hasPending: true,
+      changes: [{ type: 'Permission', key: 'TENANT.MEMBERS.READ', state: 'Create', detail: null }],
+    }));
+    fixture.detectChanges();
+    await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
+    expect(fixture.componentInstance.tenantPendingCount()).toBe(1);
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
+    // Central catalog diagnostics must not authorize any mutation.
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it('fails closed on forbidden central diagnostics without blocking registry preview', async () => {
+    systemEndpointIntegrity.mockReturnValue(throwError(() => ({ status: 403 })));
+    fixture.detectChanges();
+    await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
+    expect(fixture.componentInstance.diagnosticsError()).toContain('SuperAdmin');
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
+    expect(fixture.componentInstance.preview()).not.toBeNull();
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it('requires all three independent central checks before reporting catalog readiness', async () => {
+    fixture.detectChanges();
+    await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(false); // System Preview still pending
+    preview.mockReturnValue(of({ canApply: true, hasPending: false, changes: [] }));
+    fixture.componentInstance.loadPreview();
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(true);
+    tenantNavigationReadiness.mockReturnValue(of({
+      readyForDynamicPilot: false, requiredRoutes: 6, readyRoutes: 5,
+      routes: [], unregisteredTenantRoutes: [], ungatedExternalMenuCount: 0,
+    }));
+    fixture.componentInstance.loadDiagnostics();
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
   });
 
   it('fails closed if an executable lazy child route cannot be loaded', async () => {
