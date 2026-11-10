@@ -1,3 +1,8 @@
+## FR-17B-2A — Dynamic public plans and signup UI (2026-11-10)
+
+- Angular landing cards and signup step 1 now use the **same** `PublicPlansService` + `GET /api/public/plans`: DB-published title, features, badge and IRR currency rather than hard-coded prices. Unknown URL plan does not auto-select a different plan, missing cycle is not fake-priced, and empty catalog supports explicit `unselected` registration with **no active paid subscription**.
+- [Implementation, tests and backend dependency](development/FR-17B2A-DYNAMIC-PUBLIC-PLANS-UI.md). Includes shared service, landing and signup unit tests. Backend companion still needs merged/deployed public endpoint; no live staging smoke or paid Billing. System/Tenant dynamic menu flags unchanged.
+
 ## FR-14C — System Admin consolidated central access operator gate (2026-11-10)
 
 - Feature Registry cockpit now calls read-only System-owned `GET /system/FeatureRegistry/central-access/readiness` alongside the existing System Registry/manifest, Tenant Catalog, six Tenant routes and runtime Endpoint integrity diagnostics. Renders the four checks, blocker IDs and explicit warning when independently sampled fingerprints differ.
