@@ -8,7 +8,7 @@ import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../shared/permissions/syst
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FeatureRegistryApiService, FeatureRegistryPreview, SystemEndpointIntegrity, TenantNavigationReadiness, TenantPermissionCatalogPreview } from './feature-registry-api.service';
+import { CentralAccessReadiness, FeatureRegistryApiService, FeatureRegistryPreview, SystemEndpointIntegrity, TenantNavigationReadiness, TenantPermissionCatalogPreview } from './feature-registry-api.service';
 import { validateBackendFeatureManifest } from './feature-registry-contract';
 import { discoverExecutableSystemChildRoutes } from './system-ui-route-discovery';
 
@@ -40,17 +40,30 @@ export class FeatureRegistryPageComponent implements OnInit {
   readonly tenantCatalog = signal<TenantPermissionCatalogPreview | null>(null);
   readonly navigation = signal<TenantNavigationReadiness | null>(null);
   readonly endpointIntegrity = signal<SystemEndpointIntegrity | null>(null);
+  readonly centralAccess = signal<CentralAccessReadiness | null>(null);
 
   // This is a catalog-only readiness signal, NOT permission/grant, staging
   // deployment, two-Tenant browser, keyring or production certification.
   centralCatalogReady(): boolean {
     const preview = this.preview();
     const tenant = this.tenantCatalog();
+    const aggregate = this.centralAccess();
+    // An older independent preview must not be presented as a successful
+    // operator gate after backend rows/links change. The server aggregate
+    // remains read-only and is not a pilot activation approval.
     return this.manifestVerified() && this.manifestProblems().length === 0 &&
       preview?.canApply === true && preview.hasPending === false &&
       tenant?.canApply === true && tenant.hasPending === false &&
       this.navigation()?.readyForDynamicPilot === true &&
-      this.endpointIntegrity()?.readyForGranularEnforcement === true;
+      this.endpointIntegrity()?.readyForGranularEnforcement === true &&
+      aggregate?.centralCatalogConsistent === true &&
+      aggregate.blockingChecks.length === 0 &&
+      aggregate.systemRegistry.ready === true &&
+      aggregate.tenantPermissionCatalog.ready === true &&
+      aggregate.tenantNavigation.ready === true &&
+      aggregate.systemEndpoints.ready === true &&
+      aggregate.systemRegistry.fingerprint === preview.fingerprint &&
+      aggregate.tenantPermissionCatalog.fingerprint === tenant.fingerprint;
   }
 
   tenantPendingCount(): number {
@@ -75,16 +88,19 @@ export class FeatureRegistryPageComponent implements OnInit {
     this.tenantCatalog.set(null);
     this.navigation.set(null);
     this.endpointIntegrity.set(null);
+    this.centralAccess.set(null);
 
     forkJoin({
       tenant: this.api.tenantPermissionPreview(),
       navigation: this.api.tenantNavigationReadiness(),
       endpoints: this.api.systemEndpointIntegrity(),
+      aggregate: this.api.centralAccessReadiness(),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: ({ tenant, navigation, endpoints }) => {
+      next: ({ tenant, navigation, endpoints, aggregate }) => {
         this.tenantCatalog.set(tenant);
         this.navigation.set(navigation);
         this.endpointIntegrity.set(endpoints);
+        this.centralAccess.set(aggregate);
         this.diagnosticsLoading.set(false);
       },
       error: error => {
