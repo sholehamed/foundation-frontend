@@ -34,6 +34,7 @@ export class FeatureRegistryPageComponent implements OnInit {
   readonly applying = signal(false);
   readonly error = signal<string | null>(null);
   readonly message = signal<string | null>(null);
+  readonly tenantApplying = signal(false);
   readonly diagnosticsLoading = signal(false);
   readonly diagnosticsError = signal<string | null>(null);
   readonly tenantCatalog = signal<TenantPermissionCatalogPreview | null>(null);
@@ -68,7 +69,7 @@ export class FeatureRegistryPageComponent implements OnInit {
   // A separate read-only SuperAdmin diagnostic: failure cannot hide the
   // original preview or accidentally enable a catalog apply operation.
   loadDiagnostics(): void {
-    if (this.diagnosticsLoading() || this.applying()) return;
+    if (this.diagnosticsLoading() || this.applying() || this.tenantApplying()) return;
     this.diagnosticsLoading.set(true);
     this.diagnosticsError.set(null);
     this.tenantCatalog.set(null);
@@ -102,7 +103,7 @@ export class FeatureRegistryPageComponent implements OnInit {
   }
 
   loadPreview(): void {
-    if (this.loading() || this.applying()) return;
+    if (this.loading() || this.applying() || this.tenantApplying()) return;
     this.loading.set(true);
     this.preview.set(null);
     this.manifestVerified.set(false);
@@ -136,7 +137,7 @@ export class FeatureRegistryPageComponent implements OnInit {
 
   applyChanges(): void {
     const current = this.preview();
-    if (this.applying() || this.loading() || !this.manifestVerified() ||
+    if (this.applying() || this.tenantApplying() || this.loading() || !this.manifestVerified() ||
         this.manifestProblems().length > 0 || !current?.canApply || !current.hasPending)
       return;
 
@@ -159,6 +160,56 @@ export class FeatureRegistryPageComponent implements OnInit {
           return;
         }
         this.runApprovedApply();
+      });
+  }
+
+  applyTenantCatalog(): void {
+    const snapshot = this.tenantCatalog();
+    // The SQL transaction has its own fingerprint check. A stale/invalid
+    // response must not be promoted to an operator Apply attempt.
+    if (this.tenantApplying() || this.applying() || this.loading() ||
+        this.diagnosticsLoading() || this.diagnosticsError() ||
+        !snapshot?.canApply || !snapshot.hasPending ||
+        !/^[A-Fa-f0-9]{64}$/.test(snapshot.fingerprint)) return;
+
+    if (!window.confirm(
+      'ثبت تعاریف مرکزی Tenant در دیتابیس؟ این عملیات هیچ دسترسی به کاربر یا نقش نمی‌دهد.'))
+      return;
+
+    this.tenantApplying.set(true);
+    this.diagnosticsError.set(null);
+    this.message.set(null);
+    // Preserve the same optional UI ACTION check as the existing System
+    // Registry Apply; backend independently enforces live System SuperAdmin.
+    (this.enabled
+      ? this.access!.refreshAction('system.feature-registry.action.apply')
+      : of(true))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(allowed => {
+        if (!allowed) {
+          this.tenantApplying.set(false);
+          this.tenantCatalog.set(null);
+          this.diagnosticsError.set('مجوز اعمال کاتالوگ مرکزی معتبر نیست یا لغو شده است.');
+          return;
+        }
+        this.api.tenantPermissionApply(snapshot.fingerprint)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.tenantApplying.set(false);
+              this.message.set('درخواست ثبت کاتالوگ Tenant انجام شد؛ برای اطمینان وضعیت جدید بررسی می‌شود.');
+              this.loadDiagnostics();
+            },
+            error: error => {
+              this.tenantApplying.set(false);
+              this.tenantCatalog.set(null); // never reuse a stale fingerprint
+              this.diagnosticsError.set(error?.status === 409
+                ? 'وضعیت کاتالوگ تغییر کرده یا Apply غیرفعال است (409). Preview را دوباره بررسی کنید.'
+                : error?.status === 403
+                  ? 'حساب شما مجوز ثبت تعاریف مرکزی را ندارد.'
+                  : 'ثبت کاتالوگ انجام نشد؛ پیش از تلاش مجدد وضعیت دیتابیس را بررسی کنید.');
+            },
+          });
       });
   }
 
