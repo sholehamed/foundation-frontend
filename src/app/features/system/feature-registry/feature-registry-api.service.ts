@@ -62,6 +62,24 @@ export interface SystemEndpointIntegrity {
   outOfScopeRouteCount: number;
 }
 
+/** Server-side, read-only aggregate of four System-owned central catalog checks. */
+export interface CentralAccessCheck {
+  ready: boolean;
+  conflicts: number;
+  pending: number;
+  observed: number;
+  fingerprint: string | null;
+}
+
+export interface CentralAccessReadiness {
+  centralCatalogConsistent: boolean;
+  blockingChecks: string[];
+  systemRegistry: CentralAccessCheck;
+  tenantPermissionCatalog: CentralAccessCheck;
+  tenantNavigation: CentralAccessCheck;
+  systemEndpoints: CentralAccessCheck;
+}
+
 @Injectable({ providedIn: 'root' })
 export class FeatureRegistryApiService {
   private readonly http = inject(HttpClient);
@@ -93,6 +111,11 @@ export class FeatureRegistryApiService {
 
   systemEndpointIntegrity(): Observable<SystemEndpointIntegrity> {
     return this.http.get<SystemEndpointIntegrity>(this.root + '/system-endpoints/integrity');
+  }
+
+  /** Same persisted SuperAdmin boundary as the individual diagnostics; no writes. */
+  centralAccessReadiness(): Observable<CentralAccessReadiness> {
+    return this.http.get<CentralAccessReadiness>(this.root + '/central-access/readiness');
   }
 
   /** Explicit, reviewed System SuperAdmin Apply; server rechecks fingerprint in SQL. */

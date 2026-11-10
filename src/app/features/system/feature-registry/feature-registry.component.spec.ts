@@ -20,6 +20,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
   let tenantPermissionPreview: ReturnType<typeof vi.fn>;
   let tenantNavigationReadiness: ReturnType<typeof vi.fn>;
   let systemEndpointIntegrity: ReturnType<typeof vi.fn>;
+  let centralAccessReadiness: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     contract = mockManifestForRoutes(await discoverExecutableSystemChildRoutes());
@@ -41,13 +42,20 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
       readyFeatureEndpoints: 1, endpoints: [], uncatalogedSystemAdminRoutes: [],
       unreviewedActiveSystemApiKeys: [], reviewedInternalSystemRoutes: 0, outOfScopeRouteCount: 0,
     }));
+    centralAccessReadiness = vi.fn(() => of({
+      centralCatalogConsistent: true, blockingChecks: [],
+      systemRegistry: { ready: true, conflicts: 0, pending: 0, observed: 81, fingerprint: 'A'.repeat(64) },
+      tenantPermissionCatalog: { ready: true, conflicts: 0, pending: 0, observed: 53, fingerprint: 'A'.repeat(64) },
+      tenantNavigation: { ready: true, conflicts: 0, pending: 0, observed: 6, fingerprint: null },
+      systemEndpoints: { ready: true, conflicts: 0, pending: 0, observed: 1, fingerprint: null },
+    }));
 
     await TestBed.configureTestingModule({
       imports: [FeatureRegistryPageComponent],
       providers: [
         { provide: FeatureRegistryApiService, useValue: { preview, manifest, apply,
             tenantPermissionApply, tenantPermissionPreview,
-            tenantNavigationReadiness, systemEndpointIntegrity } },
+            tenantNavigationReadiness, systemEndpointIntegrity, centralAccessReadiness } },
       ],
     }).overrideComponent(FeatureRegistryPageComponent, {
       set: { template: '' },
@@ -193,19 +201,61 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     expect(apply).not.toHaveBeenCalled();
   });
 
-  it('requires all three independent central checks before reporting catalog readiness', async () => {
+  it('requires the aggregate of four central checks AND matching reviewed fingerprints', async () => {
     fixture.detectChanges();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     expect(fixture.componentInstance.centralCatalogReady()).toBe(false); // System Preview still pending
     await vi.waitFor(() => expect(fixture.componentInstance.loading()).toBe(false));
     preview.mockReturnValue(of({ fingerprint: 'D'.repeat(64), canApply: true, hasPending: false, changes: [] }));
     fixture.componentInstance.loadPreview();
-    await vi.waitFor(() => expect(fixture.componentInstance.centralCatalogReady()).toBe(true));
+    await vi.waitFor(() => expect(fixture.componentInstance.preview()?.fingerprint).toBe('D'.repeat(64)));
+    // The earlier aggregate was based on a different System preview.
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
+    centralAccessReadiness.mockReturnValue(of({
+      centralCatalogConsistent: true, blockingChecks: [],
+      systemRegistry: { ready: true, conflicts: 0, pending: 0, observed: 81,
+        fingerprint: 'D'.repeat(64) },
+      tenantPermissionCatalog: { ready: true, conflicts: 0, pending: 0, observed: 53,
+        fingerprint: 'A'.repeat(64) },
+      tenantNavigation: { ready: true, conflicts: 0, pending: 0, observed: 6, fingerprint: null },
+      systemEndpoints: { ready: true, conflicts: 0, pending: 0, observed: 1, fingerprint: null },
+    }));
+    fixture.componentInstance.loadDiagnostics();
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(true);
+
     tenantNavigationReadiness.mockReturnValue(of({
       readyForDynamicPilot: false, requiredRoutes: 6, readyRoutes: 5,
       routes: [], unregisteredTenantRoutes: [], ungatedExternalMenuCount: 0,
     }));
     fixture.componentInstance.loadDiagnostics();
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
+  });
+
+  it('fails closed when the consolidated backend gate refuses the catalog or its read fails', async () => {
+    fixture.detectChanges();
+    await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
+    preview.mockReturnValue(of({ fingerprint: 'A'.repeat(64), canApply: true,
+      hasPending: false, changes: [] }));
+    fixture.componentInstance.loadPreview();
+    await vi.waitFor(() => expect(fixture.componentInstance.preview()?.hasPending).toBe(false));
+    fixture.componentInstance.loadDiagnostics();
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(true);
+
+    centralAccessReadiness.mockReturnValue(of({
+      centralCatalogConsistent: false,
+      blockingChecks: ['tenant_navigation_not_ready'],
+      systemRegistry: { ready: true, conflicts: 0, pending: 0, observed: 81, fingerprint: 'A'.repeat(64) },
+      tenantPermissionCatalog: { ready: true, conflicts: 0, pending: 0, observed: 53, fingerprint: 'A'.repeat(64) },
+      tenantNavigation: { ready: false, conflicts: 1, pending: 1, observed: 6, fingerprint: null },
+      systemEndpoints: { ready: true, conflicts: 0, pending: 0, observed: 1, fingerprint: null },
+    }));
+    fixture.componentInstance.loadDiagnostics();
+    expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
+
+    centralAccessReadiness.mockReturnValue(throwError(() => ({ status: 403 })));
+    fixture.componentInstance.loadDiagnostics();
+    expect(fixture.componentInstance.centralAccess()).toBeNull();
+    expect(fixture.componentInstance.diagnosticsError()).toContain('SuperAdmin');
     expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
   });
 
