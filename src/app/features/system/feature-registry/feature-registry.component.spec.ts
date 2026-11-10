@@ -148,7 +148,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     await vi.waitFor(() => expect(fixture.componentInstance.loading()).toBe(false));
     preview.mockReturnValue(of({ canApply: true, hasPending: false, changes: [] }));
     fixture.componentInstance.loadPreview();
-    expect(fixture.componentInstance.centralCatalogReady()).toBe(true);
+    await vi.waitFor(() => expect(fixture.componentInstance.centralCatalogReady()).toBe(true));
     tenantNavigationReadiness.mockReturnValue(of({
       readyForDynamicPilot: false, requiredRoutes: 6, readyRoutes: 5,
       routes: [], unregisteredTenantRoutes: [], ungatedExternalMenuCount: 0,
