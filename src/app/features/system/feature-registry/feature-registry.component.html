@@ -117,6 +117,33 @@
       </p>
     }
 
+    @if (centralAccess(); as gate) {
+      <h3>گیت یکپارچهٔ دسترسی مرکزی</h3>
+      <p role="status" [class.success-message]="centralCatalogReady()"
+        [class.error-message]="!centralCatalogReady()">
+        {{ centralCatalogReady()
+          ? 'چهار بررسی مرکزی و Fingerprintهای نسخه جاری سازگارند؛ این نتیجه مجوز فعال‌سازی یا تأیید Staging نیست.'
+          : 'گیت نهایی دسترسی مرکزی هنوز تأیید نشده است؛ موارد مانع را بررسی کنید.' }}
+      </p>
+      <p>رجیستری System: {{ gate.systemRegistry.ready ? 'سازگار' : 'نیازمند بررسی' }} |
+        مجوزهای Tenant: {{ gate.tenantPermissionCatalog.ready ? 'سازگار' : 'نیازمند بررسی' }} |
+        منوها: {{ gate.tenantNavigation.ready ? 'سازگار' : 'نیازمند بررسی' }} |
+        Endpointها: {{ gate.systemEndpoints.ready ? 'سازگار' : 'نیازمند بررسی' }}</p>
+      @if (gate.blockingChecks.length > 0) {
+        <ul aria-label="موانع آمادگی مرکزی">
+          @for (blocker of gate.blockingChecks; track blocker) {
+            <li><code>{{ blocker }}</code></li>
+          }
+        </ul>
+      }
+      @if (gate.centralCatalogConsistent && !centralCatalogReady()) {
+        <p role="alert" class="error-message">
+          گزارش‌ها یا Fingerprintها با Preview و نسخه فرانت فعلی مطابقت ندارند.
+          بررسی مجدد انجام دهید؛ فعال‌سازی مجاز نیست.
+        </p>
+      }
+    }
+
     @if (tenantCatalog(); as catalog) {
       <h3>مجوزهای مرکزی Tenant</h3>
       <p>تغییرات نیازمند بررسی: {{ tenantPendingCount() }} |
