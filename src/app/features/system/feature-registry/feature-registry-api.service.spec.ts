@@ -30,6 +30,13 @@ describe('FeatureRegistryApiService admin-only contract', () => {
     expect(tenant.request.params.keys()).toEqual([]);
     tenant.flush({ fingerprint: 'A'.repeat(64), canApply: true, hasPending: false, changes: [] });
 
+    api.tenantPermissionApply('A'.repeat(64)).subscribe();
+    const tenantApply = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/tenant-permissions/apply');
+    expect(tenantApply.request.method).toBe('POST');
+    expect(tenantApply.request.params.keys()).toEqual([]);
+    expect(tenantApply.request.body).toEqual({ fingerprint: 'A'.repeat(64) });
+    tenantApply.flush({ fingerprint: 'A'.repeat(64), canApply: true, hasPending: false, changes: [] });
+
     api.tenantNavigationReadiness().subscribe();
     const nav = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/tenant-navigation/readiness');
     expect(nav.request.method).toBe('GET');
