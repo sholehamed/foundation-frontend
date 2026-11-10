@@ -145,6 +145,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     fixture.detectChanges();
     await vi.waitFor(() => expect(fixture.componentInstance.manifestVerified()).toBe(true));
     expect(fixture.componentInstance.centralCatalogReady()).toBe(false); // System Preview still pending
+    await vi.waitFor(() => expect(fixture.componentInstance.loading()).toBe(false));
     preview.mockReturnValue(of({ canApply: true, hasPending: false, changes: [] }));
     fixture.componentInstance.loadPreview();
     expect(fixture.componentInstance.centralCatalogReady()).toBe(true);
