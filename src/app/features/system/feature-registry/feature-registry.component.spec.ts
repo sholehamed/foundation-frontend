@@ -208,6 +208,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     await vi.waitFor(() => expect(fixture.componentInstance.loading()).toBe(false));
     preview.mockReturnValue(of({ fingerprint: 'D'.repeat(64), canApply: true, hasPending: false, changes: [] }));
     fixture.componentInstance.loadPreview();
+    await vi.waitFor(() => expect(fixture.componentInstance.preview()?.fingerprint).toBe('D'.repeat(64)));
     // The earlier aggregate was based on a different System preview.
     expect(fixture.componentInstance.centralCatalogReady()).toBe(false);
     centralAccessReadiness.mockReturnValue(of({
@@ -236,6 +237,7 @@ describe('FeatureRegistryPageComponent safe cross-repo review workflow', () => {
     preview.mockReturnValue(of({ fingerprint: 'A'.repeat(64), canApply: true,
       hasPending: false, changes: [] }));
     fixture.componentInstance.loadPreview();
+    await vi.waitFor(() => expect(fixture.componentInstance.preview()?.hasPending).toBe(false));
     fixture.componentInstance.loadDiagnostics();
     expect(fixture.componentInstance.centralCatalogReady()).toBe(true);
 
