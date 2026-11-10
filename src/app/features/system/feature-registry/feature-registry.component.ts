@@ -8,7 +8,7 @@ import { SYSTEM_UI_ACCESS_PILOT_ENABLED } from '../../../shared/permissions/syst
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FeatureRegistryApiService, FeatureRegistryPreview } from './feature-registry-api.service';
+import { FeatureRegistryApiService, FeatureRegistryPreview, SystemEndpointIntegrity, TenantNavigationReadiness, TenantPermissionCatalogPreview } from './feature-registry-api.service';
 import { validateBackendFeatureManifest } from './feature-registry-contract';
 import { discoverExecutableSystemChildRoutes } from './system-ui-route-discovery';
 
@@ -34,9 +34,71 @@ export class FeatureRegistryPageComponent implements OnInit {
   readonly applying = signal(false);
   readonly error = signal<string | null>(null);
   readonly message = signal<string | null>(null);
+  readonly diagnosticsLoading = signal(false);
+  readonly diagnosticsError = signal<string | null>(null);
+  readonly tenantCatalog = signal<TenantPermissionCatalogPreview | null>(null);
+  readonly navigation = signal<TenantNavigationReadiness | null>(null);
+  readonly endpointIntegrity = signal<SystemEndpointIntegrity | null>(null);
+
+  // This is a catalog-only readiness signal, NOT permission/grant, staging
+  // deployment, two-Tenant browser, keyring or production certification.
+  centralCatalogReady(): boolean {
+    const preview = this.preview();
+    const tenant = this.tenantCatalog();
+    return this.manifestVerified() && this.manifestProblems().length === 0 &&
+      preview?.canApply === true && preview.hasPending === false &&
+      tenant?.canApply === true && tenant.hasPending === false &&
+      this.navigation()?.readyForDynamicPilot === true &&
+      this.endpointIntegrity()?.readyForGranularEnforcement === true;
+  }
+
+  tenantPendingCount(): number {
+    return this.tenantCatalog()?.changes.filter(x => x.state !== 'Present').length ?? 0;
+  }
+
+  endpointProblems(): SystemEndpointIntegrity['endpoints'] {
+    return this.endpointIntegrity()?.endpoints.filter(x => x.status !== 'ready') ?? [];
+  }
 
   ngOnInit(): void {
     this.loadPreview();
+    this.loadDiagnostics();
+  }
+
+  // A separate read-only SuperAdmin diagnostic: failure cannot hide the
+  // original preview or accidentally enable a catalog apply operation.
+  loadDiagnostics(): void {
+    if (this.diagnosticsLoading() || this.applying()) return;
+    this.diagnosticsLoading.set(true);
+    this.diagnosticsError.set(null);
+    this.tenantCatalog.set(null);
+    this.navigation.set(null);
+    this.endpointIntegrity.set(null);
+
+    forkJoin({
+      tenant: this.api.tenantPermissionPreview(),
+      navigation: this.api.tenantNavigationReadiness(),
+      endpoints: this.api.systemEndpointIntegrity(),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ tenant, navigation, endpoints }) => {
+        this.tenantCatalog.set(tenant);
+        this.navigation.set(navigation);
+        this.endpointIntegrity.set(endpoints);
+        this.diagnosticsLoading.set(false);
+      },
+      error: error => {
+        // Never turn an unreadable/forbidden diagnostic into a green badge.
+        this.diagnosticsError.set(error?.status === 403
+          ? 'ممیزی‌های مرکزی فقط برای SuperAdmin فعال سیستم قابل مشاهده‌اند.'
+          : 'دریافت ممیزی‌های مرکزی ناموفق بود؛ وضعیت آماده محسوب نمی‌شود.');
+        this.diagnosticsLoading.set(false);
+      },
+    });
+  }
+
+  refresh(): void {
+    this.loadPreview();
+    this.loadDiagnostics();
   }
 
   loadPreview(): void {
@@ -108,6 +170,7 @@ export class FeatureRegistryPageComponent implements OnInit {
           this.applying.set(false);
           this.message.set('ثبت تعاریف انجام شد. وضعیت جدید را بررسی کنید.');
           this.loadPreview();
+          this.loadDiagnostics();
         },
         error: error => {
           this.applying.set(false);

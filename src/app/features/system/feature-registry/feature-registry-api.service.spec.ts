@@ -24,6 +24,27 @@ describe('FeatureRegistryApiService admin-only contract', () => {
     expect(preview.request.params.keys()).toEqual([]);
     preview.flush({ canApply: true, hasPending: false, changes: [] });
 
+    api.tenantPermissionPreview().subscribe();
+    const tenant = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/tenant-permissions/preview');
+    expect(tenant.request.method).toBe('GET');
+    expect(tenant.request.params.keys()).toEqual([]);
+    tenant.flush({ fingerprint: 'A'.repeat(64), canApply: true, hasPending: false, changes: [] });
+
+    api.tenantNavigationReadiness().subscribe();
+    const nav = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/tenant-navigation/readiness');
+    expect(nav.request.method).toBe('GET');
+    expect(nav.request.params.keys()).toEqual([]);
+    nav.flush({ readyForDynamicPilot: false, requiredRoutes: 6, readyRoutes: 0, routes: [],
+      unregisteredTenantRoutes: [], ungatedExternalMenuCount: 0 });
+
+    api.systemEndpointIntegrity().subscribe();
+    const integrity = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/system-endpoints/integrity');
+    expect(integrity.request.method).toBe('GET');
+    expect(integrity.request.params.keys()).toEqual([]);
+    integrity.flush({ readyForGranularEnforcement: false, discoveredFeatureEndpoints: 1,
+      readyFeatureEndpoints: 0, endpoints: [], uncatalogedSystemAdminRoutes: [],
+      unreviewedActiveSystemApiKeys: [], reviewedInternalSystemRoutes: 0, outOfScopeRouteCount: 0 });
+
     api.apply().subscribe();
     const apply = http.expectOne(environment.apiUrl + '/system/FeatureRegistry/apply');
     expect(apply.request.method).toBe('POST');

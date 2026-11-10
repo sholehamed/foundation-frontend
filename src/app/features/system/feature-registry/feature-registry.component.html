@@ -11,7 +11,7 @@
   </header>
 
   <div class="actions">
-    <button mat-stroked-button type="button" (click)="loadPreview()"
+    <button mat-stroked-button type="button" (click)="refresh()"
       [disabled]="loading() || applying()">
       <mat-icon>refresh</mat-icon>
       بررسی مجدد
@@ -94,4 +94,73 @@
       </table>
     </div>
   }
+
+  <section class="central-diagnostics" aria-labelledby="central-diagnostics-title">
+    <h2 id="central-diagnostics-title">کنترل‌های مرکزی پیش از فعال‌سازی</h2>
+    <p class="notice">
+      این گزارش‌ها فقط وضعیت رجیستری مرکزی را بررسی می‌کنند؛ نه مجوز واقعی کاربر،
+      استقرار Staging، محدودیت شعب، یا سلامت BFF. فعال‌سازی خودکار انجام نمی‌شود.
+    </p>
+
+    @if (diagnosticsLoading()) {
+      <p role="status">در حال دریافت ممیزی‌های مرکزی...</p>
+    }
+    @if (diagnosticsError()) {
+      <p role="alert" class="error-message">{{ diagnosticsError() }}</p>
+    }
+    @if (!diagnosticsLoading() && !diagnosticsError()) {
+      <p role="status" [class.success-message]="centralCatalogReady()"
+        [class.error-message]="!centralCatalogReady()">
+        {{ centralCatalogReady()
+          ? 'رجیستری‌های مرکزی سازگارند؛ آزمون واقعی و تأیید عملیاتی هنوز لازم است.'
+          : 'کاتالوگ مرکزی برای اجرای پایلوت آماده نیست؛ موارد زیر را بررسی کنید.' }}
+      </p>
+    }
+
+    @if (tenantCatalog(); as catalog) {
+      <h3>مجوزهای مرکزی Tenant</h3>
+      <p>تغییرات نیازمند بررسی: {{ tenantPendingCount() }} |
+        تعارض: {{ catalog.canApply ? 'ندارد' : 'دارد' }} |
+        نیازمند Apply: {{ catalog.hasPending ? 'بله' : 'خیر' }}</p>
+      @if (tenantPendingCount() > 0) {
+        <ul>
+          @for (change of catalog.changes; track $index) {
+            @if (change.state !== 'Present') {
+              <li><code>{{ change.key }}</code>: {{ change.state }} — {{ change.detail || 'نیازمند بررسی اپراتور' }}</li>
+            }
+          }
+        </ul>
+      }
+    }
+    @if (navigation(); as nav) {
+      <h3>منوهای داینامیک Tenant</h3>
+      <p>مسیرهای معتبر: {{ nav.readyRoutes }} از {{ nav.requiredRoutes }} |
+        لینک خارجی بدون مجوز: {{ nav.ungatedExternalMenuCount }}</p>
+      @if (nav.unregisteredTenantRoutes.length > 0) {
+        <p role="alert">مسیرهای تعریف‌نشده: {{ nav.unregisteredTenantRoutes.join('، ') }}</p>
+      }
+      <ul>
+        @for (route of nav.routes; track route.route) {
+          @if (route.status !== 'ready') {
+            <li><code>{{ route.route }}</code>: {{ route.status }} — {{ route.issues.join('، ') }}</li>
+          }
+        }
+      </ul>
+    }
+    @if (endpointIntegrity(); as audit) {
+      <h3>Endpoint / Resource / Permission</h3>
+      <p>Endpointهای سازگار: {{ audit.readyFeatureEndpoints }} از {{ audit.discoveredFeatureEndpoints }}</p>
+      <ul>
+        @for (entry of endpointProblems(); track entry.key + entry.httpMethod) {
+          <li><code>{{ entry.httpMethod }} {{ entry.route }}</code>: {{ entry.issues.join('، ') }}</li>
+        }
+        @for (route of audit.uncatalogedSystemAdminRoutes; track route) {
+          <li>Endpoint بدون رجیستری: <code>{{ route }}</code></li>
+        }
+        @for (key of audit.unreviewedActiveSystemApiKeys; track key) {
+          <li>API قدیمی/ناشناخته فعال: <code>{{ key }}</code></li>
+        }
+      </ul>
+    }
+  </section>
 </section>
