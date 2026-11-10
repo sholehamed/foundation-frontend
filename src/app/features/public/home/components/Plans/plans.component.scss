@@ -637,3 +637,21 @@
     }
   }
 }
+
+/* FR-17B-2A: explicit catalog lifecycle states; no fabricated local fallback. */
+.plans-status {
+  max-width: 680px;
+  margin: 1rem auto 3rem;
+  padding: 2rem;
+  text-align: center;
+  line-height: 2;
+  border: 1px solid var(--pricing-border-color, var(--borderColor));
+  background: var(--pricing-card-bg, var(--cardBgColor));
+  border-radius: 16px;
+}
+.plan-catalog-note {
+  margin-top: 1.5rem;
+  color: var(--bodyColor);
+  font-size: 13px;
+  line-height: 1.9;
+}

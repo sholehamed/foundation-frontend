@@ -14,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../../../environments/environment'
 import { CaptchaComponent } from '../../../shared/components/share-captcha/share-captcha.component'
 import { finalize } from 'rxjs'
+import { PublicPlansService } from '../shared/public-plans.service'
 
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -60,6 +61,7 @@ export class SignupCheckoutComponent {
   private readonly route = inject(ActivatedRoute)
   private readonly destroyRef = inject(DestroyRef)
   private readonly checkoutService = inject(SignupCheckoutService)
+  private readonly plansApi = inject(PublicPlansService)
 
   readonly currentStep = signal(0)
   readonly submitting = signal(false)
@@ -80,58 +82,16 @@ export class SignupCheckoutComponent {
     { title: 'مرور و ساخت', subtitle: 'ایجاد حساب و فضای کاری' },
   ]
 
-  // Display-only indicative prices; the backend provisions without billing/activation.
-  readonly plans: CheckoutPlan[] = [
-    {
-      key: 'solo',
-      title: 'انفرادی',
-      subtitle: 'برای متخصص مستقل',
-      monthlyPrice: 690_000,
-      yearlyPrice: 6_900_000,
-      badge: null,
-      branchLimit: 1,
-      features: ['مدیریت نوبت‌ها', 'مشتریان', 'خدمات', 'گزارش پایه'],
-    },
-    {
-      key: 'solo-pro',
-      title: 'انفرادی حرفه‌ای',
-      subtitle: 'برای رشد جدی‌تر',
-      monthlyPrice: 990_000,
-      yearlyPrice: 9_900_000,
-      badge: 'پیشنهادی',
-      branchLimit: 1,
-      features: [
-        'همه امکانات انفرادی',
-        'گزارش پیشرفته',
-        'اتوماسیون بیشتر',
-        'پشتیبانی اولویت‌دار',
-      ],
-    },
-    {
-      key: 'salon',
-      title: 'سالن',
-      subtitle: 'برای تیم و سالن',
-      monthlyPrice: 1_490_000,
-      yearlyPrice: 14_900_000,
-      badge: null,
-      branchLimit: 1,
-      features: ['پرسنل', 'شیفت و برنامه کاری', 'داشبورد مدیریتی', 'گزارش فروش'],
-    },
-    {
-      key: 'salon-pro',
-      title: 'سالن حرفه‌ای',
-      subtitle: 'برای مجموعه‌های چندشعبه‌ای',
-      monthlyPrice: 2_290_000,
-      yearlyPrice: 22_900_000,
-      badge: 'کامل',
-      branchLimit: 5,
-      features: ['همه امکانات سالن', 'چند شعبه', 'گزارش تجمیعی', 'قابلیت‌های حرفه‌ای'],
-    },
-  ]
+  // Only published server catalog rows are purchasable selections. The
+  // legacy 'unselected' choice is onboarding *without* an active subscription.
+  readonly plans = signal<CheckoutPlan[]>([])
+  readonly plansLoading = signal(true)
+  readonly plansFailed = signal(false)
+  readonly choosingWithoutPlan = signal(false)
 
   readonly form = this.fb.nonNullable.group({
     subscription: this.fb.nonNullable.group({
-      planKey: ['solo-pro', Validators.required],
+      planKey: ['', Validators.required],
       billingCycle: ['monthly' as BillingCycle, Validators.required],
       promoCode: [''],
     }),
@@ -189,7 +149,7 @@ export class SignupCheckoutComponent {
   })
 
   constructor() {
-    this.applyPlanFromRoute()
+    this.loadPublishedPlans()
 
     this.form.controls.branch.controls.enabled.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -205,22 +165,36 @@ export class SignupCheckoutComponent {
       })
   }
 
-  get selectedPlan(): CheckoutPlan {
-    return (
-      this.plans.find(
-        (x) => x.key === this.form.controls.subscription.controls.planKey.value
-      ) ?? this.plans[0]
-    )
+  get selectedPlan(): CheckoutPlan | null {
+    return this.plans().find(
+      x => x.key === this.form.controls.subscription.controls.planKey.value
+    ) ?? null
   }
 
   get billingCycle(): BillingCycle {
     return this.form.controls.subscription.controls.billingCycle.value
   }
 
-  get selectedPrice(): number {
-    return this.billingCycle === 'yearly'
-      ? this.selectedPlan.yearlyPrice
-      : this.selectedPlan.monthlyPrice
+  get selectedOffer() {
+    return this.selectedPlan?.prices.find(x => x.billingCycle === this.billingCycle) ?? null
+  }
+
+  get selectedPrice(): number | null {
+    return this.selectedOffer?.amount ?? null
+  }
+
+  get selectedCurrency(): string {
+    return this.selectedOffer?.currency === 'IRR'
+      ? 'ریال'
+      : this.selectedOffer?.currency ?? ''
+  }
+
+  offerFor(plan: CheckoutPlan) {
+    return plan.prices.find(x => x.billingCycle === this.billingCycle) ?? null
+  }
+
+  hasCycle(cycle: BillingCycle): boolean {
+    return this.selectedPlan?.prices.some(x => x.billingCycle === cycle) ?? true
   }
 
   get hasBranch(): boolean {
@@ -229,9 +203,18 @@ export class SignupCheckoutComponent {
 
   selectPlan(plan: CheckoutPlan): void {
     this.form.controls.subscription.controls.planKey.setValue(plan.key)
+    if (!plan.prices.some(p => p.billingCycle === this.billingCycle)) {
+      this.form.controls.subscription.controls.billingCycle.setValue(
+        plan.prices[0].billingCycle as BillingCycle
+      )
+    }
+    this.choosingWithoutPlan.set(false)
+    this.signupError.set(null)
   }
 
   setBillingCycle(cycle: BillingCycle): void {
+    if (this.selectedPlan &&
+        !this.selectedPlan.prices.some(p => p.billingCycle === cycle)) return
     this.form.controls.subscription.controls.billingCycle.setValue(cycle)
   }
 
@@ -243,7 +226,6 @@ export class SignupCheckoutComponent {
   }
 
   next(): void {
-    debugger
     const step = this.currentStep()
     this.signupError.set(null)
     if (!this.validateStep(step)) return
@@ -344,14 +326,66 @@ export class SignupCheckoutComponent {
     return new Intl.NumberFormat('fa-IR').format(value)
   }
 
-  private applyPlanFromRoute(): void {
-    const planFromPath = this.route.snapshot.paramMap.get('plan')
-    const planFromQuery = this.route.snapshot.queryParamMap.get('plan')
-    const requestedPlan = planFromPath ?? planFromQuery
+  private loadPublishedPlans(): void {
+    this.plansLoading.set(true)
+    this.plansFailed.set(false)
+    this.plansApi.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: rows => {
+        const choices: CheckoutPlan[] = rows.map(plan => ({
+          key: plan.code,
+          title: plan.title,
+          subtitle: plan.subtitle ?? '',
+          badge: plan.badge,
+          prices: plan.prices.filter(p => p.billingCycle === 'monthly' || p.billingCycle === 'yearly'),
+          branchLimit: null,
+          features: plan.features.map(f => f.title),
+        })).filter(plan => plan.prices.length > 0)
+        this.plans.set(choices)
+        this.plansLoading.set(false)
+        const request = this.route.snapshot.paramMap.get('plan') ??
+          this.route.snapshot.queryParamMap.get('plan')
+        const selected = request ? choices.find(p => p.key === request) : choices[0]
+        if (selected) {
+          this.form.controls.subscription.controls.planKey.setValue(selected.key)
+          const requestedCycle = this.route.snapshot.queryParamMap.get('billingCycle')
+          const cycle = requestedCycle === 'yearly' || requestedCycle === 'monthly'
+            ? requestedCycle
+            : 'monthly'
+          const offer = selected.prices.find(p => p.billingCycle === cycle)
+            ?? selected.prices[0]
+          this.form.controls.subscription.controls.billingCycle.setValue(
+            offer.billingCycle as BillingCycle
+          )
+          this.choosingWithoutPlan.set(false)
+        } else if (!request && choices.length === 0) {
+          // Core signup remains available without advertising a fake price.
+          this.chooseWithoutPlan()
+        } else {
+          // Do not silently change an unrecognized deep-linked PlanKey.
+          this.form.controls.subscription.controls.planKey.setValue('')
+          this.signupError.set('پلن انتخاب‌شده در کاتالوگ موجود نیست. لطفاً پلن دیگری انتخاب کنید.')
+        }
+      },
+      error: () => {
+        this.plans.set([])
+        this.plansLoading.set(false)
+        this.plansFailed.set(true)
+        this.form.controls.subscription.controls.planKey.setValue('')
+        this.signupError.set('دریافت پلن‌ها ناموفق بود. برای انتخاب پلن مجدداً تلاش کنید.')
+      },
+    })
+  }
 
-    if (requestedPlan && this.plans.some((x) => x.key === requestedPlan)) {
-      this.form.controls.subscription.controls.planKey.setValue(requestedPlan)
-    }
+  reloadPlans(): void {
+    this.loadPublishedPlans()
+  }
+
+  chooseWithoutPlan(): void {
+    // The backend records this as signup intent only; no paid entitlements.
+    this.form.controls.subscription.controls.planKey.setValue('unselected')
+    this.form.controls.subscription.controls.billingCycle.setValue('monthly')
+    this.choosingWithoutPlan.set(true)
+    this.signupError.set(null)
   }
 
   private validateStep(step: number): boolean {
@@ -359,7 +393,8 @@ export class SignupCheckoutComponent {
       case 0: {
         const group = this.form.controls.subscription
         group.markAllAsTouched()
-        return group.valid
+        return group.valid && (this.choosingWithoutPlan() ||
+          !!this.selectedPlan?.prices.some(x => x.billingCycle === this.billingCycle))
       }
 
       case 1: {
