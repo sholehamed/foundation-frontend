@@ -20,6 +20,7 @@ export const systemFeatureRouteSegments = {
   resources: 'resources',
   featureRegistry: 'feature-registry',
   menuManagement: 'menu-management',
+  planCatalog: 'plan-catalog',
 } as const;
 
 export const systemFeatureRoutes = Object.values(systemFeatureRouteSegments)

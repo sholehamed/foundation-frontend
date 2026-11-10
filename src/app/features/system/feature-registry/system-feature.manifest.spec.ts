@@ -6,7 +6,7 @@ describe('System Angular route index', () => {
     const root = routes.find(x => x.path === '');
     const children = root?.children ?? [];
     const segments = Object.values(systemFeatureRouteSegments);
-    expect(segments).toHaveLength(13);
+    expect(segments).toHaveLength(14);
     expect(new Set(segments).size).toBe(segments.length);
     expect(systemFeatureRoutes).toEqual(segments.map(x => '/system/' + x));
     // Every executable System root page must be registered: no untracked

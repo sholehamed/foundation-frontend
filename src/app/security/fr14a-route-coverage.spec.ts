@@ -18,7 +18,7 @@ import { environment as prodEnvironment } from '../../environments/environment.p
  * evade the existing session + live PAGE guards. It is *not* backend auth.
  */
 describe('FR-14A executable Angular route security coverage', () => {
-  it('has one System-admin shell with live child guards across all 13 root feature routes', () => {
+  it('has one System-admin shell with live child guards across all 14 root feature routes', () => {
     const systemEntry = routes.find(r => r.path === 'system');
     expect(systemEntry?.loadChildren).toBeDefined();
     const shell = systemRoutes.find(r => r.path === '' && r.children);
@@ -28,7 +28,7 @@ describe('FR-14A executable Angular route security coverage', () => {
 
     const children = shell?.children ?? [];
     const expected = Object.values(systemFeatureRouteSegments);
-    expect(expected).toHaveLength(13);
+    expect(expected).toHaveLength(14);
     expect(new Set(expected).size).toBe(expected.length);
     expect(expected.every(path =>
       children.some(child => child.path === path &&

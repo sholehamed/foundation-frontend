@@ -1,3 +1,8 @@
+## FR-17B-2B — Plan Catalog administration in Angular (2026-11-10)
+
+- [PR #61](https://github.com/sholehamed/foundation-frontend/pull/61) adds lazy `/system/plan-catalog` page as 14th centrally guarded System feature, typed `SystemPlanCatalogService`, RTL Plan listing, versioned Draft creation/edit/revision, source-approved Commercial Modules, price options in IRR, dynamic PlanCard display rows, read-only SHA-256 Publish Preview and Publish action enabled **only** when `canPublish` is true. [UI handoff and rollout](development/FR-17B2B-SYSTEM-PLAN-CATALOG-UI.md).
+- Backend [PR #131](https://github.com/sholehamed/foundation-backend/pull/131) must deploy first and new permissions/menu reconciled on existing databases; existing revoked grants remain revoked. No Commercial Module is registered as shipped, so UI may create drafts but must block publication. No real Subscription/entitlement/payment or coupon validation. Angular CI and independent Browser/SQL/HTTP smoke required before production claims.
+
 ## FR-17B-2A — Dynamic public plans and signup UI (2026-11-10)
 
 - Angular landing cards and signup step 1 now use the **same** `PublicPlansService` + `GET /api/public/plans`: DB-published title, features, badge and IRR currency rather than hard-coded prices. Unknown URL plan does not auto-select a different plan, missing cycle is not fake-priced, and empty catalog supports explicit `unselected` registration with **no active paid subscription**.
