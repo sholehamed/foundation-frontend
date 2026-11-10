@@ -1,3 +1,9 @@
+## FR-14C — System Admin central readiness cockpit (2026-11-10)
+
+- Existing System Feature Registry page now displays independently fetched read-only Tenant Permission Catalog Preview, central Tenant Menu readiness and live System Endpoint/API/Resource/Permission integrity. An overall catalog-ready indicator fails closed on missing/forbidden/partial responses, pending or conflicting System/Tenant catalogs and Angular manifest drift; it is NOT a release or authorization decision.
+- Fixed no-parameter GET contracts, explicit invalidation on refresh and tests for forbidden diagnostics, pending records and all-clear requirements. No Tenant menu authoring, Registry Apply automation, grants, flags, migrations or deployment. [Operator contract](development/FR-14C-CENTRAL-OPERATOR-READINESS-UI.md).
+- Next: disposable real HTTPS + SQL + Chromium integration extension, audited Staging/Deployment preflight and explicit operator approval before activating the independently default-OFF dynamic sidebar.
+
 ## FR-14C — central Menu authority correction (2026-11-10)
 
 - User-confirmed business rule: System Admin owns all Menu/Category/Page/Resource/Action/Endpoint and permission definitions. Tenant Owner can assign permitted capabilities to roles/users, never author menus. Removed FR-14C-2B Tenant menu editor route/form/client/flag and their tests; kept FR-14C-1 read-only server-filtered central Menu navigation (pilot remains OFF).
