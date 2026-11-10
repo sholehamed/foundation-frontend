@@ -80,6 +80,12 @@ export class FeatureRegistryApiService {
     return this.http.get<TenantPermissionCatalogPreview>(this.root + '/tenant-permissions/preview');
   }
 
+  /** Explicit System SuperAdmin operator action; server validates the preview fingerprint and default-OFF flag. */
+  tenantPermissionApply(fingerprint: string): Observable<TenantPermissionCatalogPreview> {
+    return this.http.post<TenantPermissionCatalogPreview>(
+      this.root + '/tenant-permissions/apply', { fingerprint });
+  }
+
   tenantNavigationReadiness(): Observable<TenantNavigationReadiness> {
     return this.http.get<TenantNavigationReadiness>(this.root + '/tenant-navigation/readiness');
   }

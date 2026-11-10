@@ -1,3 +1,9 @@
+## FR-14C — manual System Admin Tenant catalog Apply (2026-11-10)
+
+- The read-only central readiness screen now exposes an **explicit confirm-only** Tenant Permission Catalog Apply for the exact 64-character SQL preview fingerprint. It uses the code-owned System feature ACTION check where enabled, while the API always enforces live System SuperAdmin, default-OFF server Apply gate, serializable fingerprint and no automatic grants. Invalid/stale 403/409 responses clear the preview and require a new GET.
+- Typed POST contract and component confirmation/error tests added; no menu authoring by Tenant, automatic apply, operational configuration, database migration or deployment. [Operator guide](development/FR-14C-CENTRAL-OPERATOR-READINESS-UI.md).
+- Next: actual isolated Staging operator review and two-Tenant browser permission/navigation certification before any pilot enablement.
+
 ## FR-14C — System Admin central readiness cockpit (2026-11-10)
 
 - Existing System Feature Registry page now displays independently fetched read-only Tenant Permission Catalog Preview, central Tenant Menu readiness and live System Endpoint/API/Resource/Permission integrity. An overall catalog-ready indicator fails closed on missing/forbidden/partial responses, pending or conflicting System/Tenant catalogs and Angular manifest drift; it is NOT a release or authorization decision.

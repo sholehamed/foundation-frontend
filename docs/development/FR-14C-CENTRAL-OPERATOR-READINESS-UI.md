@@ -10,7 +10,7 @@ Checkpoint: 2026-11-10. The System Admin is the only author of Menu, Category, P
    - `/api/system/FeatureRegistry/tenant-navigation/readiness`: six approved routes, canonical System-owned menus and categories, permission/UI links, unknown routes and ungated external URLs.
    - `/api/system/FeatureRegistry/system-endpoints/integrity`: runtime System endpoints vs central API/Resource/Permission graph, duplicates, foreign/stale links and unsupported endpoints.
 3. A read-only **catalog-ready** message requires all three reports to be successful AND the System Registry Preview to have no conflicts/pending changes AND the Angular route manifest to match. Any 403/network problem, stale response during refresh, missing record or mismatch is NOT ready.
-4. If a fix is needed, use the independently approved System Admin editor/Registry Preview and operator migration procedure. The Tenant catalog's existing fingerprinted Apply is a separate operator-controlled endpoint with its default-OFF flag; it is deliberately not invoked by this UI.
+4. If a fix is needed, use the System Admin editors and independently approved Registry Preview. For missing **Tenant** PAGE/ACTION definitions the operator can explicitly confirm the separate Tenant Catalog Apply action with the exact latest preview fingerprint; the server requires live System SuperAdmin, the approved default-OFF Apply flag, a serializable SQL match, and never grants a Role/User. On 403/409/error, the UI clears the stale snapshot and requires fresh Preview. Menus/legacy conflicts still require manual reconciliation.
 5. Review final reports again immediately before enabling any read-only dynamic Tenant navigation pilot. Grant review, two-Tenant browser revoke/deny, TLS ingress, BFF secrets/keyring, SQL migrations and Staging approvals are separate gates.
 
 ## Safety
@@ -22,6 +22,6 @@ Checkpoint: 2026-11-10. The System Admin is the only author of Menu, Category, P
 
 ## Tests / next phase
 
-Angular request contract tests enforce fixed GET URLs and empty query parameters. Component tests exercise incomplete catalog, 403 denial, lack of auto-Apply, all-clear status and drift invalidation. Backend SQL and signed HTTP suites cover the three diagnostic endpoints independently.
+Angular request contract tests enforce fixed GET URLs without query parameters and an explicit POST containing only the reviewed Tenant fingerprint. Component tests exercise incomplete catalog, 403 denial, lack of auto-Apply, all-clear status and drift invalidation. Backend SQL and signed HTTP suites cover the three diagnostic endpoints independently.
 
 Next: expand disposable live HTTP/SQL operator acceptance and a matched Chromium run, then isolated Staging read-only preflight, manual Registry/menus reconciliation, branch entitlement review and explicit human pilot approval. Do not silently move onto Production.
