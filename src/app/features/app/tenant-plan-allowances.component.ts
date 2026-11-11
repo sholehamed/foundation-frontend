@@ -43,7 +43,7 @@ type Allowance = TenantCommercialEntitlementSnapshot['capabilities'][number];
   `,
   styles: [`
     :host { display: block; }
-    .tenant-allowances { margin-top: 20px; }
+    .tenant-allowances { margin-top: 0; }
     .tenant-allowances-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
     .tenant-allowances-heading h2 { font-size: 19px; margin: 0 0 6px; }
     .tenant-allowances-heading p { font-size: 12px; color: var(--bodyColor,#777985); margin: 0; }
