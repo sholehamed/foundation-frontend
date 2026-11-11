@@ -7,7 +7,7 @@ import { forkJoin, finalize } from 'rxjs';
 import {
   CommercialModuleOption, PlanCatalogRow, PlanDraftContent,
   PlanDraftCreate, PlanDraftDetails, PlanDraftDisplay, PlanDraftPreview,
-  SystemPlanCatalogService, SystemPendingPlanOrder,
+  SystemPlanCatalogService, SystemPendingPlanOrder, SystemDiscountCoupon,
 } from './system-plan-catalog.service';
 
 @Component({
@@ -31,6 +31,20 @@ export class SystemPlanCatalogComponent {
   readonly ordersLoading = signal(false);
   readonly receipts: Record<string, string> = {};
   readonly verifiedReceipt: Record<string, boolean> = {};
+
+  readonly coupons = signal<SystemDiscountCoupon[]>([]);
+  readonly couponsLoaded = signal(false);
+  readonly couponsLoading = signal(false);
+  readonly lastIssuedSecret = signal<string | null>(null);
+  couponDraft: {
+    title: string; kind: 'Percentage' | 'FixedIRR'; value: number;
+    planVersionId: string | null; maxUses: number;
+    maxUsesPerTenant: number; validDays: number;
+  } = {
+    title: '', kind: 'Percentage', value: 100,
+    planVersionId: null, maxUses: 20,
+    maxUsesPerTenant: 1, validDays: 14,
+  };
 
   readonly eligibleModules = signal<CommercialModuleOption[]>([]);
   readonly selectedDraft = signal<PlanDraftDetails | null>(null);
@@ -62,6 +76,78 @@ export class SystemPlanCatalogComponent {
       next: result => {
         this.plans.set(result.plans);
         this.eligibleModules.set(result.modules);
+      },
+      error: error => this.error.set(this.describeError(error)),
+    });
+  }
+
+  loadCoupons(): void {
+    if (this.couponsLoading()) return;
+    this.couponsLoading.set(true);
+    this.error.set(null);
+    this.api.listCoupons().pipe(
+      finalize(() => this.couponsLoading.set(false)),
+      takeUntilDestroyed(this.destroyed)
+    ).subscribe({
+      next: coupons => {
+        this.coupons.set(coupons);
+        this.couponsLoaded.set(true);
+      },
+      error: error => this.error.set(this.describeError(error)),
+    });
+  }
+
+  issueCoupon(): void {
+    const d = this.couponDraft;
+    if (this.busy() || !d.title.trim() || d.title.length > 120 ||
+        !Number.isFinite(d.value) || d.value <= 0 ||
+        (d.kind === 'Percentage' && d.value > 100) ||
+        !Number.isInteger(d.maxUses) || d.maxUses < 1 ||
+        !Number.isInteger(d.maxUsesPerTenant) || d.maxUsesPerTenant < 1 ||
+        d.maxUsesPerTenant > d.maxUses ||
+        !Number.isInteger(d.validDays) || d.validDays < 1 || d.validDays > 365) {
+      this.error.set('عنوان، مقدار، سقف مصرف و روزهای اعتبار را بررسی کنید.');
+      return;
+    }
+    const now = Date.now();
+    this.busy.set(true);
+    this.error.set(null);
+    this.lastIssuedSecret.set(null);
+    this.api.issueCoupon({
+      title: d.title.trim(), kind: d.kind, value: d.value,
+      planVersionId: d.planVersionId,
+      startsAtUtc: new Date(now - 5 * 60_000).toISOString(),
+      endsAtUtc: new Date(now + d.validDays * 86_400_000).toISOString(),
+      maxUses: d.maxUses, maxUsesPerTenant: d.maxUsesPerTenant,
+    }).pipe(
+      finalize(() => this.busy.set(false)),
+      takeUntilDestroyed(this.destroyed)
+    ).subscribe({
+      next: issued => {
+        if (!issued.ok || !issued.secretCode) {
+          this.error.set('ایجاد کد ناموفق بود: ' + issued.code);
+          return;
+        }
+        this.lastIssuedSecret.set(issued.secretCode);
+        this.notice.set('کد جدید صادر شد. همین حالا آن را ذخیره کنید؛ بعداً دوباره نمایش داده نمی‌شود.');
+        this.couponDraft.title = '';
+        this.loadCoupons();
+      },
+      error: error => this.error.set(this.describeError(error)),
+    });
+  }
+
+  disableCoupon(coupon: SystemDiscountCoupon): void {
+    if (this.busy() || !coupon.isActive) return;
+    this.busy.set(true);
+    this.error.set(null);
+    this.api.disableCoupon(coupon.id).pipe(
+      finalize(() => this.busy.set(false)),
+      takeUntilDestroyed(this.destroyed)
+    ).subscribe({
+      next: () => {
+        this.notice.set('مصرف‌های آینده این کد غیرفعال شدند. مصرف‌های تسویه‌شده دست‌نخورده‌اند.');
+        this.loadCoupons();
       },
       error: error => this.error.set(this.describeError(error)),
     });
