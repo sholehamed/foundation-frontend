@@ -1,3 +1,4 @@
+- [FR-17E-1 — System coupon manager and Tenant optional discount checkout](development/FR-17E1-COUPONS-CHECKOUT-UI.md)
 - [FR-17C-2A — Tenant Order form and System Admin external receipt review](development/FR-17C2A-PLAN-ORDER-ANGULAR.md)
 - [FR-17C-1 — Tenant dashboard read-only subscription shadow](development/FR-17C1-TENANT-SUBSCRIPTION-STATUS.md)
 - [FR-17B-2C — immutable published Plan lock UI and new-version-only flow](development/FR-17B2C-PUBLISHED-PLAN-LOCK-UI.md)
