@@ -46,6 +46,29 @@ export interface TenantCommercialEntitlementSnapshot {
   }[];
 }
 
+/** IRR price quote is server-owned. These fields are for display only. */
+export interface TenantPlanOrder {
+  id: string;
+  tenantId: string;
+  planVersionId: string;
+  status: 'Pending' | 'Settled' | 'Cancelled' | 'Refunded';
+  billingCycle: 'monthly' | 'yearly';
+  currency: string;
+  grossAmount: number;
+  discountAmount: number;
+  netAmount: number;
+  quotedAtUtc: string;
+  settledAtUtc: string | null;
+  settlementKind: string | null;
+  settlementReference: string | null;
+}
+export interface TenantPlanOrderResult {
+  ok: boolean;
+  code: string;
+  order: TenantPlanOrder | null;
+  subscriptionId: string | null;
+}
+
 export interface TenantBranchWriteRequest {
   name: string;
   city: string;
@@ -291,6 +314,19 @@ export class TenantWorkspaceService {
   /** Tenant ID is derived by the server from the authenticated tenant session. */
   getWorkspace(): Observable<TenantWorkspaceSummary> {
     return this.http.get<TenantWorkspaceSummary>(this.root);
+  }
+
+  listMyPlanOrders(): Observable<TenantPlanOrder[]> {
+    return this.http.get<TenantPlanOrder[]>(
+      this.root + '/subscription/orders');
+  }
+
+  createMyPlanOrder(planVersionId: string, billingCycle: 'monthly' | 'yearly',
+    idempotencyKey: string): Observable<TenantPlanOrderResult> {
+    // No client TenantId, IRR amount or discount accepted by the server.
+    return this.http.post<TenantPlanOrderResult>(
+      this.root + '/subscription/orders',
+      { planVersionId, billingCycle, idempotencyKey });
   }
 
   getSubscriptionShadow(): Observable<TenantCommercialEntitlementSnapshot> {

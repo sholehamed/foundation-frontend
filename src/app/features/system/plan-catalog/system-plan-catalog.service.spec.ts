@@ -32,6 +32,22 @@ describe('System Plan Catalog API contract', () => {
     modules.flush([]);
   });
 
+  it('requires an explicit receipt attestation for central settlement, not a tenant request', () => {
+    client.pendingOrders().subscribe();
+    const listing = http.expectOne(root + '/orders/pending');
+    expect(listing.request.method).toBe('GET');
+    listing.flush([]);
+    client.confirmExternalReceipt('order-1', 'receipt-reviewed-101', true).subscribe();
+    const attestation = http.expectOne(root + '/orders/order-1/confirm-external');
+    expect(attestation.request.method).toBe('POST');
+    expect(attestation.request.body).toEqual({
+      receiptReference: 'receipt-reviewed-101', paymentVerified: true,
+    });
+    expect(attestation.request.body).not.toHaveProperty('tenantId');
+    expect(attestation.request.body).not.toHaveProperty('netAmount');
+    attestation.flush({ ok: true, code: 'settled_and_activated', subscriptionId: 'sub-1' });
+  });
+
   it('uses reviewed fingerprint in distinct publish POST, not plan edit PUT', () => {
     client.preview('draft-1').subscribe();
     const preview = http.expectOne(root + '/drafts/draft-1/preview');

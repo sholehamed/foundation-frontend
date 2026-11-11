@@ -3,6 +3,27 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
+/** System-owned review data; no customer-provided settlement state. */
+export interface SystemPendingPlanOrder {
+  id: string;
+  tenantId: string;
+  planVersionId: string;
+  status: 'Pending' | 'Settled';
+  billingCycle: 'monthly' | 'yearly';
+  currency: string;
+  grossAmount: number;
+  discountAmount: number;
+  netAmount: number;
+  quotedAtUtc: string;
+  settledAtUtc: string | null;
+  settlementReference: string | null;
+}
+export interface SettlementResult {
+  ok: boolean;
+  code: string;
+  subscriptionId: string | null;
+}
+
 export interface PlanCatalogRow {
   id: string;
   code: string;
@@ -99,6 +120,17 @@ export interface CatalogOperation {
 export class SystemPlanCatalogService {
   private readonly http = inject(HttpClient);
   private readonly root = environment.apiUrl.replace(/\/$/, '') + '/system/PlanCatalog';
+
+  pendingOrders(): Observable<SystemPendingPlanOrder[]> {
+    return this.http.get<SystemPendingPlanOrder[]>(this.root + '/orders/pending');
+  }
+
+  confirmExternalReceipt(orderId: string, receiptReference: string,
+    paymentVerified: boolean): Observable<SettlementResult> {
+    return this.http.post<SettlementResult>(
+      this.root + '/orders/' + encodeURIComponent(orderId) + '/confirm-external',
+      { receiptReference, paymentVerified });
+  }
 
   list(): Observable<PlanCatalogRow[]> {
     return this.http.get<PlanCatalogRow[]>(this.root);

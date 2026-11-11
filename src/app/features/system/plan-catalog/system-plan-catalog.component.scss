@@ -284,3 +284,12 @@
     }
   }
 }
+
+/* FR-17C-2A: operator-reviewed out-of-band settlement. */
+.catalog-page .external-settlement-row {
+  align-items: start;
+  flex-wrap: wrap;
+  .plan-row-main { flex: 1 1 320px; }
+  .fields { flex: 1 1 320px; }
+  input[type='checkbox'] { width: auto; margin: 0; }
+}

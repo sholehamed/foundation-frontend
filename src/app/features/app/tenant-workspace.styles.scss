@@ -103,3 +103,26 @@
 .tenant-member-create-form>p,.tenant-member-create-form>.tenant-heading-actions{grid-column:1 / -1;}
 .tenant-member-create-form>p[role="alert"]{color:#b42318;}
 @media(max-width:610px){.tenant-member-create-form{grid-template-columns:1fr;}.tenant-member-create-form>p,.tenant-member-create-form>.tenant-heading-actions{grid-column:auto;}}
+
+/* FR-17C-2A: quoted orders are not yet a paid license. */
+.tenant-order-form {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 18px 0;
+  label { display: grid; gap: 8px; color: var(--bodyColor); }
+  select {
+    min-width: 160px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--borderColor);
+    color: var(--headingColor);
+    background: var(--cardBgColor);
+  }
+}
+.tenant-order-row {
+  display: flex; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; padding: 12px;
+  border-bottom: 1px solid var(--borderColor);
+}
