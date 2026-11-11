@@ -21,6 +21,7 @@ export const systemFeatureRouteSegments = {
   featureRegistry: 'feature-registry',
   menuManagement: 'menu-management',
   planCatalog: 'plan-catalog',
+  controlTower: 'control-tower',
 } as const;
 
 export const systemFeatureRoutes = Object.values(systemFeatureRouteSegments)

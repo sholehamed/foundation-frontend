@@ -1,3 +1,9 @@
+## FR-18E-1 — Angular Control Tower first real Trace Explorer (2026-11-11; PR/CI pending)
+
+- Added lazy `/system/control-tower` System page in authoritative `systemFeatureRouteSegments`, retained existing System session/UI permission guards, backed **only by System-permission protected Foundation API** (server new `system/control-tower` Resource + `CONTROL-TOWER.TRACES.READ`). No separate Angular grants or Tenant menu authorship.
+- New responsive RTL TraceId finder with real server Trace list/Waterfall/timings, SQL/Handler/Error filters, selected sanitized Span inspector, Jalali UTC dates, copy identifier and explicit loading/invalid/not-retained/unavailable/forbidden/partial states. No direct Tempo/Collector browser access, mock charts or raw SQL/DTO fields. System dashboard shortcut uses existing `*systemCan`.
+- [Detailed UX, API and limits](development/FR-18E1-CONTROL-TOWER-TRACE-EXPLORER.md). PR-head and post-merge CI pending; companion backend FR-18E1 API must pass actual signed JWT HTTP/Tempo tests. **No full BFF Cookie E2E, durable operator view-audit, hosted Staging or Production yet.** Next FR-18E-2 search/overview, audit and cross-repo browser verification.
+
 ## FR-18A — Planned Angular Control Tower (2026-11-11; DOCUMENTATION ONLY)
 
 - Added [complete UX plan](development/FR-18-CONTROL-TOWER-UX.md) for clean RTL/light/dark System dashboard, bounded Request Explorer, TraceId detail and correct duration Waterfall, SQL fingerprint/analyzer, error grouping, service health, authorized Tenant diagnostics, capture sessions and alerts. Documented search filters/pagination, UTC backend -> Jalali display, honest loading/no-data/sampled-out/redacted/unavailable/forbidden states, mobile, accessible tree navigation and XSS-safe display.
