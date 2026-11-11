@@ -14,6 +14,14 @@ const workspace: TenantWorkspaceSummary = {
   mainBranch: { id: 'main', name: 'Main', city: 'Tehran', address: 'First street' },
   branchesCount: 2, subscriptionStatus: 'pending_activation',
 };
+const noSubscription = {
+  status: 'NotSubscribed' as const,
+  reason: 'no_active_subscription',
+  subscriptionId: null, planVersionId: null,
+  startsAtUtc: null, endsAtUtc: null,
+  hasCommercialEntitlement: false, moduleCodes: [], capabilities: [],
+};
+
 const branches: TenantWorkspaceBranch[] = [
   { id: 'main', name: 'Main', city: 'Tehran', address: 'First', phone: null, isMain: true },
   { id: 'second', name: 'Second', city: 'Shiraz', address: 'Second', phone: null, isMain: false },
@@ -21,18 +29,20 @@ const branches: TenantWorkspaceBranch[] = [
 
 describe('Tenant Admin workspace pages', () => {
   const getWorkspace = vi.fn(() => of(workspace));
+  const getSubscriptionShadow = vi.fn(() => of(noSubscription));
   const getBranches = vi.fn(() => of(branches));
   const getAdminCapabilities = vi.fn(() => of({canViewAdministration: true, canManageBranches: false}));
 
   beforeEach(async () => {
     getWorkspace.mockReset().mockReturnValue(of(workspace));
     getBranches.mockReset().mockReturnValue(of(branches));
+    getSubscriptionShadow.mockReset().mockReturnValue(of(noSubscription));
     getAdminCapabilities.mockReset().mockReturnValue(of({canViewAdministration: true, canManageBranches: false}));
     await TestBed.configureTestingModule({
       imports: [TenantDashboardComponent, TenantBusinessProfileComponent, TenantBranchesComponent],
       providers: [
         provideRouter([]),
-        { provide: TenantWorkspaceService, useValue: { getWorkspace, getBranches, getAdminCapabilities } },
+        { provide: TenantWorkspaceService, useValue: { getWorkspace, getBranches, getAdminCapabilities, getSubscriptionShadow } },
       ],
     }).compileComponents();
   });
@@ -42,10 +52,22 @@ describe('Tenant Admin workspace pages', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Salon One');
     expect(fixture.nativeElement.textContent).toContain('Main');
-    expect(fixture.nativeElement.textContent).toContain('در انتظار فعال‌سازی');
-    expect(fixture.nativeElement.textContent).toContain('به معنی فعال‌سازی اشتراک');
+    expect(fixture.nativeElement.textContent).toContain('اشتراک فعالی ثبت نشده');
+    expect(fixture.nativeElement.textContent).toContain('هیچ مجوز تجاری فعالی');
     expect(getWorkspace).toHaveBeenCalledOnce();
+    expect(getSubscriptionShadow).toHaveBeenCalledOnce();
     expect(getBranches).not.toHaveBeenCalled();
+    fixture.destroy();
+  });
+
+  it('never treats a requested PlanKey as a settled Subscription', () => {
+    getSubscriptionShadow.mockReturnValueOnce(of({
+      ...noSubscription, status: 'Pending' as const, reason: 'awaiting_verified_settlement',
+    }));
+    const fixture = TestBed.createComponent(TenantDashboardComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('در انتظار تسویه تأییدشده');
+    expect(fixture.nativeElement.textContent).toContain('هیچ مجوز تجاری فعالی');
     fixture.destroy();
   });
 
