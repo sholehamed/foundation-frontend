@@ -30,6 +30,30 @@ describe('FR-17C-1 Tenant subscription shadow HTTP contract', () => {
     http.verify();
   });
 
+  it('accepts optional coupon secret without trusting a client discount or paid flag', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(TenantWorkspaceService);
+    const http = TestBed.inject(HttpTestingController);
+    api.createMyPlanOrder('version-1', 'yearly', 'checkout-coupon-request-001',
+      'A'.repeat(24)).subscribe();
+    const order = http.expectOne(environment.apiUrl + '/tenant/workspace/subscription/orders');
+    expect(order.request.method).toBe('POST');
+    expect(order.request.body).toEqual({
+      planVersionId: 'version-1', billingCycle: 'yearly',
+      idempotencyKey: 'checkout-coupon-request-001',
+      couponCode: 'A'.repeat(24),
+    });
+    expect(order.request.body).not.toHaveProperty('discountAmount');
+    expect(order.request.body).not.toHaveProperty('netAmount');
+    expect(order.request.body).not.toHaveProperty('tenantId');
+    expect(order.request.body).not.toHaveProperty('isPaid');
+    order.flush({ ok: true, code: 'zero_total_settled_and_activated',
+      order: null, subscriptionId: null });
+    http.verify();
+  });
+
   it('reads the current authenticated Tenant only, without an editable TenantId', () => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
