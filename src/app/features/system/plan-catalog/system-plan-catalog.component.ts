@@ -7,7 +7,7 @@ import { forkJoin, finalize } from 'rxjs';
 import {
   CommercialModuleOption, PlanCatalogRow, PlanDraftContent,
   PlanDraftCreate, PlanDraftDetails, PlanDraftDisplay, PlanDraftPreview,
-  SystemPlanCatalogService,
+  SystemPlanCatalogService, SystemPendingPlanOrder,
 } from './system-plan-catalog.service';
 
 @Component({
@@ -26,6 +26,12 @@ export class SystemPlanCatalogComponent {
   readonly error = signal<string | null>(null);
   readonly notice = signal<string | null>(null);
   readonly plans = signal<PlanCatalogRow[]>([]);
+  readonly pendingOrders = signal<SystemPendingPlanOrder[]>([]);
+  readonly ordersLoaded = signal(false);
+  readonly ordersLoading = signal(false);
+  readonly receipts: Record<string, string> = {};
+  readonly verifiedReceipt: Record<string, boolean> = {};
+
   readonly eligibleModules = signal<CommercialModuleOption[]>([]);
   readonly selectedDraft = signal<PlanDraftDetails | null>(null);
   readonly latestPreview = signal<PlanDraftPreview | null>(null);
@@ -56,6 +62,49 @@ export class SystemPlanCatalogComponent {
       next: result => {
         this.plans.set(result.plans);
         this.eligibleModules.set(result.modules);
+      },
+      error: error => this.error.set(this.describeError(error)),
+    });
+  }
+
+  loadPendingOrders(): void {
+    if (this.ordersLoading()) return;
+    this.ordersLoading.set(true);
+    this.error.set(null);
+    this.api.pendingOrders().pipe(
+      finalize(() => this.ordersLoading.set(false)),
+      takeUntilDestroyed(this.destroyed)
+    ).subscribe({
+      next: rows => {
+        this.pendingOrders.set(rows);
+        this.ordersLoaded.set(true);
+      },
+      error: error => this.error.set(this.describeError(error)),
+    });
+  }
+
+  confirmExternalReceipt(order: SystemPendingPlanOrder): void {
+    const receipt = (this.receipts[order.id] ?? '').trim();
+    if (this.busy() || !this.verifiedReceipt[order.id] ||
+        receipt.length < 6 || receipt.length > 160) {
+      this.error.set('شماره رسید معتبر و تأیید بررسی واقعی پرداخت ضروری است.');
+      return;
+    }
+    this.busy.set(true);
+    this.error.set(null);
+    this.api.confirmExternalReceipt(order.id, receipt, true).pipe(
+      finalize(() => this.busy.set(false)),
+      takeUntilDestroyed(this.destroyed)
+    ).subscribe({
+      next: result => {
+        if (!result.ok) {
+          this.error.set('تسویه رد شد: ' + result.code);
+          return;
+        }
+        this.notice.set('تأیید دریافت وجه ثبت شد و اشتراک برای همان کسب‌وکار فعال شد.');
+        delete this.receipts[order.id];
+        delete this.verifiedReceipt[order.id];
+        this.loadPendingOrders();
       },
       error: error => this.error.set(this.describeError(error)),
     });
