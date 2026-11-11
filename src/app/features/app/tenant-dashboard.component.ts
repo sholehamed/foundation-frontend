@@ -69,7 +69,7 @@ import { TenantWorkspaceService, TenantWorkspaceSummary, TenantCommercialEntitle
 
         @if (subscription(); as license) {
           @if (license.hasCommercialEntitlement) {
-            <app-tenant-plan-allowances [capabilities]="license.capabilities" />
+            <app-tenant-plan-allowances class="tenant-panel" [capabilities]="license.capabilities" />
           }
         }
 
