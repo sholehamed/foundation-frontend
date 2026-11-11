@@ -1,3 +1,4 @@
+- [FR-18E-1 — Real Angular Control Tower TraceId Explorer and responsive Waterfall](development/FR-18E1-CONTROL-TOWER-TRACE-EXPLORER.md)
 ## FR-18A — Planned Control Tower UX (documentation only)
 
 - [Control Tower Angular UX and permission design: Overview, Trace Explorer/Waterfall, SQL Analyzer, Diagnostic Sessions, Alerts and Audit](development/FR-18-CONTROL-TOWER-UX.md)
