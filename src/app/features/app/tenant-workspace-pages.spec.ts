@@ -91,7 +91,7 @@ describe('Tenant Admin workspace pages', () => {
     expect(fixture.nativeElement.querySelector('app-tenant-plan-orders')).toBeNull();
     // Opening the form is separately covered by the existing order component
     // HTTP tests, not by a fake local plan/catalog stub.
-    expect(orderButton.textContent).toContain('سفارش‌ها و پلن‌ها');
+    expect(orderButton?.textContent).toContain('سفارش‌ها و پلن‌ها');
     fixture.destroy();
   });
 
