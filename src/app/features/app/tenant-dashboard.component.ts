@@ -3,12 +3,13 @@ import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { forkJoin } from 'rxjs';
+import { TenantPlanOrdersComponent } from './tenant-plan-orders.component';
 import { TenantWorkspaceService, TenantWorkspaceSummary, TenantCommercialEntitlementSnapshot } from './tenant-workspace.service';
 
 @Component({
   selector: 'app-tenant-dashboard',
   standalone: true,
-  imports: [RouterLink, MatButtonModule],
+  imports: [RouterLink, MatButtonModule, TenantPlanOrdersComponent],
   template: `
     <section class="tenant-page">
       <div class="tenant-page-heading">
@@ -66,6 +67,13 @@ import { TenantWorkspaceService, TenantWorkspaceSummary, TenantCommercialEntitle
         </div>
 
         <div class="tenant-panel">
+          <button mat-stroked-button type="button"
+            (click)="showOrderForm.set(!showOrderForm())">
+            {{ showOrderForm() ? 'بستن سفارش‌ها' : 'مشاهده و ثبت سفارش پلن' }}
+          </button>
+          @if (showOrderForm()) { <app-tenant-plan-orders /> }
+        </div>
+        <div class="tenant-panel">
           <h2>اطلاعات سریع</h2>
           <dl class="tenant-details">
             <div><dt>نوع فعالیت</dt><dd>{{ data.profile?.activityType || '—' }}</dd></div>
@@ -84,6 +92,7 @@ export class TenantDashboardComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   readonly workspace = signal<TenantWorkspaceSummary | null>(null);
   readonly subscription = signal<TenantCommercialEntitlementSnapshot | null>(null);
+  readonly showOrderForm = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
