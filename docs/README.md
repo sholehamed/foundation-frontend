@@ -1,3 +1,4 @@
+- [FR-17B-2C — immutable published Plan lock UI and new-version-only flow](development/FR-17B2C-PUBLISHED-PLAN-LOCK-UI.md)
 - [FR-17B-2B — System Admin Plan Catalog editor and publication review](development/FR-17B2B-SYSTEM-PLAN-CATALOG-UI.md)
 - [FR-17B-2A — DB-published plan cards and signup selection](development/FR-17B2A-DYNAMIC-PUBLIC-PLANS-UI.md)
 # Foundation Frontend Documentation
