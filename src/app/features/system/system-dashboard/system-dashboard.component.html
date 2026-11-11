@@ -76,6 +76,49 @@
       }
     </div>
 
+    @if (data.publishedPlanVersions !== undefined &&
+         data.pendingPlanOrders !== undefined &&
+         data.settledPlanOrders !== undefined &&
+         data.activeSubscriptionPeriods !== undefined) {
+      <section class="system-commerce-panel panel" aria-label="نمای چرخه تجاری">
+        <div class="panel-heading">
+          <div>
+            <p class="system-section-eyebrow">COMMERCIAL OPERATIONS</p>
+            <h2>وضعیت پلن‌ها و اشتراک‌ها</h2>
+            <p>آمار ثبت‌شده سفارش‌ها و دوره‌های اشتراک در پایگاه داده</p>
+          </div>
+          <a *systemCan="'/system/plan-catalog'" routerLink="/system/plan-catalog"
+            class="text-link">مدیریت پلن‌ها</a>
+        </div>
+        <div class="system-commerce-grid">
+          <article class="system-commerce-metric">
+            <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+            <small>نسخه‌های منتشرشده پلن</small>
+            <strong>{{ data.publishedPlanVersions | number }}</strong>
+          </article>
+          <article class="system-commerce-metric">
+            <span class="material-symbols-outlined" aria-hidden="true">pending_actions</span>
+            <small>سفارش‌های در انتظار</small>
+            <strong>{{ data.pendingPlanOrders | number }}</strong>
+          </article>
+          <article class="system-commerce-metric">
+            <span class="material-symbols-outlined" aria-hidden="true">receipt_long</span>
+            <small>سفارش‌های با وضعیت تسویه</small>
+            <strong>{{ data.settledPlanOrders | number }}</strong>
+          </article>
+          <article class="system-commerce-metric">
+            <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
+            <small>دوره‌های اشتراک فعال ثبت‌شده</small>
+            <strong>{{ data.activeSubscriptionPeriods | number }}</strong>
+          </article>
+        </div>
+        <p class="system-commerce-disclaimer">
+          این اعداد، وضعیت‌های ثبت‌شده در سیستم هستند؛ به‌معنای درآمد بانکی
+          یا مجوز استفاده کاربران از ماژول‌ها نیستند.
+        </p>
+      </section>
+    }
+
     <div class="details-grid">
       <article class="panel">
         <div class="panel-heading">
