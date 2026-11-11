@@ -25,10 +25,12 @@ describe('System Plan Catalog UI', () => {
     }),
   };
 
-  async function create() {
+  async function create(planRows: unknown[] = []) {
     await TestBed.configureTestingModule({
       imports: [SystemPlanCatalogComponent],
-      providers: [{ provide: SystemPlanCatalogService, useValue: api }],
+      providers: [{ provide: SystemPlanCatalogService, useValue: {
+        ...api, list: () => of(planRows),
+      } }],
     }).compileComponents();
     const fixture = TestBed.createComponent(SystemPlanCatalogComponent);
     fixture.detectChanges();
@@ -40,6 +42,22 @@ describe('System Plan Catalog UI', () => {
     const page: HTMLElement = fixture.nativeElement;
     expect(page.textContent).toContain('هنوز پلنی تعریف نشده');
     expect(page.textContent).toContain('ایجاد نسخه پیش‌نویس');
+    expect(page.textContent).not.toContain('اشتراک فعال شد');
+  });
+
+  it('marks a published version as locked and offers only a new draft revision', async () => {
+    const fixture = await create([{
+      id: 'plan-1', code: 'starter', name: 'Starter',
+      isActive: true, parentPlanId: null, draftVersionId: null,
+      latestVersionNumber: 2, latestVersionStatus: 'Published',
+      publishedVersions: 2, latestPublishedVersionId: 'version-2',
+    }]);
+    const page: HTMLElement = fixture.nativeElement;
+    expect(page.textContent).toContain('نسخه منتشرشده قفل است');
+    const buttons = [...page.querySelectorAll('button')]
+      .map(x => x.textContent?.trim());
+    expect(buttons).toContain('نسخه جدید');
+    expect(buttons).not.toContain('ویرایش پیش‌نویس');
     expect(page.textContent).not.toContain('اشتراک فعال شد');
   });
 
