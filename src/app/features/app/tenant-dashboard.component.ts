@@ -4,12 +4,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { forkJoin } from 'rxjs';
 import { TenantPlanOrdersComponent } from './tenant-plan-orders.component';
+import { TenantPlanAllowancesComponent } from './tenant-plan-allowances.component';
 import { TenantWorkspaceService, TenantWorkspaceSummary, TenantCommercialEntitlementSnapshot } from './tenant-workspace.service';
 
 @Component({
   selector: 'app-tenant-dashboard',
   standalone: true,
-  imports: [RouterLink, MatButtonModule, TenantPlanOrdersComponent],
+  imports: [RouterLink, MatButtonModule, TenantPlanOrdersComponent, TenantPlanAllowancesComponent],
   template: `
     <section class="tenant-page">
       <div class="tenant-page-heading">
@@ -65,6 +66,12 @@ import { TenantWorkspaceService, TenantWorkspaceSummary, TenantCommercialEntitle
             }
           </article>
         </div>
+
+        @if (subscription(); as license) {
+          @if (license.hasCommercialEntitlement) {
+            <app-tenant-plan-allowances [capabilities]="license.capabilities" />
+          }
+        }
 
         <div class="tenant-panel">
           <button mat-stroked-button type="button"

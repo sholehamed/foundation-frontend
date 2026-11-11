@@ -1,3 +1,8 @@
+## FR-17C-3A — Tenant active subscription PlanVersion allowances (2026-11-11)
+
+- Added standalone Angular `TenantPlanAllowancesComponent` under Tenant dashboard **only for verified active commercial entitlement** from existing `/subscription/me`. Displays server-resolved Feature booleans, finite including 0, explicit Unlimited, and AllowedModes. Does not display or guess actual current usage/remaining capacity because no authoritative usage read API exists yet. No frontend role/permission grant or client-side paywall.
+- Tests for zero vs Unlimited, inactive features, modes and empty capability list. Existing Tenant subscription status and coupon order paths remain unchanged. [Handoff](development/FR-17C3A-PLAN-ALLOWANCES-ANGULAR.md). Next backend usage projection with authenticated tenant scope, then a genuine consumption meter UI.
+
 ## FR-17E-1 — Dynamic coupons and zero-total Tenant checkout UI (2026-11-11)
 
 - [PR #65](https://github.com/sholehamed/foundation-frontend/pull/65): System PlanCatalog page issues centrally generated percentage/FixedIRR coupon codes with validity days, total/per-Tenant settled limits and optional pinned published PlanVersion; plaintext secret shown exactly once at issuance, server stores hash only; lists settled usage/disable state. Existing Tenant order form supports optional coupon code and never transmits a client discount/net/tenant ID/payment flag; distinguishes confirmed `zero_total_settled_and_activated` from an unpaid partially discounted Pending Order. [UI handoff](development/FR-17E1-COUPONS-CHECKOUT-UI.md).
