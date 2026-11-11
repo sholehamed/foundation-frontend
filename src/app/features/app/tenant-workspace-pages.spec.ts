@@ -60,6 +60,41 @@ describe('Tenant Admin workspace pages', () => {
     fixture.destroy();
   });
 
+  it('renders a clean real-data command center without inventing commercial access', () => {
+    const fixture = TestBed.createComponent(TenantDashboardComponent);
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('.tenant-command-hero')?.textContent).toContain('Salon One');
+    expect(element.querySelectorAll('.tenant-command-metric').length).toBe(4);
+    const kpis = element.querySelectorAll('.tenant-command-metric strong');
+    expect(kpis[0].textContent).toContain('2');
+    expect(kpis[2].textContent?.trim()).toBe('0');
+    expect(element.textContent).toContain('پلن درخواستی: solo');
+    expect(element.querySelector('app-tenant-usage-overview')).toBeNull();
+    expect(element.querySelector('app-tenant-plan-allowances')).toBeNull();
+    expect(element.querySelectorAll('.tenant-command-action').length).toBe(3);
+    expect(fixture.componentInstance.formatPersianDate(null)).toBe('—');
+    expect(fixture.componentInstance.formatPersianDate('invalid')).toBe('—');
+    expect(fixture.componentInstance.formatPersianDate('2026-11-11T12:00:00Z'))
+      .not.toBe('—');
+    fixture.destroy();
+  });
+
+  it('quick billing action toggles a real component only on explicit interaction', () => {
+    const fixture = TestBed.createComponent(TenantDashboardComponent);
+    fixture.detectChanges();
+    const orderButton = fixture.nativeElement.querySelector('.tenant-command-action[type="button"]')
+      as HTMLButtonElement;
+    expect(orderButton).toBeTruthy();
+    expect(fixture.componentInstance.showOrderForm()).toBe(false);
+    // The billing component itself is not initialized before the action.
+    expect(fixture.nativeElement.querySelector('app-tenant-plan-orders')).toBeNull();
+    // Opening the form is separately covered by the existing order component
+    // HTTP tests, not by a fake local plan/catalog stub.
+    expect(orderButton.textContent).toContain('سفارش‌ها و پلن‌ها');
+    fixture.destroy();
+  });
+
   it('never treats a requested PlanKey as a settled Subscription', () => {
     getSubscriptionShadow.mockReturnValueOnce(of({
       ...noSubscription, status: 'Pending' as const, reason: 'awaiting_verified_settlement',
