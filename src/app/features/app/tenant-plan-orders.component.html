@@ -1,0 +1,52 @@
+@if (!notOwner()) {
+  <div class="tenant-panel" aria-label="درخواست خرید پلن">
+    <h2>سفارش اشتراک</h2>
+    <p>قیمت و امکانات از پلن‌های منتشرشده دریافت می‌شوند. ثبت سفارش به معنی پرداخت یا فعال‌سازی امکانات نیست.</p>
+    @if (loading()) {
+      <p role="status">در حال دریافت پلن‌ها و سفارش‌های شما…</p>
+    } @else {
+      @if (error()) { <p role="alert" class="tenant-feedback error">{{ error() }}</p> }
+      @if (message()) { <p role="status" class="tenant-feedback">{{ message() }}</p> }
+      @if (plans().length === 0) {
+        <p role="status">هنوز پلن تجاری قابل سفارشی در سیستم منتشر نشده است.</p>
+      } @else {
+        <div class="tenant-order-form">
+          <label>انتخاب پلن
+            <select [(ngModel)]="selectedVersion" (ngModelChange)="selectOffer()">
+              @for (plan of plans(); track plan.versionId) {
+                <option [value]="plan.versionId">{{ plan.title }}</option>
+              }
+            </select>
+          </label>
+          <label>دوره سفارش
+            <select [(ngModel)]="selectedCycle">
+              @for (cycle of offeredCycles(); track cycle) {
+                <option [value]="cycle">{{ cycle === 'yearly' ? 'سالانه' : 'ماهانه' }}</option>
+              }
+            </select>
+          </label>
+          @if (selectedOfferAmount() !== null) {
+            <p>مبلغ ثبت سفارش:
+              <strong>{{ formatMoney(selectedOfferAmount()!) }} ریال</strong>
+            </p>
+          }
+          <button mat-flat-button type="button" [disabled]="busy() || !selectedOfferAmount()"
+            (click)="placeOrder()">ثبت سفارش در انتظار تسویه</button>
+        </div>
+      }
+      <h3>سفارش‌های اخیر</h3>
+      @if (orders().length === 0) {
+        <p>سفارشی ثبت نشده است.</p>
+      } @else {
+        @for (order of orders(); track order.id) {
+          <p class="tenant-order-row">
+            <strong>{{ formatMoney(order.netAmount) }} ریال</strong>
+            <span>{{ order.billingCycle === 'yearly' ? 'سالانه' : 'ماهانه' }}</span>
+            <span>{{ order.status === 'Settled' ? 'تسویه‌شده' :
+              order.status === 'Pending' ? 'در انتظار بررسی پرداخت' : order.status }}</span>
+          </p>
+        }
+      }
+    }
+  </div>
+}
