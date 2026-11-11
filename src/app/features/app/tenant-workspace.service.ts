@@ -24,6 +24,28 @@ export interface TenantWorkspaceSummary {
   subscriptionStatus: 'pending_activation';
 }
 
+/**
+ * Server-resolved tenant-scoped SHADOW commercial license. This is a status
+ * display only: the API is not a user Permission or an activation receipt.
+ */
+export interface TenantCommercialEntitlementSnapshot {
+  status: 'NotSubscribed' | 'Pending' | 'Active' | 'Inactive' | 'Invalid' | 'Unavailable';
+  reason: string;
+  subscriptionId: string | null;
+  planVersionId: string | null;
+  startsAtUtc: string | null;
+  endsAtUtc: string | null;
+  hasCommercialEntitlement: boolean;
+  moduleCodes: string[];
+  capabilities: {
+    code: string;
+    booleanValue: boolean | null;
+    integerValue: number | null;
+    isUnlimited: boolean;
+    modes: string[];
+  }[];
+}
+
 export interface TenantBranchWriteRequest {
   name: string;
   city: string;
@@ -270,6 +292,14 @@ export class TenantWorkspaceService {
   getWorkspace(): Observable<TenantWorkspaceSummary> {
     return this.http.get<TenantWorkspaceSummary>(this.root);
   }
+
+  getSubscriptionShadow(): Observable<TenantCommercialEntitlementSnapshot> {
+    // TenantId derives from the authenticated BFF/Tenant context only.
+    return this.http.get<TenantCommercialEntitlementSnapshot>(
+      this.root + '/subscription/me');
+  }
+
+
 
 
 
