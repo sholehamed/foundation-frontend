@@ -157,7 +157,7 @@ test('Tenant logout UI sends real CSRF header and only navigates on confirmed 20
     await route.fulfill({ status: 204 });
   });
   await page.goto('/dashboard');
-  await expect(page.getByRole('heading', { name: 'نمای کلی فضای کاری' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'داشبورد فضای کاری' })).toBeVisible();
   await page.getByRole('button', { name: /خروج/ }).click();
   await expect(page).toHaveURL(/\/auth\/login/);
   expect(logoutValidated).toBe(true);
