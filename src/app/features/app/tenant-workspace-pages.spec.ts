@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
-import { TenantWorkspaceService, TenantWorkspaceSummary, TenantWorkspaceBranch } from './tenant-workspace.service';
+import { TenantWorkspaceService, TenantWorkspaceSummary, TenantWorkspaceBranch, TenantCommercialEntitlementSnapshot } from './tenant-workspace.service';
 import { TenantDashboardComponent } from './tenant-dashboard.component';
 import { TenantBusinessProfileComponent } from './tenant-business-profile.component';
 import { TenantBranchesComponent } from './tenant-branches.component';
@@ -14,7 +14,7 @@ const workspace: TenantWorkspaceSummary = {
   mainBranch: { id: 'main', name: 'Main', city: 'Tehran', address: 'First street' },
   branchesCount: 2, subscriptionStatus: 'pending_activation',
 };
-const noSubscription = {
+const noSubscription: TenantCommercialEntitlementSnapshot = {
   status: 'NotSubscribed' as const,
   reason: 'no_active_subscription',
   subscriptionId: null, planVersionId: null,
