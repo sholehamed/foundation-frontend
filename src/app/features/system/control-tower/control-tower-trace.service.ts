@@ -35,7 +35,7 @@ export interface ControlTowerTrace {
 export class ControlTowerTraceService {
   private readonly http = inject(HttpClient);
   private readonly root =
-    environment.apiUrl.replace(/\/$/, '') + '/system/control-tower/traces/';
+    environment.apiUrl.replace(/\/$/, '') + '/system/ControlTower/traces/';
 
   read(traceId: string): Observable<ControlTowerTrace> {
     if (!/^[0-9a-f]{32}$/i.test(traceId)) {
