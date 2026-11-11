@@ -142,3 +142,26 @@
   .system-overview .shortcuts-grid{grid-template-columns:1fr;}
   .system-overview .panel-heading{align-items:flex-start;}
 }
+
+
+/* FR-17F-1: optional server-backed commercial lifecycle overview. */
+.system-commerce-panel{margin:0 0 18px;}
+.system-commerce-panel .panel-heading{align-items:start;}
+.system-section-eyebrow{color:#a4687c!important;font-weight:750;font-size:10px!important;letter-spacing:1.3px;margin:0 0 5px!important;}
+.system-commerce-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+.system-commerce-metric{min-width:0;display:grid;align-content:start;gap:11px;
+  border:1px solid var(--borderColor,#e8e2e8);
+  background:var(--bodyBackgroundColor,#fdfafb);
+  border-radius:14px;padding:18px;}
+.system-commerce-metric .material-symbols-outlined{display:grid;place-items:center;
+  background:#f6e7ed;color:#9f5c75;border-radius:11px;width:39px;height:39px;font-size:21px;}
+.system-commerce-metric:nth-child(2) .material-symbols-outlined{background:#fff0df;color:#a87936;}
+.system-commerce-metric:nth-child(3) .material-symbols-outlined{background:#e6f4ec;color:#348965;}
+.system-commerce-metric:nth-child(4) .material-symbols-outlined{background:#eaf0f9;color:#4f7ba7;}
+.system-commerce-metric small{font-size:11px;line-height:1.7;color:var(--bodyColor,#7c7881);}
+.system-commerce-metric strong{font-size:28px;font-weight:800;line-height:1.2;}
+.system-commerce-disclaimer{margin:17px 0 0;padding-top:14px;
+ border-top:1px solid var(--borderColor,#eee8ed);font-size:11px;
+ line-height:2;color:var(--bodyColor,#837d86);}
+@media(max-width:900px){.system-commerce-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:450px){.system-commerce-metric{padding:14px;}.system-commerce-metric strong{font-size:23px;}}
