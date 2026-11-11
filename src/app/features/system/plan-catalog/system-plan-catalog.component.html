@@ -4,6 +4,7 @@
       <span class="eyebrow">مدیریت مرکزی امکانات</span>
       <h1>پلن‌ها و نسخه‌های انتشار</h1>
       <p>پلن‌ها فقط توسط مدیر سیستم تعریف می‌شوند. ذخیره پیش‌نویس، اشتراکی را برای کسب‌وکار فعال نمی‌کند.</p>
+      <p class="muted">نسخه‌های منتشرشده، قیمت‌ها و امکانات ثبت‌شده آن‌ها ثابت می‌مانند؛ برای هر تغییر یک پیش‌نویس نسخه جدید بسازید.</p>
     </div>
     <button type="button" mat-stroked-button (click)="refresh()" [disabled]="loading()">
       <span class="material-symbols-outlined">refresh</span> تازه‌سازی
@@ -38,6 +39,12 @@
                   {{ plan.latestVersionNumber ? 'نسخه ' + plan.latestVersionNumber : 'بدون نسخه' }}
                   · {{ plan.latestVersionStatus === 'Published' ? 'منتشرشده' : 'پیش‌نویس' }}
                 </small>
+                @if (plan.latestPublishedVersionId) {
+                  <small class="published-lock" aria-label="نسخه منتشرشده غیرقابل ویرایش">
+                    <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+                    نسخه منتشرشده قفل است؛ تغییرات فقط با نسخه جدید اعمال می‌شوند.
+                  </small>
+                }
               </div>
               <div class="plan-actions">
                 @if (plan.draftVersionId) {
