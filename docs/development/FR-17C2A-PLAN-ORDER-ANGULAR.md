@@ -11,6 +11,8 @@ The Tenant Dashboard has a lazy **«مشاهده و ثبت سفارش پلن»**
 
 The panel reads exactly the same DB-published `PublicPlansService` PlanCards as the public landing/signup. The only writable inputs are PlanVersionId, offered monthly/yearly cycle and a cryptographically generated request UUID. **No amount, currency, discount, TenantId, isPaid or Subscription status is sent by Angular.** The server re-resolves a source-owned Commercial Module and IRR offer and creates only a Pending Order.
 
+The owner component preserves a cryptographically generated idempotency key while the selected PlanVersion/cycle stays the same, including network retries; the backend additionally deduplicates pending quotes across new browser sessions. Changing selection begins a new request key. A future quote cancellation/expiry UI will allow changing an already pending Order.
+
 The list of the last 50 Tenant Orders comes from `GET /api/tenant/workspace/subscription/orders`, scoped by authenticated Tenant. The UI displays Pending/Settled accurately. A successful POST says the Order is awaiting settlement; it does not claim a license was activated.
 
 The existing central `/system/plan-catalog` System Admin screen now offers an explicit refreshable queue of up to 100 Pending Orders, including Tenant ID, immutable PlanVersion, billing cycle, NetAmount in IRR. SuperAdmin must enter a receipt reference and check **«تأیید می‌کنم دریافت وجه را مستقل از نرم‌افزار بررسی کرده‌ام»** before the button activates. The backend still independently enforces live Master SuperAdmin, central `PLAN-CATALOG.SETTLE`, validated Pending/positive/IRR Order, current saleable Commercial product and one active license.
