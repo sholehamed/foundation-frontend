@@ -16,7 +16,7 @@ describe('ControlTowerTraceService — private System read boundary', () => {
     let result: unknown;
     api.read(id.toUpperCase()).subscribe(value => { result = value; });
     const request = http.expectOne(
-      environment.apiUrl.replace(/\/$/, '') + '/system/control-tower/traces/' + id);
+      environment.apiUrl.replace(/\/$/, '') + '/system/ControlTower/traces/' + id);
     expect(request.request.method).toBe('GET');
     expect(request.request.params.keys()).toEqual([]);
     expect(request.request.headers.has('Authorization')).toBe(false);
