@@ -98,6 +98,52 @@
     </section>
   </div>
 
+  <section class="catalog-panel" aria-label="بررسی سفارش‌های پرداخت">
+    <div class="panel-title">
+      <div>
+        <h2>سفارش‌های در انتظار تسویه</h2>
+        <small>تأیید فقط بعد از بررسی مستقل دریافت وجه در خارج از سامانه</small>
+      </div>
+      <button mat-stroked-button type="button" [disabled]="ordersLoading() || busy()"
+        (click)="loadPendingOrders()">دریافت سفارش‌ها</button>
+    </div>
+    @if (ordersLoading()) {
+      <p role="status">در حال دریافت سفارش‌های در انتظار بررسی…</p>
+    } @else if (!ordersLoaded()) {
+      <p class="empty inline">برای بررسی پرداخت‌های خارج از درگاه، فهرست سفارش‌ها را دریافت کنید.</p>
+    } @else if (pendingOrders().length === 0) {
+      <p class="empty inline">سفارش تسویه‌نشده‌ای موجود نیست.</p>
+    } @else {
+      <div class="plan-rows">
+        @for (order of pendingOrders(); track order.id) {
+          <article class="plan-row external-settlement-row">
+            <div class="plan-row-main">
+              <strong>مبلغ قابل تأیید: {{ order.netAmount.toLocaleString('fa-IR') }} ریال</strong>
+              <small>شناسه کسب‌وکار: <code dir="ltr">{{ order.tenantId }}</code></small>
+              <small>نسخه پلن: <code dir="ltr">{{ order.planVersionId }}</code></small>
+              <small>دوره: {{ order.billingCycle === 'yearly' ? 'سالانه' : 'ماهانه' }}</small>
+            </div>
+            <div class="fields">
+              <label>شماره رسید پرداخت تأییدشده خارج از سامانه
+                <input type="text" maxlength="160" autocomplete="off"
+                  [(ngModel)]="receipts[order.id]" />
+              </label>
+              <label class="checkbox-field">
+                <input type="checkbox" [(ngModel)]="verifiedReceipt[order.id]" />
+                تأیید می‌کنم دریافت وجه را مستقل از نرم‌افزار بررسی کرده‌ام.
+              </label>
+              <button mat-flat-button type="button"
+                [disabled]="busy() || !verifiedReceipt[order.id] || (receipts[order.id] || '').trim().length < 6"
+                (click)="confirmExternalReceipt(order)">
+                ثبت تسویه و فعال‌سازی اشتراک
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
   @if (selectedDraft(); as draft) {
     @if (editor; as model) {
       <section class="catalog-panel draft-editor">
