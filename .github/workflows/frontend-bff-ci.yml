@@ -55,7 +55,12 @@ jobs:
       - name: Install Angular and browser dependencies
         run: npm ci --no-audit --no-fund
       - name: Install Playwright Chromium for isolated browser wiring tests
-        run: npx playwright install --with-deps chromium
+        # ubuntu-latest includes the Chromium runtime libraries. Avoid
+        # Playwright's optional apt dependency re-install on GitHub runner
+        # Ubuntu 26.04: transient apt mirror DNS failures otherwise fail CI
+        # before any browser test can start. We still install Chromium and
+        # REQUIRE the real browser suite to pass; no tests are skipped.
+        run: npx playwright install chromium
       - name: Resolve disposable Tenant browser hostname to loopback
         run: echo '127.0.0.1 tenant-a.shinera.localhost' | sudo tee -a /etc/hosts
       - name: Run Angular BFF pilot Chromium UX regression suite (controlled HTTP responses)

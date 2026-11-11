@@ -10,6 +10,8 @@ const sample: SuperDashboardDto = {
   totalTenants: 10, activeTenants: 7, inactiveTenants: 3,
   totalUsers: 42, activeUsers: 35, systemUsers: 4, tenantUsers: 38,
   totalRoles: 6, totalPermissions: 22, totalGroups: 2, totalModules: 8,
+  publishedPlanVersions: 3, pendingPlanOrders: 2,
+  settledPlanOrders: 7, activeSubscriptionPeriods: 4,
   recentTenants: [
     { id: '55555555-5555-4555-8555-555555555555', name: 'نمونه کسب‌وکار',
       slug: 'sample', isActive: true, createdAt: '2026-11-01T00:00:00' },
@@ -45,6 +47,47 @@ describe('SystemDashboardComponent — meaningful state and numbers', () => {
     expect(component.activePercent()).toBe(70);
     expect(fixture.nativeElement.textContent).toContain('نمونه کسب‌وکار');
     expect(fixture.nativeElement.textContent).toContain('کسب‌وکارهای فعال7');
+  });
+
+  it('renders the operational hero and concise KPIs from the same backend response', () => {
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('.system-command-hero')).toBeTruthy();
+    expect(element.querySelector('.system-health-ring')?.getAttribute('aria-label'))
+      .toContain('70 درصد');
+    expect(element.querySelectorAll('.stats-grid:not(.supporting-stats) .stat-card').length).toBe(4);
+    expect(element.querySelectorAll('.supporting-stats .stat-card').length).toBe(5);
+    expect(fixture.componentInstance.primaryStats()[0].value).toBe(10);
+    expect(fixture.componentInstance.secondaryStats().length).toBe(5);
+    expect(fixture.componentInstance.formatPersianDate('invalid')).toBe('—');
+    expect(fixture.componentInstance.formatPersianDate('2026-11-01T00:00:00Z'))
+      .not.toBe('—');
+    expect(element.textContent).not.toContain('درآمد امروز');
+  });
+
+  it('shows only backend supplied commercial lifecycle counts and does not call them revenue', () => {
+    fixture.detectChanges();
+    const panel: HTMLElement | null =
+      fixture.nativeElement.querySelector('.system-commerce-panel');
+    expect(panel).not.toBeNull();
+    const numbers = panel?.querySelectorAll('.system-commerce-metric strong');
+    expect(numbers?.length).toBe(4);
+    expect(Array.from(numbers ?? []).map(x => x.textContent?.trim()))
+      .toEqual(['3', '2', '7', '4']);
+    expect(panel?.textContent).toContain('وضعیت پلن‌ها و اشتراک‌ها');
+    expect(panel?.textContent).toContain('به‌معنای درآمد بانکی');
+  });
+
+  it('does not invent zeroed-out commercial metrics against an older backend', () => {
+    const legacy = { ...sample };
+    delete legacy.publishedPlanVersions;
+    delete legacy.pendingPlanOrders;
+    delete legacy.settledPlanOrders;
+    delete legacy.activeSubscriptionPeriods;
+    load.mockReturnValue(of(legacy));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.system-commerce-panel')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('نمونه کسب‌وکار');
   });
 
   it('shows loading then a genuine empty-business state without fabricated data', () => {

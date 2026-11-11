@@ -24,6 +24,11 @@ export interface SuperDashboardDto {
   totalPermissions: number;
   totalGroups: number;
   totalModules: number;
+  /** Additive server-owned lifecycle counts; optional during backend-first rollout. */
+  publishedPlanVersions?: number;
+  pendingPlanOrders?: number;
+  settledPlanOrders?: number;
+  activeSubscriptionPeriods?: number;
   recentTenants: RecentTenantDto[];
 }
 
