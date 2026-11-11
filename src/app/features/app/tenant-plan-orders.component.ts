@@ -28,6 +28,7 @@ export class TenantPlanOrdersComponent {
   private checkoutSelection = '';
   private checkoutRequestKey: string | null = null;
   selectedVersion = '';
+  couponCode = '';
   selectedCycle: 'monthly' | 'yearly' = 'monthly';
 
   constructor() { this.refresh(); }
@@ -77,7 +78,12 @@ export class TenantPlanOrdersComponent {
 
   placeOrder(): void {
     if (this.busy() || !this.selectedVersion || !(this.selectedOfferAmount()! > 0)) return;
-    const currentSelection = this.selectedVersion + '/' + this.selectedCycle;
+    const normalizedCode = this.couponCode.trim().toUpperCase();
+    if (normalizedCode && !/^[0-9A-F]{24}$/.test(normalizedCode)) {
+      this.error.set('کد تخفیف باید ۲۴ رقم و حرف لاتین معتبر داشته باشد.');
+      return;
+    }
+    const currentSelection = this.selectedVersion + '/' + this.selectedCycle + '/' + normalizedCode;
     if (this.checkoutSelection !== currentSelection) {
       this.checkoutRequestKey = globalThis.crypto?.randomUUID?.() ?? null;
       this.checkoutSelection = currentSelection;
@@ -87,14 +93,18 @@ export class TenantPlanOrdersComponent {
     this.busy.set(true);
     this.error.set(null);
     this.message.set(null);
-    this.api.createMyPlanOrder(this.selectedVersion, this.selectedCycle, id)
+    this.api.createMyPlanOrder(this.selectedVersion, this.selectedCycle, id,
+      normalizedCode || undefined)
       .pipe(takeUntilDestroyed(this.destroy), finalize(() => this.busy.set(false)))
       .subscribe({
         next: result => {
           if (!result.ok || !result.order) {
             this.error.set('ثبت سفارش رد شد: ' + result.code); return;
           }
-          this.message.set('سفارش ثبت شد و در انتظار تسویه معتبر است؛ هیچ اشتراکی فعال نشده است.');
+          this.message.set(result.code === 'zero_total_settled_and_activated' ||
+            (result.order.status === 'Settled' && result.order.netAmount === 0)
+              ? 'کد تخفیف کامل اعمال شد؛ سفارش صفرریالی تسویه و اشتراک با تأیید سرور فعال شد.'
+              : 'سفارش با مبلغ محاسبه‌شده در سرور ثبت شد و در انتظار تأیید تسویه است.');
           this.api.listMyPlanOrders().pipe(takeUntilDestroyed(this.destroy))
             .subscribe({ next: orders => this.orders.set(orders) });
         },

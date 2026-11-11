@@ -98,6 +98,98 @@
     </section>
   </div>
 
+  <section class="catalog-panel" aria-label="مدیریت کدهای تخفیف">
+    <div class="panel-title">
+      <div>
+        <h2>کدهای تخفیف</h2>
+        <small>صدور و کنترل مرکزی، با ثبت مصرف فقط هنگام تسویه معتبر</small>
+      </div>
+      <button mat-stroked-button type="button" [disabled]="couponsLoading()"
+        (click)="loadCoupons()">دریافت کدها</button>
+    </div>
+
+    <div class="editor-grid">
+      <div class="editor-block">
+        <h3>صدور کد جدید</h3>
+        <div class="fields">
+          <label>عنوان مدیریتی
+            <input type="text" maxlength="120" [(ngModel)]="couponDraft.title"
+              placeholder="کمپین افتتاحیه" />
+          </label>
+          <label>نوع تخفیف
+            <select [(ngModel)]="couponDraft.kind">
+              <option value="Percentage">درصدی</option>
+              <option value="FixedIRR">مبلغ ثابت (ریال)</option>
+            </select>
+          </label>
+          <label>{{ couponDraft.kind === 'Percentage' ? 'درصد تخفیف (حداکثر ۱۰۰)' : 'مبلغ تخفیف به ریال' }}
+            <input type="number" min="0.01" [max]="couponDraft.kind === 'Percentage' ? 100 : null"
+              [(ngModel)]="couponDraft.value" />
+          </label>
+          <label>محدودیت به نسخه مشخص پلن
+            <select [(ngModel)]="couponDraft.planVersionId">
+              <option [ngValue]="null">تمام نسخه‌های تجاری معتبر</option>
+              @for (plan of plans(); track plan.id) {
+                @if (plan.latestPublishedVersionId) {
+                  <option [ngValue]="plan.latestPublishedVersionId">{{ plan.name }}</option>
+                }
+              }
+            </select>
+          </label>
+          <label>مدت اعتبار (روز)
+            <input type="number" min="1" max="365" step="1"
+              [(ngModel)]="couponDraft.validDays" />
+          </label>
+          <label>حداکثر مصرف کل
+            <input type="number" min="1" step="1"
+              [(ngModel)]="couponDraft.maxUses" />
+          </label>
+          <label>حداکثر مصرف هر Tenant
+            <input type="number" min="1" step="1"
+              [(ngModel)]="couponDraft.maxUsesPerTenant" />
+          </label>
+          <button mat-flat-button type="button" [disabled]="busy()"
+            (click)="issueCoupon()">ایجاد کد تخفیف</button>
+        </div>
+        @if (lastIssuedSecret(); as code) {
+          <div class="publication-review" role="status">
+            <strong>کد صادرشده (فقط همین بار نمایش داده می‌شود)</strong>
+            <p dir="ltr"><code>{{ code }}</code></p>
+            <p>این کد را در محل امن ذخیره کنید. پس از بستن صفحه قابل بازیابی نیست.</p>
+          </div>
+        }
+      </div>
+      <div class="editor-block">
+        <h3>کدهای تعریف‌شده</h3>
+        @if (couponsLoading()) {
+          <p role="status">در حال دریافت…</p>
+        } @else if (!couponsLoaded()) {
+          <p class="empty inline">برای بررسی مصرف و غیرفعال‌سازی، فهرست را دریافت کنید.</p>
+        } @else if (!coupons().length) {
+          <p class="empty inline">هنوز کد تخفیفی صادر نشده است.</p>
+        } @else {
+          @for (coupon of coupons(); track coupon.id) {
+            <div class="plan-row coupon-row">
+              <div class="plan-row-main">
+                <strong>{{ coupon.title }}</strong>
+                <small>
+                  {{ coupon.kind === 'Percentage' ? coupon.value + '٪' :
+                    coupon.value.toLocaleString('fa-IR') + ' ریال' }}
+                </small>
+                <small>مصرف قطعی: {{ coupon.settledUses }} از {{ coupon.maxUses }}</small>
+                <small>سقف هر Tenant: {{ coupon.maxUsesPerTenant }}</small>
+                <small>{{ coupon.isActive ? 'فعال' : 'غیرفعال' }}</small>
+              </div>
+              <button type="button" mat-stroked-button
+                [disabled]="busy() || !coupon.isActive"
+                (click)="disableCoupon(coupon)">غیرفعال‌سازی</button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </section>
+
   <section class="catalog-panel" aria-label="بررسی سفارش‌های پرداخت">
     <div class="panel-title">
       <div>

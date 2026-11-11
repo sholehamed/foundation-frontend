@@ -25,6 +25,11 @@
               }
             </select>
           </label>
+          <label>کد تخفیف (اختیاری)
+            <input type="text" dir="ltr" maxlength="24" autocomplete="off"
+              [(ngModel)]="couponCode" placeholder="کد دریافتی از مدیر سیستم" />
+          </label>
+          <p>مبلغ نهایی و اعتبار کد صرفاً در سرور محاسبه می‌شود.</p>
           @if (selectedOfferAmount() !== null) {
             <p>مبلغ ثبت سفارش:
               <strong>{{ formatMoney(selectedOfferAmount()!) }} ریال</strong>

@@ -4,6 +4,36 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 /** System-owned review data; no customer-provided settlement state. */
+export interface SystemDiscountCoupon {
+  id: string;
+  title: string;
+  kind: 'Percentage' | 'FixedIRR';
+  value: number;
+  planVersionId: string | null;
+  startsAtUtc: string;
+  endsAtUtc: string;
+  maxUses: number;
+  maxUsesPerTenant: number;
+  settledUses: number;
+  isActive: boolean;
+}
+export interface IssueDiscountCoupon {
+  title: string;
+  kind: 'Percentage' | 'FixedIRR';
+  value: number;
+  planVersionId: string | null;
+  startsAtUtc: string;
+  endsAtUtc: string;
+  maxUses: number;
+  maxUsesPerTenant: number;
+}
+export interface IssuedDiscountCoupon {
+  ok: boolean;
+  code: string;
+  coupon: SystemDiscountCoupon | null;
+  secretCode: string | null;
+}
+
 export interface SystemPendingPlanOrder {
   id: string;
   tenantId: string;
@@ -120,6 +150,19 @@ export interface CatalogOperation {
 export class SystemPlanCatalogService {
   private readonly http = inject(HttpClient);
   private readonly root = environment.apiUrl.replace(/\/$/, '') + '/system/PlanCatalog';
+
+  listCoupons(): Observable<SystemDiscountCoupon[]> {
+    return this.http.get<SystemDiscountCoupon[]>(this.root + '/coupons');
+  }
+
+  issueCoupon(request: IssueDiscountCoupon): Observable<IssuedDiscountCoupon> {
+    return this.http.post<IssuedDiscountCoupon>(this.root + '/coupons', request);
+  }
+
+  disableCoupon(id: string): Observable<{ code: string }> {
+    return this.http.post<{ code: string }>(
+      this.root + '/coupons/' + encodeURIComponent(id) + '/disable', {});
+  }
 
   pendingOrders(): Observable<SystemPendingPlanOrder[]> {
     return this.http.get<SystemPendingPlanOrder[]>(this.root + '/orders/pending');
