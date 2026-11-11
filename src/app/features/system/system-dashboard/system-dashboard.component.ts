@@ -52,6 +52,9 @@ export class SystemDashboardComponent implements OnInit {
     ];
   });
 
+  readonly primaryStats = computed(() => this.stats().slice(0, 4));
+  readonly secondaryStats = computed(() => this.stats().slice(4));
+
   readonly shortcuts = [
     { title: 'مدیریت کسب‌وکارها', description: 'فهرست و وضعیت مستأجرها', path: '/system/tenants', icon: 'domain' },
     { title: 'کاربران', description: 'حساب‌ها و وضعیت دسترسی', path: '/system/users', icon: 'people' },
@@ -59,6 +62,8 @@ export class SystemDashboardComponent implements OnInit {
     { title: 'گروه‌ها', description: 'عضویت و نقش گروه‌ها', path: '/system/groups', icon: 'groups' },
     { title: 'ماژول‌ها', description: 'مدیریت ماژول‌ها', path: '/system/modules', icon: 'widgets' },
     { title: 'رجیستری قابلیت‌ها', description: 'بازبینی تعاریف کد و دیتابیس', path: '/system/feature-registry', icon: 'sync' },
+    { title: 'پلن‌ها و اشتراک', description: 'ویرایش و انتشار نسخه پلن‌ها', path: '/system/plan-catalog', icon: 'workspace_premium' },
+    { title: 'منوی مرکزی', description: 'فهرست و مدیریت ناوبری', path: '/system/menu-management', icon: 'view_list' },
   ] as const;
 
   ngOnInit(): void { this.load(); }
@@ -89,6 +94,14 @@ export class SystemDashboardComponent implements OnInit {
   }
 
   hasValidDate(iso: string): boolean {
-    return !!iso && Number(iso.substring(0, 4)) >= 2000;
+    return !!iso && Number(iso.substring(0, 4)) >= 2000 &&
+      Number.isFinite(new Date(iso).getTime());
+  }
+
+  formatPersianDate(value: string): string {
+    if (!this.hasValidDate(value)) return '—';
+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+      timeZone: 'UTC', year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(new Date(value));
   }
 }
