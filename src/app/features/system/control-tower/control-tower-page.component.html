@@ -1,0 +1,176 @@
+<main class="control-tower" dir="rtl">
+  <header class="tower-heading">
+    <div>
+      <span class="eyebrow">FOUNDATION · OBSERVABILITY</span>
+      <h1>مرکز پایش سیستم</h1>
+      <p>ردیابی درخواست‌ها، اجرای Handler و کوئری‌های SQL بر اساس داده‌های ثبت‌شده واقعی.</p>
+    </div>
+    <div class="heading-symbol" aria-hidden="true">
+      <span class="material-symbols-outlined">monitoring</span>
+    </div>
+  </header>
+
+  <form class="trace-search" (submit)="$event.preventDefault(); search()">
+    <div class="search-copy">
+      <label for="tower-trace-id">جستجوی درخواست با TraceId</label>
+      <small>شناسه ۳۲ کاراکتری W3C که همراه پاسخ API دریافت شده است.</small>
+    </div>
+    <div class="search-fields">
+      <input id="tower-trace-id" dir="ltr" type="text" inputmode="text"
+        autocomplete="off" spellcheck="false" maxlength="32"
+        placeholder="00000000000000000000000000000000"
+        [value]="query()" (input)="onInput($event)" aria-describedby="tower-trace-help" />
+      <button type="submit" [disabled]="status() === 'loading'">
+        <span class="material-symbols-outlined" aria-hidden="true">search</span>
+        جستجو
+      </button>
+    </div>
+    <p id="tower-trace-help" class="search-note">
+      فقط Metadata مجاز نمایش داده می‌شود؛ متن SQL، پارامترها و محتوای ورودی/خروجی ثبت نشده‌اند.
+    </p>
+  </form>
+
+  @if (status() === 'idle') {
+    <section class="state-panel">
+      <span class="material-symbols-outlined" aria-hidden="true">account_tree</span>
+      <h2>مسیر یک درخواست را دنبال کنید</h2>
+      <p>TraceId را وارد کنید تا اطلاعات موجود در مخزن مستقل مانیتورینگ بازیابی شود.</p>
+    </section>
+  } @else if (status() === 'loading') {
+    <section class="state-panel" role="status" aria-live="polite">
+      <span class="material-symbols-outlined spinning" aria-hidden="true">progress_activity</span>
+      <h2>در حال دریافت Trace واقعی…</h2>
+      <p>درخواست از API محافظت‌شده Foundation به مخزن خصوصی Trace ارسال شده است.</p>
+    </section>
+  } @else if (status() !== 'captured') {
+    <section class="state-panel" [class.state-error]="status() === 'forbidden' || status() === 'failed'"
+      role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">
+        {{ status() === 'forbidden' ? 'gpp_bad' : status() === 'not-retained' ? 'history' : 'cloud_off' }}
+      </span>
+      <h2>{{ status() === 'not-retained' ? 'اطلاعات این Trace موجود نیست' :
+        status() === 'forbidden' ? 'دسترسی محدود شده است' :
+        status() === 'invalid' ? 'شناسه نامعتبر' : 'دریافت اطلاعات ممکن نیست' }}</h2>
+      <p>{{ message() }}</p>
+      @if (status() === 'unavailable' || status() === 'failed') {
+        <button class="outline-button" type="button" (click)="refresh()">تلاش مجدد</button>
+      }
+    </section>
+  } @else if (data(); as trace) {
+    <section class="trace-overview" aria-label="مشخصات Trace">
+      <div class="trace-topline">
+        <span class="capture-state" [class.partial]="trace.truncated || trace.state === 'PartiallyCaptured'">
+          <span class="material-symbols-outlined" aria-hidden="true">
+            {{ trace.truncated || trace.state === 'PartiallyCaptured' ? 'warning' : 'check_circle' }}
+          </span>
+          {{ trace.truncated || trace.state === 'PartiallyCaptured' ? 'ثبت ناقص' : 'ثبت‌شده' }}
+        </span>
+        <button class="outline-button" type="button" (click)="refresh()">
+          <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+          به‌روزرسانی
+        </button>
+      </div>
+      <div class="trace-title-row">
+        <div>
+          <span class="eyebrow">TRACE DETAIL</span>
+          <h2>{{ trace.service }}</h2>
+          <div class="trace-code">
+            <code dir="ltr">{{ trace.traceId }}</code>
+            <button class="copy-button" type="button" (click)="copy()"
+              [attr.aria-label]="copied() ? 'شناسه کپی شد' : 'کپی شناسه Trace'">
+              <span class="material-symbols-outlined" aria-hidden="true">{{ copied() ? 'done' : 'content_copy' }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="trace-start">
+          <small>زمان شروع (UTC، تقویم شمسی)</small>
+          <strong>{{ date(trace.startedAtUtc) }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div><small>مدت درخواست ثبت‌شده</small><strong>{{ trace.durationMs | number:'1.0-2' }} <em>ms</em></strong></div>
+        <div><small>Spanهای ذخیره‌شده</small><strong>{{ trace.spans.length | number }}</strong></div>
+        <div><small>فرمان‌های SQL</small><strong>{{ sqlCount() | number }}</strong></div>
+        <div><small>Spanهای خطادار</small><strong>{{ errorCount() | number }}</strong></div>
+      </div>
+
+      @if (trace.truncated || trace.state === 'PartiallyCaptured') {
+        <p class="partial-warning" role="status">
+          <span class="material-symbols-outlined" aria-hidden="true">warning_amber</span>
+          تعداد Spanها از سقف مجاز نمایش بیشتر بوده؛ این نمای ذخیره‌شده کامل نیست.
+        </p>
+      }
+    </section>
+
+    <section class="waterfall-panel" aria-label="جدول زمانی Spanهای درخواست">
+      <header class="panel-header">
+        <div>
+          <span class="eyebrow">EXECUTION TIMELINE</span>
+          <h2>مسیر اجرای درخواست</h2>
+          <p>زمان‌ها از Spanهای واقعی سرور گرفته شده‌اند. نوارها ممکن است به علت اجرای هم‌زمان هم‌پوشانی داشته باشند.</p>
+        </div>
+        <div class="span-filters" role="group" aria-label="فیلتر Spanها">
+          <button type="button" [class.active]="filter() === 'all'" (click)="setFilter('all')">همه</button>
+          <button type="button" [class.active]="filter() === 'handler'" (click)="setFilter('handler')">Handler</button>
+          <button type="button" [class.active]="filter() === 'sql'" (click)="setFilter('sql')">SQL</button>
+          <button type="button" [class.active]="filter() === 'errors'" (click)="setFilter('errors')">خطاها</button>
+        </div>
+      </header>
+      <div class="waterfall-scroller">
+        <div class="timeline-head">
+          <span>عملیات</span><span>مدت اجرا / موقعیت نسبی</span><span>ms</span>
+        </div>
+        @for (span of visible(); track span.spanId) {
+          <button type="button" class="timeline-row"
+            [class.selected]="span.spanId === selectedId()"
+            [class.has-error]="span.error" (click)="choose(span)"
+            [attr.aria-pressed]="span.spanId === selectedId()">
+            <span class="span-label">
+              <span class="category-icon material-symbols-outlined" aria-hidden="true">
+                {{ span.category === 'sql' ? 'database' : span.category === 'handler' ?
+                  'account_tree' : span.category === 'pipeline' ? 'conversion_path' : 'http' }}
+              </span>
+              <span class="span-text">{{ span.name }}</span>
+            </span>
+            <span class="timeline-track" aria-hidden="true">
+              <span class="timeline-bar" [attr.data-category]="span.category"
+                [style.margin-inline-start.%]="offset(span)" [style.width.%]="width(span)"></span>
+            </span>
+            <span class="span-duration">{{ span.durationMs | number:'1.0-2' }}</span>
+          </button>
+        } @empty {
+          <p class="empty-filter">Span مطابق این فیلتر در Trace ذخیره‌شده وجود ندارد.</p>
+        }
+      </div>
+    </section>
+
+    @if (selected(); as span) {
+      <section class="span-inspector" aria-label="جزئیات Span">
+        <header class="panel-header">
+          <div>
+            <span class="eyebrow">SPAN INSPECTOR</span>
+            <h2>{{ span.name }}</h2>
+            <p>جزئیات اجازه‌داده‌شده توسط API مرکزی؛ بدون مقادیر محرمانه.</p>
+          </div>
+          <button class="outline-button" type="button" (click)="choose(span)">بستن</button>
+        </header>
+        <dl class="inspector-grid">
+          <div><dt>Span ID</dt><dd dir="ltr">{{ span.spanId }}</dd></div>
+          <div><dt>Parent Span ID</dt><dd dir="ltr">{{ span.parentSpanId || '—' }}</dd></div>
+          <div><dt>شروع (UTC)</dt><dd>{{ date(span.startedAtUtc) }}</dd></div>
+          <div><dt>مدت اجرا</dt><dd>{{ span.durationMs | number:'1.0-3' }} ms</dd></div>
+          <div><dt>وضعیت</dt><dd>{{ span.error ? 'خطا' : 'بدون خطای ثبت‌شده' }}</dd></div>
+        </dl>
+        <h3>Attributeهای مجاز</h3>
+        <dl class="attribute-list">
+          @for (entry of span.attributes | keyvalue; track entry.key) {
+            <div><dt dir="ltr">{{ entry.key }}</dt><dd dir="ltr">{{ entry.value }}</dd></div>
+          } @empty {
+            <p class="empty-filter">Attribute مجاز دیگری برای این Span ذخیره نشده است.</p>
+          }
+        </dl>
+      </section>
+    }
+  }
+</main>
