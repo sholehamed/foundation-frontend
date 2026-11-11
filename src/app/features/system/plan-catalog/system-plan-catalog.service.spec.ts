@@ -48,6 +48,35 @@ describe('System Plan Catalog API contract', () => {
     attestation.flush({ ok: true, code: 'settled_and_activated', subscriptionId: 'sub-1' });
   });
 
+  it('issues a secret exactly once and never passes a client-selected coupon code', () => {
+    client.listCoupons().subscribe();
+    const list = http.expectOne(root + '/coupons');
+    expect(list.request.method).toBe('GET');
+    list.flush([]);
+
+    const request = {
+      title: 'Opening', kind: 'Percentage' as const, value: 100,
+      planVersionId: null,
+      startsAtUtc: '2026-11-11T08:00:00.000Z',
+      endsAtUtc: '2026-12-11T08:00:00.000Z',
+      maxUses: 20, maxUsesPerTenant: 1,
+    };
+    client.issueCoupon(request).subscribe();
+    const issue = http.expectOne(root + '/coupons');
+    expect(issue.request.method).toBe('POST');
+    expect(issue.request.body).toEqual(request);
+    expect(issue.request.body).not.toHaveProperty('code');
+    expect(issue.request.body).not.toHaveProperty('tenantId');
+    issue.flush({ ok: true, code: 'coupon_issued', coupon: null,
+      secretCode: 'A'.repeat(24) });
+
+    client.disableCoupon('coupon-id').subscribe();
+    const disable = http.expectOne(root + '/coupons/coupon-id/disable');
+    expect(disable.request.method).toBe('POST');
+    expect(disable.request.body).toEqual({});
+    disable.flush({ code: 'coupon_disabled' });
+  });
+
   it('uses reviewed fingerprint in distinct publish POST, not plan edit PUT', () => {
     client.preview('draft-1').subscribe();
     const preview = http.expectOne(root + '/drafts/draft-1/preview');
