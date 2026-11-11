@@ -162,3 +162,51 @@ test('Tenant logout UI sends real CSRF header and only navigates on confirmed 20
   await expect(page).toHaveURL(/\/auth\/login/);
   expect(logoutValidated).toBe(true);
 });
+
+test('Tenant dashboard remains truthful and readable at mobile width', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockTenantBranding(page);
+  await mockWorkspace(page);
+  await page.route('**/bff/session', async route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify(session),
+  }));
+  await page.route('**/api/tenant/workspace/subscription/me', async route =>
+    route.fulfill({
+      status: 200, contentType: 'application/json',
+      body: JSON.stringify({
+        status: 'NotSubscribed', reason: 'no_active_subscription',
+        subscriptionId: null, planVersionId: null,
+        startsAtUtc: null, endsAtUtc: null,
+        hasCommercialEntitlement: false, moduleCodes: [], capabilities: [],
+      }),
+    }));
+  await page.route('**/api/tenant/workspace', async route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({
+      tenant: { id: 'fixture-tenant', name: 'Tenant Browser Pilot', slug: 'tenant-a' },
+      profile: {
+        displayName: 'کسب‌وکار آزمایشی مرورگر', activityType: 'Beauty',
+        city: 'Tehran', address: '', requestedPlanKey: 'solo',
+        requestedBillingCycle: 'monthly',
+      },
+      mainBranch: { id: 'main', name: 'شعبه اصلی', city: 'Tehran', address: '' },
+      branchesCount: 2, subscriptionStatus: 'pending_activation',
+    }),
+  }));
+
+  await page.goto('/dashboard');
+  await expect(page.getByRole('heading', { name: 'داشبورد فضای کاری' })).toBeVisible();
+  const hero = page.locator('.tenant-command-hero');
+  await expect(hero).toBeVisible();
+  await expect(hero).toContainText('کسب‌وکار آزمایشی مرورگر');
+  await expect(page.locator('.tenant-command-metric')).toHaveCount(4);
+  await expect(page.locator('.tenant-command-status')).toContainText('اشتراک فعالی ثبت نشده');
+  await expect(page.locator('app-tenant-usage-overview')).toHaveCount(0);
+  await expect(page.locator('app-tenant-plan-allowances')).toHaveCount(0);
+  await expect(page.locator('app-tenant-plan-orders')).toHaveCount(0);
+  // Mobile layout should not push the page beyond the viewport. The header
+  // navigation scrolls inside its own container instead of widening the page.
+  const fits = await hero.evaluate(element =>
+    element.getBoundingClientRect().width <= window.innerWidth + 1);
+  expect(fits).toBe(true);
+});
