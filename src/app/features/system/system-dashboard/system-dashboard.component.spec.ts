@@ -47,6 +47,22 @@ describe('SystemDashboardComponent — meaningful state and numbers', () => {
     expect(fixture.nativeElement.textContent).toContain('کسب‌وکارهای فعال7');
   });
 
+  it('renders the operational hero and concise KPIs from the same backend response', () => {
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('.system-command-hero')).toBeTruthy();
+    expect(element.querySelector('.system-health-ring')?.getAttribute('aria-label'))
+      .toContain('70 درصد');
+    expect(element.querySelectorAll('.stats-grid:not(.supporting-stats) .stat-card').length).toBe(4);
+    expect(element.querySelectorAll('.supporting-stats .stat-card').length).toBe(5);
+    expect(fixture.componentInstance.primaryStats()[0].value).toBe(10);
+    expect(fixture.componentInstance.secondaryStats().length).toBe(5);
+    expect(fixture.componentInstance.formatPersianDate('invalid')).toBe('—');
+    expect(fixture.componentInstance.formatPersianDate('2026-11-01T00:00:00Z'))
+      .not.toBe('—');
+    expect(element.textContent).not.toContain('درآمد امروز');
+  });
+
   it('shows loading then a genuine empty-business state without fabricated data', () => {
     const pending = new Subject<SuperDashboardDto>();
     load.mockReturnValue(pending.asObservable());
