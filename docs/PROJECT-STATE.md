@@ -1,3 +1,8 @@
+## FR-17D-2B — Tenant Owner actual consumption and remaining quota in Angular (2026-11-11)
+
+- Added `TenantWorkspaceService.getSubscriptionUsage()` for the owner-only server-scoped GET `/tenant/workspace/subscription/usage` (no client TenantId, period or quota value). The new standalone `TenantUsageOverviewComponent` renders actual SQL committed PeriodQuota usage and remaining only when verified active Subscription and measured period are reported; renders CountLimit as **unmeasured** without a domain count, missing cadence as unconfigured, mismatch as error. Strict bigint decimal strings retain >2^53 precision, Persian digits and Jalali UTC-period end. A member 403 shows private Owner-only message; UI never authorizes writes.
+- Dashboard composes the existing active Plan allowances and the new read-only usage panel; no fake Commercial Module or sample usage. Unit HTTP/403/bigint/zero-vs-null tests added. Backend companion [PR #140](https://github.com/sholehamed/foundation-backend/pull/140) must deploy first. [Angular handoff](development/FR-17D2B-OWNER-USAGE-ANGULAR.md). Next domain CountLimit adapters and real atomic business operation gating. PR-head Angular+Chromium and post-merge CI must be checked separately.
+
 ## FR-17C-3A — Tenant active subscription PlanVersion allowances (2026-11-11)
 
 - Added standalone Angular `TenantPlanAllowancesComponent` under Tenant dashboard **only for verified active commercial entitlement** from existing `/subscription/me`. Displays server-resolved Feature booleans, finite including 0, explicit Unlimited, and AllowedModes. Does not display or guess actual current usage/remaining capacity because no authoritative usage read API exists yet. No frontend role/permission grant or client-side paywall.

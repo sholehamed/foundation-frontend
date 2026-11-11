@@ -46,6 +46,32 @@ export interface TenantCommercialEntitlementSnapshot {
   }[];
 }
 
+/**
+ * FR-17D-2B: source-verified, Owner-only consumption read. Bigint units are
+ * exact decimal STRINGS; a null counter is unmeasured, never equivalent to 0.
+ */
+export interface TenantUsageMetric {
+  code: string;
+  kind: 'PeriodQuota' | 'CountLimit';
+  state: 'Measured' | 'DomainCountUnavailable' | 'PeriodNotConfigured' |
+    'PeriodUnavailable' | 'PeriodConflict' | 'InvalidAllowance';
+  isUnlimited: boolean;
+  limit: string | null;
+  currentUsage: string | null;
+  remaining: string | null;
+  periodStartUtc: string | null;
+  periodEndUtc: string | null;
+  periodCadence: 'SubscriptionTerm' | 'MonthlyAnniversary' | 'YearlyAnniversary' | null;
+  overLimit: boolean;
+}
+
+export interface TenantUsageProjection {
+  status: TenantCommercialEntitlementSnapshot['status'];
+  reason: string;
+  subscriptionId: string | null;
+  items: TenantUsageMetric[];
+}
+
 /** IRR price quote is server-owned. These fields are for display only. */
 export interface TenantPlanOrder {
   id: string;
@@ -334,6 +360,12 @@ export class TenantWorkspaceService {
     // TenantId derives from the authenticated BFF/Tenant context only.
     return this.http.get<TenantCommercialEntitlementSnapshot>(
       this.root + '/subscription/me');
+  }
+
+  /** Tenant Owner only. No TenantId, period or quota threshold comes from UI. */
+  getSubscriptionUsage(): Observable<TenantUsageProjection> {
+    return this.http.get<TenantUsageProjection>(
+      this.root + '/subscription/usage');
   }
 
 
