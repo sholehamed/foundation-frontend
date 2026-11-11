@@ -1,3 +1,8 @@
+## FR-17C-2A — Owner Order form and central external-payment review (2026-11-11)
+
+- [PR #64](https://github.com/sholehamed/foundation-frontend/pull/64) adds lazily loaded Tenant Owner order form from shared PublicPlanCards, typed server-priced Pending Order POST with no caller TenantId/amount/discount/payment flags, and own order list. Existing System PlanCatalog page includes a manual receipt review panel and sends an explicit external-payment attestation to the new backend System-only endpoint; no bank verification or coupon redemption is claimed. [Implementation/UI workflow](development/FR-17C2A-PLAN-ORDER-ANGULAR.md).
+- Depends on [backend PR #135](https://github.com/sholehamed/foundation-backend/pull/135) and reviewed existing-db SuperAdmin `PLAN-CATALOG.SETTLE` permission rollout. Production source manifest has zero Commercial Modules, so UI must show no purchasable plans. No role grant, subscription activation before settlement, 100% coupon, gateway, quota or commercial runtime entitlement gating.
+
 ## FR-17C-1 — Truthful tenant commercial subscription shadow (2026-11-11)
 
 - [PR #63](https://github.com/sholehamed/foundation-frontend/pull/63) replaces the hard-coded Tenant Dashboard pending activation message with read-only `TenantWorkspaceService.getSubscriptionShadow()` and `TenantCommercialEntitlementSnapshot` API. Only the backend active-Tenant context chooses the licensed Tenant; no TenantId/query/write input, no role/permission/menu change and no fake active plan from signup intent. New HTTP contract and pending/no-subscription UI tests. [Handoff](development/FR-17C1-TENANT-SUBSCRIPTION-STATUS.md).
