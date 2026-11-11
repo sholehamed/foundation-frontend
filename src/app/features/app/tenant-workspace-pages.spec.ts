@@ -83,8 +83,8 @@ describe('Tenant Admin workspace pages', () => {
   it('quick billing action toggles a real component only on explicit interaction', () => {
     const fixture = TestBed.createComponent(TenantDashboardComponent);
     fixture.detectChanges();
-    const orderButton = fixture.nativeElement.querySelector('.tenant-command-action[type="button"]')
-      as HTMLButtonElement;
+    const orderButton: HTMLButtonElement | null =
+      fixture.nativeElement.querySelector('.tenant-command-action[type="button"]');
     expect(orderButton).toBeTruthy();
     expect(fixture.componentInstance.showOrderForm()).toBe(false);
     // The billing component itself is not initialized before the action.
