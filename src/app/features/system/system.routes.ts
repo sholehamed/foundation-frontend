@@ -83,6 +83,12 @@ export default [
         data: { breadcrumb: 'رجیستری قابلیت‌ها' },
       },
       {
+        path: systemFeatureRouteSegments.controlTower,
+        loadComponent: () => import('./control-tower/control-tower-page.component')
+          .then(x => x.ControlTowerPageComponent),
+        data: { breadcrumb: 'مرکز پایش' },
+      },
+      {
         path: systemFeatureRouteSegments.planCatalog,
         loadComponent: () =>
           import('./plan-catalog/system-plan-catalog.component').then(
