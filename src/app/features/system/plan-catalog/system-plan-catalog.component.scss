@@ -127,6 +127,22 @@
     border-radius: 12px;
   }
 
+  .published-lock {
+    display: flex;
+    align-items: start;
+    gap: 5px;
+    max-width: 355px;
+    line-height: 1.7;
+    color: var(--bodyColor);
+
+    .material-symbols-outlined {
+      flex: 0 0 auto;
+      font-size: 16px;
+      color: var(--primaryColor);
+      margin-top: 2px;
+    }
+  }
+
   .plan-row-main {
     display: grid;
     gap: 5px;
