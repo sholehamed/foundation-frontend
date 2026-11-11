@@ -64,6 +64,7 @@ export class SystemDashboardComponent implements OnInit {
     { title: 'رجیستری قابلیت‌ها', description: 'بازبینی تعاریف کد و دیتابیس', path: '/system/feature-registry', icon: 'sync' },
     { title: 'پلن‌ها و اشتراک', description: 'ویرایش و انتشار نسخه پلن‌ها', path: '/system/plan-catalog', icon: 'workspace_premium' },
     { title: 'منوی مرکزی', description: 'فهرست و مدیریت ناوبری', path: '/system/menu-management', icon: 'view_list' },
+    { title: 'مرکز پایش', description: 'جستجو و رهگیری درخواست‌های ثبت‌شده', path: '/system/control-tower', icon: 'monitoring' },
   ] as const;
 
   ngOnInit(): void { this.load(); }
