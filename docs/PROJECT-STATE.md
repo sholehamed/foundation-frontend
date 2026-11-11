@@ -1,3 +1,8 @@
+## FR-17B-2C — Published Plan locks in System Admin UI (2026-11-11)
+
+- [PR #62](https://github.com/sholehamed/foundation-frontend/pull/62) visibly distinguishes SQL-immutable Published Plan revisions from editable Drafts. Published-only rows show a lock and the **نسخه جدید** action; no published-content editor or false subscription activation. [Details and rollout](development/FR-17B2C-PUBLISHED-PLAN-LOCK-UI.md).
+- Deploy matching backend [PR #132](https://github.com/sholehamed/foundation-backend/pull/132) SQL migration and EF trigger metadata before relying on DB integrity. Existing System Admin central grants, commercial Module registration, Subscription, discounts, quotas, actual payments and staging verification are independent prerequisites.
+
 ## FR-17B-2B — Plan Catalog administration in Angular (2026-11-10)
 
 - [PR #61](https://github.com/sholehamed/foundation-frontend/pull/61) adds lazy `/system/plan-catalog` page as 14th centrally guarded System feature, typed `SystemPlanCatalogService`, RTL Plan listing, versioned Draft creation/edit/revision, source-approved Commercial Modules, price options in IRR, dynamic PlanCard display rows, read-only SHA-256 Publish Preview and Publish action enabled **only** when `canPublish` is true. [UI handoff and rollout](development/FR-17B2B-SYSTEM-PLAN-CATALOG-UI.md).
