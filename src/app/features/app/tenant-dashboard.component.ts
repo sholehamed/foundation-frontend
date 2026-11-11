@@ -88,7 +88,7 @@ import {
               <span class="material-symbols-outlined" aria-hidden="true">extension</span>
               <small>ماژول‌های تجاری مجاز</small>
             </div>
-            <strong>{{ subscription()?.hasCommercialEntitlement ? subscription()!.moduleCodes.length : 0 }}</strong>
+            <strong>{{ subscription()?.hasCommercialEntitlement ? subscription()?.moduleCodes?.length : 0 }}</strong>
             <p>صرفاً بر اساس اشتراک تأییدشده</p>
           </article>
           <article class="tenant-command-metric">
