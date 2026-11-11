@@ -1,3 +1,8 @@
+## FR-17C-1 — Truthful tenant commercial subscription shadow (2026-11-11)
+
+- [PR #63](https://github.com/sholehamed/foundation-frontend/pull/63) replaces the hard-coded Tenant Dashboard pending activation message with read-only `TenantWorkspaceService.getSubscriptionShadow()` and `TenantCommercialEntitlementSnapshot` API. Only the backend active-Tenant context chooses the licensed Tenant; no TenantId/query/write input, no role/permission/menu change and no fake active plan from signup intent. New HTTP contract and pending/no-subscription UI tests. [Handoff](development/FR-17C1-TENANT-SUBSCRIPTION-STATUS.md).
+- Requires [backend PR #134](https://github.com/sholehamed/foundation-backend/pull/134) and applied SQL migration; the dashboard safely shows a fetch error before it deploys. **No checkout/coupon/active paid license issuance/permission gating** is implemented. Commercial code registry still has zero modules.
+
 ## FR-17B-2C — Published Plan locks in System Admin UI (2026-11-11)
 
 - [PR #62](https://github.com/sholehamed/foundation-frontend/pull/62) visibly distinguishes SQL-immutable Published Plan revisions from editable Drafts. Published-only rows show a lock and the **نسخه جدید** action; no published-content editor or false subscription activation. [Details and rollout](development/FR-17B2C-PUBLISHED-PLAN-LOCK-UI.md).

@@ -2,7 +2,8 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { TenantWorkspaceService, TenantWorkspaceSummary } from './tenant-workspace.service';
+import { forkJoin } from 'rxjs';
+import { TenantWorkspaceService, TenantWorkspaceSummary, TenantCommercialEntitlementSnapshot } from './tenant-workspace.service';
 
 @Component({
   selector: 'app-tenant-dashboard',
@@ -45,11 +46,22 @@ import { TenantWorkspaceService, TenantWorkspaceSummary } from './tenant-workspa
             <a routerLink="/dashboard/branches">مشاهده شعبه‌ها</a>
           </article>
           <article class="tenant-card">
-            <span class="material-symbols-outlined" aria-hidden="true">assignment</span>
-            <small>وضعیت درخواست اشتراک</small>
-            <h2>در انتظار فعال‌سازی</h2>
-            <p>پلن درخواستی: {{ data.profile?.requestedPlanKey || 'ثبت نشده' }}</p>
-            <p class="notice">ثبت درخواست پلن به معنی فعال‌سازی اشتراک یا تأیید پرداخت نیست.</p>
+            <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+            <small>وضعیت اشتراک تجاری</small>
+            @if (subscription(); as license) {
+              <h2>{{ subscriptionTitle(license.status) }}</h2>
+              <p>پلن درخواست‌شده: {{ data.profile?.requestedPlanKey || 'ثبت نشده' }}</p>
+              @if (license.hasCommercialEntitlement) {
+                <p>ماژول‌های دارای مجوز: {{ license.moduleCodes.join('، ') }}</p>
+                <p>پایان دوره: {{ license.endsAtUtc || '—' }}</p>
+              } @else {
+                <p class="notice">هیچ مجوز تجاری فعالی برای این فضای کاری تأیید نشده است.</p>
+              }
+              <p class="notice">این اطلاعات صرفاً گزارش وضعیت است؛ دسترسی هر کاربر همچنان جداگانه بررسی می‌شود.</p>
+            } @else {
+              <h2>وضعیت نامشخص</h2>
+              <p class="notice">امکان تأیید وضعیت اشتراک از سرور وجود ندارد.</p>
+            }
           </article>
         </div>
 
@@ -71,8 +83,20 @@ export class TenantDashboardComponent implements OnInit {
   private readonly service = inject(TenantWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
   readonly workspace = signal<TenantWorkspaceSummary | null>(null);
+  readonly subscription = signal<TenantCommercialEntitlementSnapshot | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+
+  subscriptionTitle(status: TenantCommercialEntitlementSnapshot['status']): string {
+    switch (status) {
+      case 'Active': return 'اشتراک تجاری فعال';
+      case 'Pending': return 'در انتظار تسویه تأییدشده';
+      case 'Inactive': return 'اشتراک غیرفعال یا منقضی';
+      case 'Invalid': return 'اشتراک فاقد تسویه معتبر';
+      case 'Unavailable': return 'امکانات پلن در دسترس نیست';
+      default: return 'اشتراک فعالی ثبت نشده';
+    }
+  }
 
   ngOnInit(): void { this.load(); }
 
@@ -81,17 +105,22 @@ export class TenantDashboardComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.workspace.set(null);
-    this.service.getWorkspace().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: result => {
-        if (!result?.tenant || !Number.isFinite(result.branchesCount)) {
+    this.subscription.set(null);
+    forkJoin({
+      workspace: this.service.getWorkspace(),
+      subscription: this.service.getSubscriptionShadow(),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ workspace, subscription }) => {
+        if (!workspace?.tenant || !Number.isFinite(workspace.branchesCount)) {
           this.error.set('پاسخ فضای کاری ناقص است؛ نسخه Backend را بررسی کنید.');
         } else {
-          this.workspace.set(result);
+          this.workspace.set(workspace);
+          this.subscription.set(subscription);
         }
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('دریافت اطلاعات فضای کاری انجام نشد.');
+        this.error.set('دریافت وضعیت فضای کاری یا اشتراک انجام نشد.');
         this.loading.set(false);
       },
     });
