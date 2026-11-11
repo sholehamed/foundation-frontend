@@ -25,6 +25,8 @@ export class TenantPlanOrdersComponent {
   readonly message = signal<string | null>(null);
   readonly plans = signal<PublicPlanCard[]>([]);
   readonly orders = signal<TenantPlanOrder[]>([]);
+  private checkoutSelection = '';
+  private checkoutRequestKey: string | null = null;
   selectedVersion = '';
   selectedCycle: 'monthly' | 'yearly' = 'monthly';
 
@@ -75,7 +77,12 @@ export class TenantPlanOrdersComponent {
 
   placeOrder(): void {
     if (this.busy() || !this.selectedVersion || !(this.selectedOfferAmount()! > 0)) return;
-    const id = globalThis.crypto?.randomUUID?.();
+    const currentSelection = this.selectedVersion + '/' + this.selectedCycle;
+    if (this.checkoutSelection !== currentSelection) {
+      this.checkoutRequestKey = globalThis.crypto?.randomUUID?.() ?? null;
+      this.checkoutSelection = currentSelection;
+    }
+    const id = this.checkoutRequestKey;
     if (!id) { this.error.set('مرورگر از شناسه امن درخواست پشتیبانی نمی‌کند.'); return; }
     this.busy.set(true);
     this.error.set(null);
