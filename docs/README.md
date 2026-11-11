@@ -1,3 +1,4 @@
+- [FR-17C-2A — Tenant Order form and System Admin external receipt review](development/FR-17C2A-PLAN-ORDER-ANGULAR.md)
 - [FR-17C-1 — Tenant dashboard read-only subscription shadow](development/FR-17C1-TENANT-SUBSCRIPTION-STATUS.md)
 - [FR-17B-2C — immutable published Plan lock UI and new-version-only flow](development/FR-17B2C-PUBLISHED-PLAN-LOCK-UI.md)
 - [FR-17B-2B — System Admin Plan Catalog editor and publication review](development/FR-17B2B-SYSTEM-PLAN-CATALOG-UI.md)
