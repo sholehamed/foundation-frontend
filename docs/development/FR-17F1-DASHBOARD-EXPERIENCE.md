@@ -16,6 +16,7 @@
 ## System dashboard
 
 - Reorganized existing nine backend-sourced `SuperDashboardDto` counters into four primary KPIs and five secondary KPIs. Original values and API call unchanged.
+- Companion [backend PR #143](https://github.com/sholehamed/foundation-backend/pull/143) adds four real persisted plan/order/subscription status counts. The System dashboard renders a dedicated commercial lifecycle panel **only when all four optional response fields are present**; older Backend responses do not produce fabricated zero KPIs. These counts are explicitly not bank revenue, purchased permissions, or verified commercial licenses.
 - Hero shows **real** `totalTenants` and `activeUsers`, with a visually prominent conic progress ring derived ONLY from `activeTenants / totalTenants` (0 when none). No hard-coded 80% satisfaction or revenue.
 - Existing tenant activity/active-vs-inactive summaries, recent tenant list, permission-filtered quick links and zero-state survive; new central Plans and Menu quick links use the existing `*systemCan` directive.
 - Dates of recent tenant registrations are rendered in Persian calendar; API timestamps remain UTC. All new CSS is scoped to `.system-overview` for safer integration with shared admin shell.
