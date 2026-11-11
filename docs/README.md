@@ -1,3 +1,12 @@
+## FR-18A — Planned Control Tower UX (documentation only)
+
+- [Control Tower Angular UX and permission design: Overview, Trace Explorer/Waterfall, SQL Analyzer, Diagnostic Sessions, Alerts and Audit](development/FR-18-CONTROL-TOWER-UX.md)
+- [Source architecture and isolated telemetry decision](https://github.com/sholehamed/foundation-backend/blob/main/docs/architecture/control-tower-observability.md)
+- [Proposed telemetry data/API and security contracts](https://github.com/sholehamed/foundation-backend/blob/main/docs/reference/control-tower-telemetry-contracts.md)
+- [Full staged implementation roadmap](https://github.com/sholehamed/foundation-backend/blob/main/docs/development/FR-18-CONTROL-TOWER-ROADMAP.md)
+
+**Status:** design only. No new /system/control-tower route, component, API integration, Feature Registry permission or fake health widgets yet. Angular implementation begins after real telemetry is collected and System-only query API is authorized.
+
 - [FR-17E-1 — System coupon manager and Tenant optional discount checkout](development/FR-17E1-COUPONS-CHECKOUT-UI.md)
 - [FR-17C-2A — Tenant Order form and System Admin external receipt review](development/FR-17C2A-PLAN-ORDER-ANGULAR.md)
 - [FR-17C-1 — Tenant dashboard read-only subscription shadow](development/FR-17C1-TENANT-SUBSCRIPTION-STATUS.md)
