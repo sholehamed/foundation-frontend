@@ -1,3 +1,8 @@
+## FR-17E-1 — Dynamic coupons and zero-total Tenant checkout UI (2026-11-11)
+
+- [PR #65](https://github.com/sholehamed/foundation-frontend/pull/65): System PlanCatalog page issues centrally generated percentage/FixedIRR coupon codes with validity days, total/per-Tenant settled limits and optional pinned published PlanVersion; plaintext secret shown exactly once at issuance, server stores hash only; lists settled usage/disable state. Existing Tenant order form supports optional coupon code and never transmits a client discount/net/tenant ID/payment flag; distinguishes confirmed `zero_total_settled_and_activated` from an unpaid partially discounted Pending Order. [UI handoff](development/FR-17E1-COUPONS-CHECKOUT-UI.md).
+- Must deploy [Backend PR #138](https://github.com/sholehamed/foundation-backend/pull/138) and migration/central `PLAN-CATALOG.COUPONS` permission before UI. No real Commercial Module registered yet, so no actual published Plan order can be fabricated. Coupon is not a user Permission. Staging, refunds, renewal, accounting and payment gateway remain independent.
+
 ## FR-17C-2A — Owner Order form and central external-payment review (2026-11-11)
 
 - [PR #64](https://github.com/sholehamed/foundation-frontend/pull/64) adds lazily loaded Tenant Owner order form from shared PublicPlanCards, typed server-priced Pending Order POST with no caller TenantId/amount/discount/payment flags, and own order list. Existing System PlanCatalog page includes a manual receipt review panel and sends an explicit external-payment attestation to the new backend System-only endpoint; no bank verification or coupon redemption is claimed. [Implementation/UI workflow](development/FR-17C2A-PLAN-ORDER-ANGULAR.md).
