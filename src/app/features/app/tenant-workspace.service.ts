@@ -322,11 +322,12 @@ export class TenantWorkspaceService {
   }
 
   createMyPlanOrder(planVersionId: string, billingCycle: 'monthly' | 'yearly',
-    idempotencyKey: string): Observable<TenantPlanOrderResult> {
+    idempotencyKey: string, couponCode?: string): Observable<TenantPlanOrderResult> {
     // No client TenantId, IRR amount or discount accepted by the server.
     return this.http.post<TenantPlanOrderResult>(
       this.root + '/subscription/orders',
-      { planVersionId, billingCycle, idempotencyKey });
+      couponCode ? { planVersionId, billingCycle, idempotencyKey, couponCode } :
+        { planVersionId, billingCycle, idempotencyKey });
   }
 
   getSubscriptionShadow(): Observable<TenantCommercialEntitlementSnapshot> {
